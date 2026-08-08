@@ -1,0 +1,17 @@
+SYNTHETIC TRAINING DATA — NOT REAL FINANCIAL RECORDS — FOR AI TRAINING EXERCISES ONLY
+Row,Vendor,Invoice_No,Invoice_Date,Invoice_Amount,Currency,Payment_Date,Payment_Amount,Status,Notes
+1,Mehta Compound Pvt Ltd,INV-2024-0441,2024-03-01,142000,INR,2024-03-15,142000,MATCHED,Profile grade PVC compound
+2,Bharati Pigments,INV-2024-0442,2024-03-02,28500,INR,2024-03-18,28500,MATCHED,Titanium white batch
+3,Raj Packaging Supplies,INV-2024-0443,2024-03-03,9800,INR,2024-03-20,9800,MATCHED,Stretch film rolls
+4,Mehta Compound Pvt Ltd,INV-2024-0444,2024-03-05,186000,Rs,2024-03-22,186000,MATCHED,NOTE: currency symbol inconsistent (Rs vs INR)
+5,Apex Logistics Ltd,INV-2024-0445,2024-03-06,34200,INR,2024-03-28,31500,MISMATCH,Short payment — Rs 2700 difference
+6,Suresh Die Makers,INV-2024-0446,2024-03-07,55000,INR,,0,UNPAID,No payment record found
+7,Bharati Pigments,INV-2024-0447,2024-03-08,28500,INR,2024-03-24,28500,MATCHED,Titanium white batch — POSSIBLE DUPLICATE of Row 2
+8,National Scrap Traders,INV-2024-0448,2024-03-09,12400,INR,2024-03-25,12400,MATCHED,PVC regrind purchase
+9,Vishwas Transport,INV-2024-0449,2024-03-10,22000,INR,2024-03-26,22000,MATCHED,Freight Ahmedabad-Pune
+10,Mehta Compound Pvt Ltd,INV-2024-0450,2024-03-11,97500,INR,2024-03-27,97500,MATCHED,Emergency top-up order
+11,Suresh Die Makers,INV-2024-0451,2024-03-12,55000,INR,,0,UNPAID,POSSIBLE DUPLICATE of Row 6 — same vendor same amount different invoice
+12,Apex Logistics Ltd,INV-2024-0452,2024-03-14,18700,INR,2024-03-30,18700,MATCHED,Local freight
+13,Kumar Tooling Works,INV-2024-0453,2024-03-15,76000,INR,2024-04-01,76000,MATCHED,Extrusion die refurb
+14,Priya Chemical Corp,INV-2024-0454,2024-03-17,41200,INR,2024-04-03,41200,MATCHED,Stabiliser package
+15,National Scrap Traders,INV-2024-0455,2024-03-19,12400,INR,2024-04-04,12400,MATCHED,PVC regrind — check if duplicate of Row 8 (same amount)

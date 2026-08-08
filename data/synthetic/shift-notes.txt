@@ -1,0 +1,16 @@
+SYNTHETIC TRAINING DATA — NOT REAL OPERATIONAL RECORDS
+
+B-SHIFT HANDOVER NOTES — Extrusion Line, March 22 2024 (SYNTHETIC)
+
+raw notes from shift supervisor Ramesh K. before handing over to C-shift:
+
+- extruder 2 back running after bearing job, still on watch. keep an eye on vibration dial. sunil knows the history
+- filter on EXT-1 changed at 3pm, fresh one, should be fine for full night run
+- PO 4471 — 60 lengths white 70mm on hold, QC flagged surface finish on last 15 pieces, waiting for QC lead call in morning. do NOT dispatch these until cleared
+- night priority is PO 4488 green 60mm for Ahmedabad order, needs to be on the truck by 6am. 80 lengths. mould and settings are ready on EXT-3
+- colour changeover done on EXT-1 — moved from white to grey. purge complete. test piece looked fine to me but get proper QC sign-off before mass run
+- die head on EXT-3 was noisy for 10 mins around 2pm — stopped making noise, watched it for an hour and it was ok. mention to night team just in case. ramesh
+- compound stock: grey grade compound getting low on shelf B4 — enough for tonight but order in morning
+- temperature log sheet is on the clipboard by EXT-2 — please update every 2 hours as usual
+
+--- end of B-shift notes ---

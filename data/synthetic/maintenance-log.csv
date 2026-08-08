@@ -1,0 +1,23 @@
+SYNTHETIC TRAINING DATA — NOT REAL OPERATIONAL RECORDS — FOR AI TRAINING EXERCISES ONLY
+
+Machine,Date,Issue,Downtime_Hours,Technician,Resolved,Notes
+EXT-1,2024-03-01,Bearing noise on drive shaft,2.5,Ramesh K.,Yes,Lubricated and monitored
+EXT-2,2024-03-01,Heating zone 3 temperature drift,1.0,Sunil P.,Yes,PID recalibrated
+EXT-3,2024-03-02,Die head seal failure — compound leakage,4.0,Ramesh K.,Yes,Seal replaced
+EXT-2,2024-03-04,Bearing noise on drive shaft,3.0,Sunil P.,Yes,Same issue as EXT-1 Mar 1 — different machine
+EXT-4,2024-03-05,Vacuum calibration failure,2.0,Dinesh R.,Yes,Calibration adjusted
+EXT-1,2024-03-06,Haul-off roller slip,1.5,Ramesh K.,Yes,Belt tension adjusted
+EXT-2,2024-03-07,Bearing noise on drive shaft,4.5,Sunil P.,Yes,Bearing partially replaced — advised full replacement
+EXT-3,2024-03-08,Colour contamination in compound feed,6.0,Dinesh R.,Yes,Purge cycle — lost 6 hours production
+EXT-2,2024-03-09,Heating zone 2 temperature drift,0.5,Sunil P.,Yes,Minor — PID adjusted
+EXT-4,2024-03-11,Power trip on motor controller,3.0,Ramesh K.,Yes,Fuse replaced
+EXT-2,2024-03-12,Bearing noise on drive shaft,5.0,Sunil P.,No,Escalated to maintenance lead — bearing critical
+EXT-1,2024-03-13,Die head seal failure — compound leakage,3.5,Dinesh R.,Yes,
+EXT-3,2024-03-14,Haul-off roller slip,2.0,Ramesh K.,Yes,
+EXT-2,2024-03-15,Bearing noise on drive shaft,6.0,Sunil P.,No,MACHINE STOPPED — production transferred to EXT-1
+EXT-4,2024-03-16,Vacuum calibration failure,2.5,Dinesh R.,Yes,Second occurrence this month
+EXT-1,2024-03-17,Heating zone 1 temperature drift,1.0,Ramesh K.,Yes,
+EXT-2,2024-03-18,Bearing replacement in progress,8.0,External vendor,No,Vendor Suresh Die Makers on site
+EXT-3,2024-03-20,Compound feed sensor fault,2.0,Sunil P.,Yes,Sensor cleaned
+EXT-4,2024-03-21,Haul-off roller slip,1.5,Dinesh R.,Yes,
+EXT-2,2024-03-22,Bearing replacement complete — test run,2.0,External vendor,Yes,Bearing replaced — monitor for 48 hrs

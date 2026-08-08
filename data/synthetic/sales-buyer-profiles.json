@@ -1,0 +1,54 @@
+[
+  {
+    "id": "buyer-1",
+    "type": "Architect",
+    "name": "Neha Sharma (Synthetic)",
+    "company": "Sharma Design Studio, Pune",
+    "project": "Residential apartment complex, 80 units, premium segment",
+    "primary_priority": "Thermal performance and U-values for green rating",
+    "secondary_priority": "Aesthetics — slim sightlines, modern finishes",
+    "pressure": "Client demanding GRIHA compliance for the building",
+    "likely_objection": "Imported European brands have better design options",
+    "proof_point_needed": "Technical spec sheet, thermal data, reference projects in India",
+    "next_step": "Site visit + sample review with their facade consultant"
+  },
+  {
+    "id": "buyer-2",
+    "type": "Builder",
+    "name": "Suresh Contractors Pvt Ltd (Synthetic)",
+    "company": "Suresh Contractors, Nashik",
+    "project": "Mid-segment housing development, 200 units, 6 blocks",
+    "primary_priority": "Price per unit and reliable lead time — they cannot afford delays",
+    "secondary_priority": "Easy installation — their team is not specialist fabricators",
+    "pressure": "Project deadline in 5 months, 80% of profiles needed within 2 months",
+    "likely_objection": "uPVC from China is 20% cheaper",
+    "proof_point_needed": "Price comparison, delivery guarantee, installation support",
+    "next_step": "Quotation with delivery schedule confirmation"
+  },
+  {
+    "id": "buyer-3",
+    "type": "Fabricator",
+    "name": "Precision Windows & Facades (Synthetic)",
+    "company": "Precision Windows, Hyderabad",
+    "project": "Commercial fitout contracts, mixed residential supply",
+    "primary_priority": "Profile consistency — their machines are calibrated to specific tolerances",
+    "secondary_priority": "Technical support for die and tool compatibility",
+    "pressure": "Current supplier quality is inconsistent — they are actively looking to switch",
+    "likely_objection": "Will there be support if our dies need adjustment?",
+    "proof_point_needed": "Technical spec sheets, tolerance data, testimonials from other fabricators",
+    "next_step": "Sample shipment of standard 70mm + technical call with VEKA engineer"
+  },
+  {
+    "id": "buyer-4",
+    "type": "Dealer",
+    "name": "Mehta Building Supplies (Synthetic)",
+    "company": "Mehta Building Supplies, Ahmedabad",
+    "project": "Distribution to small builders and contractors across Gujarat",
+    "primary_priority": "Margin and stock availability — they carry inventory risk",
+    "secondary_priority": "Brand recognition that makes it easy to sell to their customers",
+    "pressure": "Competitor distributor just took on a Chinese brand, undercutting on price",
+    "likely_objection": "Our customers ask for price first, not quality",
+    "proof_point_needed": "Dealer margin structure, credit terms, marketing support",
+    "next_step": "Commercial discussion + dealership agreement terms"
+  }
+]

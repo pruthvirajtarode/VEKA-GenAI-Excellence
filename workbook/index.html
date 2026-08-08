@@ -1,0 +1,1039 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>VEKA GenAI Excellence — Participant Workbook</title>
+<meta name="description" content="VEKA India GenAI Excellence participant workbook. Write. Test. Improve. Reuse. Your personal record of the training day."/>
+<style>
+/* ============================================================
+   DESIGN TOKENS
+   ============================================================ */
+:root{
+  --bg:#0E1116;
+  --bg-elevated:#151A22;
+  --bg-card:#1A212B;
+  --text:#F4F2EC;
+  --text-muted:#98A2B2;
+  --text-faint:#5C6472;
+  --border:rgba(255,255,255,.09);
+  --border-strong:rgba(255,255,255,.16);
+  --veka-red:#E4002B;
+  --veka-red-soft:rgba(228,0,43,.14);
+  --steel:#5B8DEF;
+  --green:#24C58A;
+  --amber:#F5A623;
+  --display:'Space Grotesk',system-ui,sans-serif;
+  --body:'Inter',system-ui,sans-serif;
+  --mono:'JetBrains Mono',ui-monospace,monospace;
+  --radius:12px;
+  --radius-lg:16px;
+}
+
+/* ============================================================
+   BASE
+   ============================================================ */
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{
+  background:var(--bg);
+  color:var(--text);
+  font-family:var(--body);
+  -webkit-font-smoothing:antialiased;
+  line-height:1.6;
+}
+.container{max-width:900px;margin:0 auto;padding:0 24px}
+a{color:var(--veka-red);text-decoration:none}
+a:hover{text-decoration:underline}
+
+/* blueprint grid */
+body::before{
+  content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;
+  background-image:
+    linear-gradient(rgba(255,255,255,.015) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(255,255,255,.015) 1px,transparent 1px);
+  background-size:48px 48px;
+}
+
+/* ============================================================
+   STICKY TOP BAR
+   ============================================================ */
+#topbar{
+  position:sticky;top:0;z-index:100;
+  background:rgba(14,17,22,.96);border-bottom:1px solid var(--border);
+  padding:12px 0;backdrop-filter:blur(10px);
+}
+.topbar-inner{
+  display:flex;align-items:center;justify-content:space-between;
+  flex-wrap:wrap;gap:12px;
+}
+.brand{display:flex;align-items:center;gap:10px;font-family:var(--display);font-weight:600;font-size:14px}
+.brand-mark{width:24px;height:24px}
+.brand small{font-family:var(--mono);font-size:9px;letter-spacing:.14em;text-transform:uppercase;color:var(--text-muted);display:block;margin-top:1px}
+.topbar-actions{display:flex;gap:8px}
+.topbar-btn{
+  background:var(--bg-card);border:1px solid var(--border);color:var(--text-muted);
+  border-radius:8px;padding:7px 14px;font-family:var(--mono);font-size:11px;
+  letter-spacing:.08em;cursor:pointer;transition:.15s;
+}
+.topbar-btn:hover{border-color:var(--veka-red);color:var(--text)}
+.topbar-btn.save-indicator{border-color:var(--green);color:var(--green)}
+
+/* ============================================================
+   COVER
+   ============================================================ */
+#cover{
+  min-height:100vh;display:flex;flex-direction:column;justify-content:center;
+  padding:80px 24px;
+  background:linear-gradient(180deg,rgba(14,17,22,0) 0%,rgba(14,17,22,1) 100%),
+             radial-gradient(ellipse at 30% 40%,rgba(228,0,43,.08) 0%,transparent 60%);
+}
+.cover-eyebrow{
+  font-family:var(--mono);font-size:11px;letter-spacing:.28em;text-transform:uppercase;
+  color:var(--veka-red);display:flex;align-items:center;gap:12px;margin-bottom:20px;
+}
+.cover-eyebrow::before{content:"";width:28px;height:2px;background:var(--veka-red)}
+.cover-title{font-family:var(--display);font-weight:700;font-size:clamp(40px,7vw,90px);line-height:.95;letter-spacing:-.03em}
+.cover-sub{font-family:var(--mono);font-size:14px;letter-spacing:.18em;text-transform:uppercase;color:var(--text-muted);margin-top:20px}
+.cover-tagline{color:var(--text-muted);font-size:clamp(15px,2vw,20px);margin-top:14px;font-style:italic}
+.cover-fields{
+  display:grid;grid-template-columns:1fr 1fr;gap:14px;
+  margin-top:40px;max-width:560px;
+}
+@media(max-width:600px){.cover-fields{grid-template-columns:1fr}}
+.cover-field label{font-family:var(--mono);font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:var(--text-muted);display:block;margin-bottom:6px}
+.cover-field input{
+  width:100%;background:var(--bg-card);border:1px solid var(--border);color:var(--text);
+  border-radius:8px;padding:10px 14px;font-family:var(--body);font-size:14px;
+}
+.cover-field input:focus{outline:none;border-color:var(--veka-red)}
+.cover-field input::placeholder{color:var(--text-faint)}
+
+/* ============================================================
+   SECTION LAYOUT
+   ============================================================ */
+.section{
+  padding:60px 0;border-top:1px solid var(--border);
+}
+.section:first-of-type{border-top:none}
+.section-header{margin-bottom:32px}
+.section-number{
+  font-family:var(--mono);font-size:10px;letter-spacing:.24em;text-transform:uppercase;
+  color:var(--veka-red);margin-bottom:8px;display:flex;align-items:center;gap:10px;
+}
+.section-number::before{content:"";width:24px;height:2px;background:var(--veka-red)}
+.section-title{font-family:var(--display);font-weight:700;font-size:clamp(26px,4vw,46px);letter-spacing:-.02em;line-height:1.05}
+.section-desc{color:var(--text-muted);font-size:clamp(14px,1.5vw,17px);margin-top:12px;max-width:65ch;line-height:1.6}
+
+/* ============================================================
+   FORM ELEMENTS
+   ============================================================ */
+.field-group{margin-bottom:20px}
+.field-label{
+  font-family:var(--mono);font-size:10px;letter-spacing:.18em;text-transform:uppercase;
+  color:var(--text-muted);display:flex;align-items:center;gap:8px;margin-bottom:8px;
+}
+.field-hint{color:var(--text-faint);font-size:11px;letter-spacing:0;text-transform:none;font-family:var(--body)}
+textarea.wb-field, input.wb-field{
+  width:100%;background:rgba(255,255,255,.03);border:1px solid var(--border);color:var(--text);
+  border-radius:10px;padding:14px 16px;font-family:var(--body);font-size:14px;
+  line-height:1.6;resize:vertical;min-height:80px;
+  transition:.15s;
+}
+textarea.wb-field:focus, input.wb-field:focus{
+  outline:none;border-color:rgba(228,0,43,.5);background:rgba(228,0,43,.03);
+}
+textarea.wb-field::placeholder, input.wb-field::placeholder{color:var(--text-faint)}
+textarea.wb-field.tall{min-height:140px}
+textarea.wb-field.xtall{min-height:200px}
+input.wb-field{min-height:auto;resize:none}
+
+/* Checkbox group */
+.check-group{display:flex;flex-direction:column;gap:10px;margin:14px 0}
+.check-item{display:flex;align-items:flex-start;gap:12px}
+.check-item input[type="checkbox"]{
+  width:18px;height:18px;flex-shrink:0;margin-top:1px;
+  accent-color:var(--veka-red);cursor:pointer;
+}
+.check-item label{font-size:14px;color:#cdd4de;line-height:1.45;cursor:pointer}
+
+/* Row layout for multi-column fields */
+.field-row{display:grid;gap:14px}
+.field-row.two{grid-template-columns:1fr 1fr}
+.field-row.three{grid-template-columns:1fr 1fr 1fr}
+@media(max-width:640px){.field-row.two,.field-row.three{grid-template-columns:1fr}}
+
+/* ============================================================
+   CARDS
+   ============================================================ */
+.wb-card{
+  background:var(--bg-card);border:1px solid var(--border);
+  border-radius:var(--radius-lg);padding:24px 26px;margin-bottom:20px;
+}
+.wb-card.red-accent{border-left:3px solid var(--veka-red)}
+.wb-card.green-accent{border-left:3px solid var(--green)}
+.wb-card.amber-accent{border-left:3px solid var(--amber)}
+.wb-card-title{font-family:var(--mono);font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:var(--text-muted);margin-bottom:14px}
+
+/* CTPF visual cards */
+.ctpf-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:20px}
+@media(max-width:600px){.ctpf-grid{grid-template-columns:1fr}}
+.ctpf-card{
+  border:1px solid var(--border);border-radius:var(--radius);padding:18px;
+  background:var(--bg-card);
+}
+.ctpf-letter{font-family:var(--display);font-weight:700;font-size:48px;letter-spacing:-.04em;line-height:1;color:var(--veka-red);margin-bottom:6px}
+.ctpf-word{font-family:var(--mono);font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:var(--text-muted);margin-bottom:10px}
+.ctpf-question{font-size:13px;color:var(--text-muted);margin-bottom:10px;font-style:italic}
+
+/* Safety checklist */
+.safety-check{
+  background:rgba(228,0,43,.06);border:1px solid rgba(228,0,43,.2);
+  border-radius:var(--radius);padding:18px 20px;margin-top:16px;
+}
+.safety-check-title{font-family:var(--mono);font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:var(--veka-red);margin-bottom:12px}
+
+/* Template builder */
+.template-card{
+  background:#090c11;border:1px solid var(--border);border-radius:var(--radius);
+  padding:20px;margin-top:16px;
+}
+.template-field{margin-bottom:14px}
+.template-field-label{font-family:var(--mono);font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:var(--text-faint);margin-bottom:6px}
+
+/* Capstone canvas */
+.capstone-canvas{
+  background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius-lg);
+  padding:28px;margin-bottom:24px;
+}
+.capstone-title{font-family:var(--display);font-weight:700;font-size:22px;margin-bottom:20px;display:flex;align-items:center;gap:12px}
+.capstone-title span{font-family:var(--mono);font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:var(--veka-red);font-weight:400}
+
+/* Test row */
+.test-row{
+  display:grid;grid-template-columns:80px 1fr 1fr;gap:14px;align-items:start;
+  padding:14px 0;border-top:1px solid var(--border);
+}
+.test-num{font-family:var(--mono);font-size:26px;font-weight:700;color:rgba(228,0,43,.4);line-height:1}
+@media(max-width:640px){.test-row{grid-template-columns:1fr}}
+
+/* Demo card */
+.demo-card-wb{
+  background:linear-gradient(135deg,rgba(228,0,43,.08),rgba(228,0,43,.02));
+  border:1px solid rgba(228,0,43,.3);border-radius:var(--radius-lg);padding:28px;margin-bottom:20px;
+}
+.demo-card-title{font-family:var(--display);font-weight:700;font-size:22px;color:var(--text);margin-bottom:20px}
+
+/* 30-day plan grid */
+.plan-table{width:100%;border-collapse:collapse;margin-top:16px}
+.plan-table th{
+  font-family:var(--mono);font-size:9px;letter-spacing:.18em;text-transform:uppercase;
+  color:var(--text-muted);text-align:left;padding:10px 12px;
+  border-bottom:1px solid var(--border);
+}
+.plan-table td{padding:10px 12px;border-bottom:1px solid var(--border);vertical-align:top}
+.plan-table td:first-child{font-family:var(--mono);font-size:12px;color:var(--veka-red);font-weight:700;white-space:nowrap}
+
+/* Section navigation */
+.section-nav{
+  position:sticky;top:58px;z-index:99;background:rgba(14,17,22,.9);
+  border-bottom:1px solid var(--border);padding:0;
+  backdrop-filter:blur(8px);overflow-x:auto;
+  scrollbar-width:none;
+}
+.section-nav::-webkit-scrollbar{display:none}
+.section-nav-inner{display:flex;padding:0 20px;gap:0;min-width:max-content}
+.section-nav a{
+  font-family:var(--mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--text-faint);padding:12px 16px;border-bottom:2px solid transparent;
+  text-decoration:none;transition:.15s;white-space:nowrap;
+}
+.section-nav a:hover{color:var(--text);border-color:var(--border)}
+.section-nav a.active{color:var(--veka-red);border-color:var(--veka-red)}
+
+/* ============================================================
+   PRINT STYLES
+   ============================================================ */
+@media print{
+  body{background:#fff;color:#111}
+  body::before{display:none}
+  #topbar,.section-nav,.topbar-actions{display:none!important}
+  .section{page-break-before:always;padding:30px 0}
+  .section:first-of-type{page-break-before:avoid}
+  #cover{min-height:auto;page-break-after:always}
+  .wb-card{background:#f9f9f9;border:1px solid #ddd;border-radius:8px}
+  .ctpf-card{background:#f5f5f5;border:1px solid #ddd}
+  textarea.wb-field,input.wb-field{
+    background:#fafafa;border:1px solid #ccc;color:#111;
+    min-height:60px;
+  }
+  .section-title{color:#111}
+  .section-number,.field-label,.ctpf-word{color:#E4002B}
+  .cover-title,.ctpf-letter{color:#E4002B}
+  .cover-tagline,.lead,.section-desc,.field-hint{color:#555}
+  .capstone-canvas,.demo-card-wb,.safety-check,.template-card{
+    background:#f9f9f9;border:1px solid #ccc;
+  }
+  .capstone-canvas,.section{break-inside:avoid-page}
+  .plan-table th{color:#555}
+  @page{margin:20mm 15mm;size:A4 portrait}
+}
+
+/* ============================================================
+   RESPONSIVE
+   ============================================================ */
+@media(max-width:640px){
+  .cover-title{font-size:48px}
+  .section{padding:40px 0}
+}
+</style>
+</head>
+<body>
+
+<!-- TOP BAR -->
+<div id="topbar">
+  <div class="container">
+    <div class="topbar-inner">
+      <div class="brand">
+        <svg class="brand-mark" viewBox="0 0 40 40" aria-hidden="true">
+          <rect x="3" y="3" width="34" height="34" rx="2" fill="rgba(228,0,43,.12)"/>
+          <rect x="9" y="9" width="10" height="10" fill="none" stroke="#E4002B" stroke-width="1.8"/>
+          <rect x="21" y="9" width="10" height="10" fill="none" stroke="#E4002B" stroke-width="1.8"/>
+          <rect x="9" y="21" width="22" height="10" fill="none" stroke="#E4002B" stroke-width="1.8"/>
+        </svg>
+        <div>VEKA · GenAI Excellence<br><small>Participant Workbook</small></div>
+      </div>
+      <div class="topbar-actions">
+        <button class="topbar-btn" id="save-btn" onclick="saveAll()">Save Progress</button>
+        <button class="topbar-btn" onclick="clearConfirm()">Clear Fields</button>
+        <button class="topbar-btn" onclick="window.print()">Print</button>
+        <a href="../index.html" class="topbar-btn" style="text-decoration:none">← Home</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SECTION NAV -->
+<nav class="section-nav" aria-label="Workbook sections">
+  <div class="section-nav-inner">
+    <a href="#cover" class="active">Cover</a>
+    <a href="#s1">1 · First Win</a>
+    <a href="#s2">2 · C·T·P·F</a>
+    <a href="#s3">3 · Rescue</a>
+    <a href="#s4">4 · High-Stakes</a>
+    <a href="#s5">5 · Finance</a>
+    <a href="#s6">6 · Sales & HR</a>
+    <a href="#s7">7 · Template</a>
+    <a href="#s8">8 · Capstone</a>
+  </div>
+</nav>
+
+<!-- COVER -->
+<div id="cover">
+  <div class="container">
+    <div class="cover-eyebrow">VEKA India · GenAI Excellence</div>
+    <h1 class="cover-title">Participant<br>Workbook</h1>
+    <div class="cover-sub">NxtWave Enterprise Training</div>
+    <p class="cover-tagline">"Write. Test. Improve. Reuse."</p>
+    <div class="cover-fields">
+      <div class="cover-field">
+        <label for="p-name">Participant Name</label>
+        <input type="text" id="p-name" class="wb-field" placeholder="Your name" autocomplete="off"/>
+      </div>
+      <div class="cover-field">
+        <label for="p-dept">Department</label>
+        <input type="text" id="p-dept" class="wb-field" placeholder="e.g. Finance, Sales, HR" autocomplete="off"/>
+      </div>
+      <div class="cover-field">
+        <label for="p-date">Date</label>
+        <input type="text" id="p-date" class="wb-field" placeholder="Training date"/>
+      </div>
+      <div class="cover-field">
+        <label for="p-team">Team / Table</label>
+        <input type="text" id="p-team" class="wb-field" placeholder="e.g. Extrusion, Finance" autocomplete="off"/>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ======================================================
+     SECTION 1: MY FIRST AI WIN
+     ====================================================== -->
+<section class="section" id="s1">
+  <div class="container">
+    <div class="section-header">
+      <div class="section-number">Hour 1 · Section 01</div>
+      <h2 class="section-title">My First AI Win</h2>
+      <p class="section-desc">Everyone produces one real output in the first hour. This section records it — and the improvement journey.</p>
+    </div>
+
+    <div class="field-group">
+      <div class="field-label">What task am I solving? <span class="field-hint">A real task from your desk this week.</span></div>
+      <textarea class="wb-field" id="s1-task" placeholder="e.g. A reminder to a supplier about a PO that is overdue..."></textarea>
+    </div>
+    <div class="field-row two">
+      <div class="field-group">
+        <div class="field-label">Who is the audience?</div>
+        <textarea class="wb-field" id="s1-audience" placeholder="e.g. Supplier / my manager / the shift team..."></textarea>
+      </div>
+      <div class="field-group">
+        <div class="field-label">What outcome do I want?</div>
+        <textarea class="wb-field" id="s1-outcome" placeholder="e.g. Them to confirm a new date by 5pm..."></textarea>
+      </div>
+    </div>
+    <div class="field-group">
+      <div class="field-label">My first prompt <span class="field-hint">What you typed first.</span></div>
+      <textarea class="wb-field tall" id="s1-firstprompt" placeholder="Write your first prompt attempt here..."></textarea>
+    </div>
+    <div class="field-group">
+      <div class="field-label">My first output <span class="field-hint">What AI gave you back.</span></div>
+      <textarea class="wb-field tall" id="s1-firstoutput" placeholder="Paste the first output here..."></textarea>
+    </div>
+    <div class="wb-card red-accent">
+      <div class="wb-card-title">What was wrong?</div>
+      <div class="check-group">
+        <div class="check-item"><input type="checkbox" id="s1-w1"><label for="s1-w1">Too generic — could be from any company</label></div>
+        <div class="check-item"><input type="checkbox" id="s1-w2"><label for="s1-w2">Missing a specific detail (PO, date, name, number)</label></div>
+        <div class="check-item"><input type="checkbox" id="s1-w3"><label for="s1-w3">Wrong tone — too formal / too casual / too apologetic</label></div>
+        <div class="check-item"><input type="checkbox" id="s1-w4"><label for="s1-w4">No clear outcome — reader doesn't know what to do</label></div>
+        <div class="check-item"><input type="checkbox" id="s1-w5"><label for="s1-w5">Too long — buried the important part</label></div>
+      </div>
+    </div>
+    <div class="field-group">
+      <div class="field-label">What did I change? <span class="field-hint">The follow-up instruction you gave AI.</span></div>
+      <textarea class="wb-field" id="s1-change" placeholder="e.g. 'Make it shorter. Add PO#4471 and ask for confirmation by Friday 5pm.'"></textarea>
+    </div>
+    <div class="field-group">
+      <div class="field-label">Final version <span class="field-hint">The output you would actually send.</span></div>
+      <textarea class="wb-field xtall" id="s1-final" placeholder="The polished final output goes here..."></textarea>
+    </div>
+  </div>
+</section>
+
+<!-- ======================================================
+     SECTION 2: C·T·P·F
+     ====================================================== -->
+<section class="section" id="s2">
+  <div class="container">
+    <div class="section-header">
+      <div class="section-number">Hour 2 · Section 02</div>
+      <h2 class="section-title">C · T · P · F</h2>
+      <p class="section-desc">The four levers of every great prompt. Fill in one line for each lever before writing. "Can These Prompts Fly?"</p>
+    </div>
+
+    <div class="ctpf-grid">
+      <div class="ctpf-card">
+        <div class="ctpf-letter">C</div>
+        <div class="ctpf-word">Context</div>
+        <div class="ctpf-question">What is the situation? Any real numbers, names, or constraints?</div>
+        <textarea class="wb-field" id="s2-c" placeholder="The situation in 2-3 lines. Include the PO, date, or reader's mood if relevant..."></textarea>
+      </div>
+      <div class="ctpf-card">
+        <div class="ctpf-letter">T</div>
+        <div class="ctpf-word">Tone</div>
+        <div class="ctpf-question">How should the output sound? Pick words precisely.</div>
+        <textarea class="wb-field" id="s2-t" placeholder="e.g. Firm but respectful. Not apologetic. Warm but clear about the deadline..."></textarea>
+      </div>
+      <div class="ctpf-card">
+        <div class="ctpf-letter">P</div>
+        <div class="ctpf-word">Persona</div>
+        <div class="ctpf-question">Who is AI being? Who is it writing to?</div>
+        <textarea class="wb-field" id="s2-p" placeholder="e.g. A senior procurement lead at VEKA India writing to a 3-year supplier..."></textarea>
+      </div>
+      <div class="ctpf-card">
+        <div class="ctpf-letter">F</div>
+        <div class="ctpf-word">Format</div>
+        <div class="ctpf-question">What shape should the answer take?</div>
+        <textarea class="wb-field" id="s2-f" placeholder="e.g. Email under 130 words, clear subject line, one call to action at the end..."></textarea>
+      </div>
+    </div>
+
+    <div class="field-group">
+      <div class="field-label">My C·T·P·F prompt <span class="field-hint">All four levers in one prompt.</span></div>
+      <textarea class="wb-field xtall" id="s2-prompt" placeholder="PERSONA: You are a [ROLE] at VEKA India writing to [READER].&#10;CONTEXT: [THE SITUATION].&#10;TONE: [HOW IT SHOULD SOUND].&#10;FORMAT: [SHAPE OF THE ANSWER].&#10;Write it."></textarea>
+    </div>
+    <div class="field-row two">
+      <div class="field-group">
+        <div class="field-label">Before (without C·T·P·F)</div>
+        <textarea class="wb-field tall" id="s2-before" placeholder="The output when you used a weak prompt..."></textarea>
+      </div>
+      <div class="field-group">
+        <div class="field-label">After (with C·T·P·F)</div>
+        <textarea class="wb-field tall" id="s2-after" placeholder="The output after applying all four levers..."></textarea>
+      </div>
+    </div>
+    <div class="field-group">
+      <div class="field-label">Which lever changed the output most? <span class="field-hint">And why?</span></div>
+      <textarea class="wb-field" id="s2-lever" placeholder="e.g. Format — once I said 'under 100 words with one call to action', everything tightened."></textarea>
+    </div>
+  </div>
+</section>
+
+<!-- ======================================================
+     SECTION 3: BEFORE / AFTER RESCUE
+     ====================================================== -->
+<section class="section" id="s3">
+  <div class="container">
+    <div class="section-header">
+      <div class="section-number">Hour 2 · Section 03</div>
+      <h2 class="section-title">Before / After Rescue</h2>
+      <p class="section-desc">Take a weak prompt and rescue it. Prove the output got measurably better.</p>
+    </div>
+
+    <div class="field-group">
+      <div class="field-label">Weak prompt <span class="field-hint">Start with: "write something about a price increase to a customer"</span></div>
+      <textarea class="wb-field" id="s3-weak" defaultValue="write something about a price increase to a customer">write something about a price increase to a customer</textarea>
+    </div>
+
+    <div class="wb-card red-accent">
+      <div class="wb-card-title">What is missing from the weak prompt?</div>
+      <div class="check-group">
+        <div class="check-item"><input type="checkbox" id="s3-mc"><label for="s3-mc">Context — no situation, no details, no numbers</label></div>
+        <div class="check-item"><input type="checkbox" id="s3-mt"><label for="s3-mt">Tone — not specified, so AI will guess (usually wrong)</label></div>
+        <div class="check-item"><input type="checkbox" id="s3-mp"><label for="s3-mp">Persona — no role specified for AI or for the reader</label></div>
+        <div class="check-item"><input type="checkbox" id="s3-mf"><label for="s3-mf">Format — no shape required, output will be random length</label></div>
+      </div>
+    </div>
+
+    <div class="field-group" style="margin-top:20px">
+      <div class="field-label">My improved prompt</div>
+      <textarea class="wb-field xtall" id="s3-improved" placeholder="PERSONA: You are a [ROLE] at VEKA India...&#10;CONTEXT: A [X%] price increase effective [DATE] on [PRODUCT]...&#10;TONE: Informative, confident, not apologetic...&#10;FORMAT: Email under 130 words..."></textarea>
+    </div>
+    <div class="field-row two">
+      <div class="field-group">
+        <div class="field-label">Before output</div>
+        <textarea class="wb-field tall" id="s3-before-out" placeholder="What AI produced from the weak prompt..."></textarea>
+      </div>
+      <div class="field-group">
+        <div class="field-label">After output</div>
+        <textarea class="wb-field tall" id="s3-after-out" placeholder="What AI produced from your improved prompt..."></textarea>
+      </div>
+    </div>
+    <div class="field-group">
+      <div class="field-label">What changed? <span class="field-hint">The specific difference that matters.</span></div>
+      <textarea class="wb-field" id="s3-what-changed" placeholder="e.g. The After version names the product, the percentage, and the effective date. The Before is unusable. The After I could send today."></textarea>
+    </div>
+  </div>
+</section>
+
+<!-- ======================================================
+     SECTION 4: HIGH-STAKES WRITING
+     ====================================================== -->
+<section class="section" id="s4">
+  <div class="container">
+    <div class="section-header">
+      <div class="section-number">Hour 3 · Section 04</div>
+      <h2 class="section-title">High-Stakes Writing</h2>
+      <p class="section-desc">Three message types where tone and precision decide whether a problem stays small. Build one of each.</p>
+    </div>
+
+    <!-- 4a: Vendor Negotiation -->
+    <div class="wb-card" style="margin-bottom:28px">
+      <div class="wb-card-title">4A · Vendor Negotiation</div>
+      <div class="field-row two" style="margin-bottom:14px">
+        <div class="field-group">
+          <div class="field-label">Situation</div>
+          <textarea class="wb-field" id="s4a-situation" placeholder="e.g. Supplier wants 7% price rise mid-contract on profile compound..."></textarea>
+        </div>
+        <div class="field-group">
+          <div class="field-label">What must remain firm</div>
+          <textarea class="wb-field" id="s4a-firm" placeholder="e.g. Current contracted price for this term. No rise before March end."></textarea>
+        </div>
+      </div>
+      <div class="field-row two" style="margin-bottom:14px">
+        <div class="field-group">
+          <div class="field-label">What can be flexible</div>
+          <textarea class="wb-field" id="s4a-flex" placeholder="e.g. Willing to discuss a staggered rise after the current contract term..."></textarea>
+        </div>
+        <div class="field-group">
+          <div class="field-label">Desired outcome from this email</div>
+          <textarea class="wb-field" id="s4a-outcome" placeholder="e.g. Supplier agrees to hold price for this term and we schedule a review in April."></textarea>
+        </div>
+      </div>
+      <div class="field-group">
+        <div class="field-label">My negotiation draft</div>
+        <textarea class="wb-field xtall" id="s4a-draft" placeholder="Your negotiation email — warm tone, firm position, one constructive alternative..."></textarea>
+      </div>
+    </div>
+
+    <!-- 4b: Shift Handover -->
+    <div class="wb-card" style="margin-bottom:28px">
+      <div class="wb-card-title">4B · Shift Handover</div>
+      <div class="field-group">
+        <div class="field-label">My messy shift notes <span class="field-hint">Paste them exactly as they are — AI will structure them.</span></div>
+        <textarea class="wb-field tall" id="s4b-raw" placeholder="extruder 2 running slow, changed filter 3pm, PO#4471 on hold, priority = white 70mm...&#10;(Use the shift-notes.txt from the data pack or write your own)"></textarea>
+      </div>
+      <div class="field-group">
+        <div class="field-label">Structured handover output</div>
+        <textarea class="wb-field xtall" id="s4b-structured" placeholder="LINE STATUS:&#10;ACTIONS TAKEN THIS SHIFT:&#10;WATCH-OUTS:&#10;PRIORITY FOR NEXT SHIFT:"></textarea>
+      </div>
+    </div>
+
+    <!-- 4c: Crisis Comms -->
+    <div class="wb-card">
+      <div class="wb-card-title">4C · Delay / Crisis Communication</div>
+      <div class="field-row two" style="margin-bottom:14px">
+        <div class="field-group">
+          <div class="field-label">The fact</div>
+          <textarea class="wb-field" id="s4c-fact" placeholder="e.g. Transporter breakdown. Order delayed 2 days. New dispatch: Thursday."></textarea>
+        </div>
+        <div class="field-group">
+          <div class="field-label">The fix / option</div>
+          <textarea class="wb-field" id="s4c-fix" placeholder="e.g. Partial dispatch tomorrow — 40% of order can leave on Wednesday."></textarea>
+        </div>
+      </div>
+      <div class="field-group">
+        <div class="field-label">My crisis message <span class="field-hint">Fact → Fix → Option → Reassurance. Not sorry-first.</span></div>
+        <textarea class="wb-field xtall" id="s4c-draft" placeholder="Your delay/crisis communication draft goes here..."></textarea>
+      </div>
+      <div class="wb-card red-accent" style="margin-top:14px">
+        <div class="wb-card-title">Self-check: is this message fact-first?</div>
+        <div class="check-group">
+          <div class="check-item"><input type="checkbox" id="s4c-ch1"><label for="s4c-ch1">First sentence states the new date or key fact</label></div>
+          <div class="check-item"><input type="checkbox" id="s4c-ch2"><label for="s4c-ch2">A concrete option is offered (not just sympathy)</label></div>
+          <div class="check-item"><input type="checkbox" id="s4c-ch3"><label for="s4c-ch3">Reader knows what to do next</label></div>
+          <div class="check-item"><input type="checkbox" id="s4c-ch4"><label for="s4c-ch4">Not more than 2 "sorry" words in the whole message</label></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ======================================================
+     SECTION 5: FINANCE + OPERATIONS
+     ====================================================== -->
+<section class="section" id="s5">
+  <div class="container">
+    <div class="section-header">
+      <div class="section-number">Hour 4 · Section 05</div>
+      <h2 class="section-title">Finance + Operations</h2>
+      <p class="section-desc">AI beside SAP and Tally. Use the synthetic data pack provided. Never paste real financial records into public AI tools.</p>
+    </div>
+
+    <!-- 5a: Reconciliation -->
+    <div class="wb-card" style="margin-bottom:24px">
+      <div class="wb-card-title">5A · Vendor Ledger Reconciliation</div>
+      <p style="color:var(--text-muted);font-size:14px;margin-bottom:16px">Use the <strong>vendor-ledger.csv</strong> from the synthetic data pack (or any similar messy export).</p>
+      <div class="field-row three" style="margin-bottom:14px">
+        <div class="field-group"><div class="field-label">Total invoiced</div><input class="wb-field" type="text" id="s5-total-inv" placeholder="₹ ______"/></div>
+        <div class="field-group"><div class="field-label">Total paid</div><input class="wb-field" type="text" id="s5-total-paid" placeholder="₹ ______"/></div>
+        <div class="field-group"><div class="field-label">Net difference</div><input class="wb-field" type="text" id="s5-difference" placeholder="₹ ______"/></div>
+      </div>
+      <div class="field-group">
+        <div class="field-label">Mismatches found <span class="field-hint">Row number + description</span></div>
+        <textarea class="wb-field tall" id="s5-mismatches" placeholder="Row 5: Short payment — Rs 2,700 difference (Apex Logistics)&#10;Row 6: Unpaid — no payment record found (Suresh Die Makers)&#10;Row 11: Possible duplicate of Row 6..."></textarea>
+      </div>
+      <div class="field-group">
+        <div class="field-label">Duplicates suspected</div>
+        <textarea class="wb-field" id="s5-duplicates" placeholder="e.g. Row 7 looks like a duplicate of Row 2 — same vendor, same amount, same description..."></textarea>
+      </div>
+      <div class="field-group">
+        <div class="field-label">3-line manager summary</div>
+        <textarea class="wb-field tall" id="s5-summary" placeholder="Line 1: What the data shows in total.&#10;Line 2: The most important finding.&#10;Line 3: What I recommend checking first."></textarea>
+      </div>
+      <div class="safety-check">
+        <div class="safety-check-title">Data safety checklist</div>
+        <div class="check-group">
+          <div class="check-item"><input type="checkbox" id="s5-d1"><label for="s5-d1">Used synthetic or masked data only</label></div>
+          <div class="check-item"><input type="checkbox" id="s5-d2"><label for="s5-d2">Every finding cites a specific row number</label></div>
+          <div class="check-item"><input type="checkbox" id="s5-d3"><label for="s5-d3">AI flagged anomalies — I did not invent corrections</label></div>
+          <div class="check-item"><input type="checkbox" id="s5-d4"><label for="s5-d4">Human will sign off before any action is taken</label></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 5b: SOP Builder -->
+    <div class="wb-card" style="margin-bottom:24px">
+      <div class="wb-card-title">5B · SOP Builder</div>
+      <div class="field-group">
+        <div class="field-label">Process I am standardising</div>
+        <input class="wb-field" type="text" id="s5b-process" placeholder="e.g. Colour changeover on the extrusion line"/>
+      </div>
+      <div class="field-row two" style="margin-bottom:14px">
+        <div class="field-group"><div class="field-label">Purpose</div><textarea class="wb-field" id="s5b-purpose" placeholder="What this SOP enables or prevents..."></textarea></div>
+        <div class="field-group"><div class="field-label">Who does this</div><textarea class="wb-field" id="s5b-who" placeholder="e.g. Shift technician on the extrusion line..."></textarea></div>
+      </div>
+      <div class="field-group">
+        <div class="field-label">Materials / tools needed</div>
+        <textarea class="wb-field" id="s5b-materials" placeholder="List what's needed before starting..."></textarea>
+      </div>
+      <div class="field-group">
+        <div class="field-label">Steps <span class="field-hint">Numbered, one action per step, imperatives only ("Do X")</span></div>
+        <textarea class="wb-field xtall" id="s5b-steps" placeholder="1. Do X&#10;2. Do Y&#10;3. Check Z&#10;4. ..."></textarea>
+      </div>
+      <div class="field-row two" style="margin-bottom:14px">
+        <div class="field-group"><div class="field-label">Safety / quality checks</div><textarea class="wb-field" id="s5b-safety" placeholder="Critical checks and when to stop and escalate..."></textarea></div>
+        <div class="field-group"><div class="field-label" style="color:var(--veka-red)">Done When ★</div><textarea class="wb-field" id="s5b-done" placeholder="The observable condition that confirms the process is complete and correct..."></textarea></div>
+      </div>
+      <div class="field-group">
+        <div class="field-label">What would prove a new person really learned this?</div>
+        <textarea class="wb-field" id="s5b-prove" placeholder="e.g. They can run the changeover without asking for help, within 45 minutes, with no rejected profiles in the first 10 lengths."></textarea>
+      </div>
+    </div>
+
+    <!-- 5c: Maintenance Log -->
+    <div class="wb-card">
+      <div class="wb-card-title">5C · Maintenance Log Analysis</div>
+      <p style="color:var(--text-muted);font-size:14px;margin-bottom:16px">Use the <strong>maintenance-log.csv</strong> from the synthetic data pack.</p>
+      <div class="field-row two" style="margin-bottom:14px">
+        <div class="field-group"><div class="field-label">Top 3 recurring issue types</div><textarea class="wb-field tall" id="s5c-issues" placeholder="1. ___&#10;2. ___&#10;3. ___"></textarea></div>
+        <div class="field-group"><div class="field-label">Machine with most downtime</div><textarea class="wb-field tall" id="s5c-worst" placeholder="Machine: ___&#10;Total hours: ___&#10;Key issue: ___"></textarea></div>
+      </div>
+      <div class="field-group"><div class="field-label">Pattern I might be missing</div><textarea class="wb-field" id="s5c-pattern" placeholder="e.g. EXT-2 bearing failures are escalating in frequency — 1 incident in week 1, 3 by week 3..."></textarea></div>
+      <div class="field-group"><div class="field-label">One preventive action worth trialling (with business case)</div><textarea class="wb-field" id="s5c-action" placeholder="e.g. Schedule EXT-2 full bearing replacement now — 4.5 hours planned vs 28+ hours unplanned downtime so far this month."></textarea></div>
+    </div>
+  </div>
+</section>
+
+<!-- ======================================================
+     SECTION 6: SALES + HR
+     ====================================================== -->
+<section class="section" id="s6">
+  <div class="container">
+    <div class="section-header">
+      <div class="section-number">Hour 5 · Section 06</div>
+      <h2 class="section-title">Sales + HR</h2>
+      <p class="section-desc">Personalisation at scale. Same product, different buyers. Accurate JDs without begging engineering for wording.</p>
+    </div>
+
+    <!-- 6a: Sales Pitch Comparison -->
+    <div class="wb-card" style="margin-bottom:24px">
+      <div class="wb-card-title">6A · PVC Profile Pitch — Two Buyers</div>
+      <div class="field-row two" style="margin-bottom:14px">
+        <div class="wb-card" style="background:var(--bg);border-color:var(--steel);border-top:3px solid var(--steel)">
+          <div style="font-family:var(--mono);font-size:9px;letter-spacing:.18em;text-transform:uppercase;color:var(--steel);margin-bottom:12px">Buyer A — Architect</div>
+          <div class="field-group"><div class="field-label">Their priority</div><input class="wb-field" type="text" id="s6a-pri" placeholder="e.g. Thermal performance, GRIHA compliance, slim sightlines"/></div>
+          <div class="field-group"><div class="field-label">Their likely objection</div><input class="wb-field" type="text" id="s6a-obj" placeholder="e.g. Imported European brands have more design options"/></div>
+          <div class="field-group"><div class="field-label">My pitch</div><textarea class="wb-field tall" id="s6a-pitch" placeholder="Lead with thermal performance. One proof point. One clear next step."></textarea></div>
+        </div>
+        <div class="wb-card" style="background:var(--bg);border-color:var(--amber);border-top:3px solid var(--amber)">
+          <div style="font-family:var(--mono);font-size:9px;letter-spacing:.18em;text-transform:uppercase;color:var(--amber);margin-bottom:12px">Buyer B — Builder</div>
+          <div class="field-group"><div class="field-label">Their priority</div><input class="wb-field" type="text" id="s6b-pri" placeholder="e.g. Lead time, price per unit, ease of installation"/></div>
+          <div class="field-group"><div class="field-label">Their likely objection</div><input class="wb-field" type="text" id="s6b-obj" placeholder="e.g. Chinese profiles are 20% cheaper"/></div>
+          <div class="field-group"><div class="field-label">My pitch</div><textarea class="wb-field tall" id="s6b-pitch" placeholder="Lead with lead time guarantee. One concrete number. One clear next step."></textarea></div>
+        </div>
+      </div>
+      <div class="field-group">
+        <div class="field-label">The personalisation words — which words appear in Pitch A but not Pitch B?</div>
+        <textarea class="wb-field" id="s6-diff" placeholder="e.g. 'thermal', 'GRIHA', 'U-value' are Architect-only. 'lead time', 'per-unit', 'install' are Builder-only. Same product — completely different language."></textarea>
+      </div>
+    </div>
+
+    <!-- 6b: JD Builder -->
+    <div class="wb-card">
+      <div class="wb-card-title">6B · Technical Job Description Builder</div>
+      <div class="field-row two" style="margin-bottom:14px">
+        <div class="field-group"><div class="field-label">Role title</div><input class="wb-field" type="text" id="s6c-role" placeholder="e.g. Extrusion Line Technician"/></div>
+        <div class="field-group"><div class="field-label">Reports to</div><input class="wb-field" type="text" id="s6c-reports" placeholder="e.g. Plant Production Lead"/></div>
+      </div>
+      <div class="field-group"><div class="field-label">Role purpose (one sentence)</div><textarea class="wb-field" id="s6c-purpose" placeholder="e.g. Operate and monitor the PVC profile extrusion line to meet daily production targets with zero quality defects."></textarea></div>
+      <div class="field-group"><div class="field-label">Key responsibilities (5-7 bullet points)</div><textarea class="wb-field xtall" id="s6c-resp" placeholder="• ____&#10;• ____&#10;• ____&#10;• ____&#10;• ____"></textarea></div>
+      <div class="field-row two" style="margin-bottom:14px">
+        <div class="field-group"><div class="field-label">Must-have skills</div><textarea class="wb-field tall" id="s6c-must" placeholder="Skills that are non-negotiable for the role...&#10;&#10;If unsure, write [confirm with plant lead]"></textarea></div>
+        <div class="field-group"><div class="field-label">Nice-to-have / desirable</div><textarea class="wb-field tall" id="s6c-nice" placeholder="Skills that would help but are trainable...&#10;&#10;If unsure, write [confirm with plant lead]"></textarea></div>
+      </div>
+      <div class="field-group"><div class="field-label">Unknowns / things to confirm</div><textarea class="wb-field" id="s6c-unknowns" placeholder="e.g. [confirm shift pattern with plant lead] [confirm certification requirements with HR policy]"></textarea></div>
+    </div>
+  </div>
+</section>
+
+<!-- ======================================================
+     SECTION 7: PROMPT → ASSET (TEMPLATE BUILDER)
+     ====================================================== -->
+<section class="section" id="s7">
+  <div class="container">
+    <div class="section-header">
+      <div class="section-number">Hour 6 · Section 07</div>
+      <h2 class="section-title">Prompt → Asset</h2>
+      <p class="section-desc">Turn your best prompt into a team template. A prompt is personal. A template scales.</p>
+    </div>
+
+    <div class="field-group">
+      <div class="field-label">My winning prompt from today</div>
+      <textarea class="wb-field xtall" id="s7-prompt" placeholder="Paste the prompt you're most proud of from today's activities..."></textarea>
+    </div>
+
+    <div class="wb-card">
+      <div class="wb-card-title">Identify the variables (things that change each time)</div>
+      <div class="field-row three">
+        <div class="field-group"><div class="field-label">Variable 1</div><input class="wb-field" type="text" id="s7-v1" placeholder="e.g. [SUPPLIER NAME]"/></div>
+        <div class="field-group"><div class="field-label">Variable 2</div><input class="wb-field" type="text" id="s7-v2" placeholder="e.g. [DELIVERY DATE]"/></div>
+        <div class="field-group"><div class="field-label">Variable 3</div><input class="wb-field" type="text" id="s7-v3" placeholder="e.g. [PO NUMBER]"/></div>
+      </div>
+    </div>
+
+    <div class="template-card">
+      <div style="font-family:var(--mono);font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:var(--veka-red);margin-bottom:16px">My Template</div>
+      <div class="template-field">
+        <div class="template-field-label">Template name</div>
+        <input class="wb-field" type="text" id="s7-name" placeholder="e.g. Vendor-Delay-Comms-Template"/>
+      </div>
+      <div class="template-field">
+        <div class="template-field-label">Department</div>
+        <input class="wb-field" type="text" id="s7-dept" placeholder="e.g. Logistics / Finance / HR"/>
+      </div>
+      <div class="template-field">
+        <div class="template-field-label">When to use this</div>
+        <textarea class="wb-field" id="s7-when" placeholder="e.g. Use every time a supplier delivery is delayed by more than 24 hours..."></textarea>
+      </div>
+      <div class="template-field">
+        <div class="template-field-label">The template (with [BRACKETS] for variables)</div>
+        <textarea class="wb-field xtall" id="s7-template" placeholder="PERSONA: You are a [ROLE] at VEKA India.&#10;CONTEXT: [SITUATION — include [DATE], [PO NUMBER], [SUPPLIER]].&#10;TONE: [TONE].&#10;FORMAT: [FORMAT].&#10;Write it. If any information is missing, write [confirm] rather than guessing."></textarea>
+      </div>
+      <div class="template-field">
+        <div class="template-field-label">One guardrail line</div>
+        <textarea class="wb-field" id="s7-guardrail" placeholder="e.g. Never invent a delivery date, price, or commitment. If unsure, write [confirm]."></textarea>
+      </div>
+      <div class="template-field">
+        <div class="template-field-label">Worked example (fill in the brackets)</div>
+        <textarea class="wb-field xtall" id="s7-example" placeholder="Paste your template above and fill in real (or synthetic) values to show how it looks when used..."></textarea>
+      </div>
+      <div class="field-row two">
+        <div class="template-field">
+          <div class="template-field-label">Reuse rating (1-5)</div>
+          <input class="wb-field" type="text" id="s7-rating" placeholder="e.g. 5/5 — used weekly by logistics team"/>
+        </div>
+        <div class="template-field">
+          <div class="template-field-label">Author</div>
+          <input class="wb-field" type="text" id="s7-author" placeholder="Your name"/>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ======================================================
+     SECTION 8: CAPSTONE
+     ====================================================== -->
+<section class="section" id="s8">
+  <div class="container">
+    <div class="section-header">
+      <div class="section-number">Hours 7–8 · Section 08</div>
+      <h2 class="section-title">Capstone</h2>
+      <p class="section-desc">One real bottleneck. One working solution. Test it three times. Prove it. Demo it in 90 seconds.</p>
+    </div>
+
+    <!-- Capstone Canvas -->
+    <div class="capstone-canvas">
+      <div class="capstone-title">Capstone Canvas <span>Build</span></div>
+      <div class="field-row two" style="margin-bottom:16px">
+        <div class="field-group"><div class="field-label" style="color:var(--veka-red)">Problem — what repetitive task am I eliminating?</div><textarea class="wb-field tall" id="s8-problem" placeholder="e.g. Every Monday I manually chase 6-8 suppliers for delivery confirmations. Takes 45 mins per week."></textarea></div>
+        <div class="field-group"><div class="field-label">Current process</div><textarea class="wb-field tall" id="s8-current" placeholder="How is it done now, step by step?"></textarea></div>
+      </div>
+      <div class="field-row three" style="margin-bottom:16px">
+        <div class="field-group"><div class="field-label">Frequency</div><input class="wb-field" type="text" id="s8-freq" placeholder="e.g. Weekly — every Monday"/></div>
+        <div class="field-group"><div class="field-label">Current time cost</div><input class="wb-field" type="text" id="s8-time" placeholder="e.g. 45 minutes per week"/></div>
+        <div class="field-group"><div class="field-label">Error / quality cost</div><input class="wb-field" type="text" id="s8-error" placeholder="e.g. Inconsistent tone, sometimes missed suppliers"/></div>
+      </div>
+      <div class="field-row two" style="margin-bottom:16px">
+        <div class="field-group"><div class="field-label">Desired output</div><textarea class="wb-field" id="s8-desired" placeholder="What should AI produce? In what format?"></textarea></div>
+        <div class="field-group"><div class="field-label">Available input</div><textarea class="wb-field" id="s8-input" placeholder="What data / text / notes will I paste in? Where does it come from?"></textarea></div>
+      </div>
+      <div class="field-group">
+        <div class="field-label">My capstone prompt</div>
+        <textarea class="wb-field xtall" id="s8-prompt" placeholder="Your full solution prompt — with CTPF, variables in [BRACKETS], guardrails..."></textarea>
+      </div>
+    </div>
+
+    <!-- Tests -->
+    <div class="wb-card" style="margin-bottom:24px">
+      <div class="wb-card-title">Test 3 Times Before Done</div>
+      <div class="test-row">
+        <div class="test-num">01</div>
+        <div class="field-group"><div class="field-label">Input used</div><textarea class="wb-field" id="s8-t1in" placeholder="What data / scenario did you test with?"></textarea></div>
+        <div class="field-group"><div class="field-label">Result + what failed</div><textarea class="wb-field" id="s8-t1out" placeholder="What did AI produce? What was wrong or missing?"></textarea></div>
+      </div>
+      <div class="test-row">
+        <div class="test-num">02</div>
+        <div class="field-group"><div class="field-label">What I changed</div><textarea class="wb-field" id="s8-t2in" placeholder="What did you adjust in the prompt after Test 1?"></textarea></div>
+        <div class="field-group"><div class="field-label">Result + improvement</div><textarea class="wb-field" id="s8-t2out" placeholder="What improved? What still needs fixing?"></textarea></div>
+      </div>
+      <div class="test-row">
+        <div class="test-num">03</div>
+        <div class="field-group"><div class="field-label">Final test input</div><textarea class="wb-field" id="s8-t3in" placeholder="Third test — try a different or harder scenario."></textarea></div>
+        <div class="field-group"><div class="field-label">Final result</div><textarea class="wb-field" id="s8-t3out" placeholder="Is it reliable? Is it ready to demo?"></textarea></div>
+      </div>
+    </div>
+
+    <div class="field-row two" style="margin-bottom:24px">
+      <div class="field-group"><div class="field-label">Final solution (the polished prompt)</div><textarea class="wb-field xtall" id="s8-final" placeholder="The production-ready version of your capstone prompt..."></textarea></div>
+      <div class="field-group">
+        <div class="field-group"><div class="field-label">Human check — what does a human review?</div><textarea class="wb-field" id="s8-human" placeholder="e.g. Human reads every AI draft before sending. Never auto-send."></textarea></div>
+        <div class="field-group"><div class="field-label">Estimated time saved per week</div><input class="wb-field" type="text" id="s8-saved" placeholder="e.g. 35 minutes per week = ~30 hours per year"/></div>
+      </div>
+    </div>
+
+    <!-- 90-Second Demo Card -->
+    <div class="demo-card-wb">
+      <div class="demo-card-title">90-Second Demo Card</div>
+      <div class="field-row two">
+        <div class="field-group"><div class="field-label">My project name</div><input class="wb-field" type="text" id="s8-proj" placeholder="e.g. Monday Supplier Chaser Automator"/></div>
+        <div class="field-group"><div class="field-label">The problem (one sentence)</div><input class="wb-field" type="text" id="s8-prob1" placeholder="e.g. I spent 45 minutes every Monday chasing 8 suppliers manually."/></div>
+      </div>
+      <div class="field-row two" style="margin-top:14px">
+        <div class="field-group"><div class="field-label">Before</div><textarea class="wb-field" id="s8-demo-before" placeholder="What it looked like before. The pain in one sentence."></textarea></div>
+        <div class="field-group"><div class="field-label">After</div><textarea class="wb-field" id="s8-demo-after" placeholder="What it looks like now. The solution."></textarea></div>
+      </div>
+      <div class="field-row three" style="margin-top:14px">
+        <div class="field-group"><div class="field-label">Time saved</div><input class="wb-field" type="text" id="s8-demo-saved" placeholder="e.g. 35 min/week"/></div>
+        <div class="field-group"><div class="field-label">Human still checks</div><input class="wb-field" type="text" id="s8-demo-human" placeholder="e.g. Reads every draft before sending"/></div>
+        <div class="field-group"><div class="field-label">My final punchline</div><input class="wb-field" type="text" id="s8-demo-punch" placeholder="e.g. 'Monday just got 45 minutes shorter.'"/></div>
+      </div>
+    </div>
+
+    <!-- 30-Day Plan -->
+    <div class="wb-card">
+      <div class="wb-card-title">My GenAI 30-Day Plan</div>
+      <table class="plan-table">
+        <thead>
+          <tr><th>Week</th><th>My habit</th><th>I will share with</th><th>Metric</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Week 1</td>
+            <td><textarea class="wb-field" id="s8-w1-habit" placeholder="One task I'll use AI for every day..." style="min-height:60px"></textarea></td>
+            <td><input class="wb-field" type="text" id="s8-w1-share" placeholder="Name / team"/></td>
+            <td><input class="wb-field" type="text" id="s8-w1-metric" placeholder="How I'll measure it"/></td>
+          </tr>
+          <tr>
+            <td>Week 2</td>
+            <td><textarea class="wb-field" id="s8-w2-habit" placeholder="Share my template with the team..." style="min-height:60px"></textarea></td>
+            <td><input class="wb-field" type="text" id="s8-w2-share" placeholder="Name / team"/></td>
+            <td><input class="wb-field" type="text" id="s8-w2-metric" placeholder="How I'll measure it"/></td>
+          </tr>
+          <tr>
+            <td>Week 3</td>
+            <td><textarea class="wb-field" id="s8-w3-habit" placeholder="Teach one person what I learned..." style="min-height:60px"></textarea></td>
+            <td><input class="wb-field" type="text" id="s8-w3-share" placeholder="Name / team"/></td>
+            <td><input class="wb-field" type="text" id="s8-w3-metric" placeholder="How I'll measure it"/></td>
+          </tr>
+          <tr>
+            <td>Week 4</td>
+            <td><textarea class="wb-field" id="s8-w4-habit" placeholder="HOD review — hours saved, what to improve..." style="min-height:60px"></textarea></td>
+            <td><input class="wb-field" type="text" id="s8-w4-share" placeholder="Name / team"/></td>
+            <td><input class="wb-field" type="text" id="s8-w4-metric" placeholder="How I'll measure it"/></td>
+          </tr>
+        </tbody>
+      </table>
+      <div class="field-group" style="margin-top:20px">
+        <div class="field-label" style="color:var(--veka-red)">My Monday commitment (write it now)</div>
+        <textarea class="wb-field tall" id="s8-commit" placeholder="On Monday [DATE], I will use AI to [SPECIFIC TASK] and share the output with [SPECIFIC PERSON].&#10;&#10;The one metric I will track: [HOW I WILL KNOW IT WORKED]"></textarea>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer style="padding:40px 0;border-top:1px solid var(--border);margin-top:40px">
+  <div class="container">
+    <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:16px">
+      <div style="font-family:var(--mono);font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:var(--text-faint)">
+        VEKA GenAI Excellence · Participant Workbook · NxtWave Enterprise Training
+      </div>
+      <div style="display:flex;gap:10px">
+        <button class="topbar-btn" onclick="saveAll()">Save All</button>
+        <button class="topbar-btn" onclick="window.print()">Print Workbook</button>
+        <a href="../index.html" class="topbar-btn" style="text-decoration:none">← Home</a>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<script>
+/* ============================================================
+   AUTOSAVE & PERSISTENCE
+   ============================================================ */
+const STORE_KEY = 'veka-workbook-v2';
+const DEBOUNCE = 800;
+let saveTimer;
+
+function getAllFields() {
+  const fields = {};
+  document.querySelectorAll('[id]').forEach(el => {
+    if (el.tagName === 'TEXTAREA' || el.tagName === 'INPUT') {
+      if (el.type === 'text' || el.type === undefined || el.tagName === 'TEXTAREA') {
+        fields[el.id] = el.value;
+      }
+    }
+    if (el.type === 'checkbox') {
+      fields[el.id] = el.checked;
+    }
+  });
+  return fields;
+}
+
+function saveAll(manual) {
+  const data = getAllFields();
+  try {
+    localStorage.setItem(STORE_KEY, JSON.stringify(data));
+    if (manual) {
+      const btn = document.getElementById('save-btn');
+      btn.textContent = 'Saved ✓';
+      btn.classList.add('save-indicator');
+      setTimeout(() => { btn.textContent = 'Save Progress'; btn.classList.remove('save-indicator'); }, 1600);
+    }
+  } catch(e) { console.warn('Save failed:', e); }
+}
+
+function loadAll() {
+  try {
+    const raw = localStorage.getItem(STORE_KEY);
+    if (!raw) return;
+    const data = JSON.parse(raw);
+    Object.entries(data).forEach(([id, val]) => {
+      const el = document.getElementById(id);
+      if (!el) return;
+      if (el.type === 'checkbox') el.checked = val;
+      else el.value = val;
+    });
+  } catch(e) { console.warn('Load failed:', e); }
+}
+
+function clearConfirm() {
+  if (confirm('Clear all fields? Your saved progress will also be deleted.')) {
+    document.querySelectorAll('textarea.wb-field, input.wb-field').forEach(el => el.value = '');
+    document.querySelectorAll('input[type="checkbox"]').forEach(el => el.checked = false);
+    try { localStorage.removeItem(STORE_KEY); } catch(e){}
+  }
+}
+
+// Autosave on input with debounce
+document.addEventListener('input', () => {
+  clearTimeout(saveTimer);
+  saveTimer = setTimeout(() => saveAll(false), DEBOUNCE);
+});
+document.addEventListener('change', () => saveAll(false));
+
+// Load on page open
+loadAll();
+
+// Override save button to be manual
+document.getElementById('save-btn').onclick = () => saveAll(true);
+
+/* ============================================================
+   SECTION NAV ACTIVE STATE
+   ============================================================ */
+const sections = document.querySelectorAll('section.section, #cover');
+const navLinks = document.querySelectorAll('.section-nav a');
+function updateNav() {
+  let current = '';
+  sections.forEach(sec => {
+    if (window.scrollY >= sec.offsetTop - 120) current = sec.id || 'cover';
+  });
+  navLinks.forEach(a => {
+    a.classList.toggle('active', a.getAttribute('href') === '#' + current);
+  });
+}
+window.addEventListener('scroll', updateNav, {passive: true});
+updateNav();
+
+/* ============================================================
+   SET DATE DEFAULT
+   ============================================================ */
+const dateField = document.getElementById('p-date');
+if (!dateField.value) {
+  dateField.value = new Date().toLocaleDateString('en-IN', {day:'2-digit',month:'long',year:'numeric'});
+}
+</script>
+</body>
+</html>

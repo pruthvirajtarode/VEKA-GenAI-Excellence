@@ -1,0 +1,672 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>VEKA GenAI Excellence — Prompt Library</title>
+<meta name="description" content="VEKA India GenAI Prompt Library. 50 pre-tested templates for extrusion, finance, HR, sales, and operations."/>
+<style>
+/* ============================================================
+   DESIGN TOKENS
+   ============================================================ */
+:root{
+  --bg:#0E1116;
+  --bg-elevated:#151A22;
+  --bg-card:#1A212B;
+  --text:#F4F2EC;
+  --text-muted:#98A2B2;
+  --text-faint:#5C6472;
+  --border:rgba(255,255,255,.09);
+  --border-strong:rgba(255,255,255,.16);
+  --veka-red:#E4002B;
+  --veka-red-soft:rgba(228,0,43,.14);
+  --steel:#5B8DEF;
+  --green:#24C58A;
+  --amber:#F5A623;
+  --display:'Space Grotesk',system-ui,sans-serif;
+  --body:'Inter',system-ui,sans-serif;
+  --mono:'JetBrains Mono',ui-monospace,monospace;
+  --radius:12px;
+  --radius-lg:16px;
+  --radius-xl:24px;
+}
+
+/* ============================================================
+   BASE
+   ============================================================ */
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{
+  background:var(--bg);color:var(--text);font-family:var(--body);
+  -webkit-font-smoothing:antialiased;line-height:1.6;
+}
+.container{max-width:1300px;margin:0 auto;padding:0 24px}
+a{color:inherit;text-decoration:none}
+button{cursor:pointer;font-family:inherit;background:none;border:none}
+
+/* blueprint grid */
+body::before{
+  content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;
+  background-image:
+    linear-gradient(rgba(255,255,255,.015) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(255,255,255,.015) 1px,transparent 1px);
+  background-size:48px 48px;
+}
+
+/* ============================================================
+   TOP BAR
+   ============================================================ */
+#topbar{
+  position:sticky;top:0;z-index:100;
+  background:rgba(14,17,22,.96);border-bottom:1px solid var(--border);
+  padding:14px 0;backdrop-filter:blur(10px);
+}
+.topbar-inner{display:flex;align-items:center;justify-content:space-between;gap:16px}
+.brand{display:flex;align-items:center;gap:10px;font-family:var(--display);font-weight:600;font-size:14px}
+.brand-mark{width:24px;height:24px}
+.brand small{font-family:var(--mono);font-size:9px;letter-spacing:.14em;text-transform:uppercase;color:var(--text-muted);display:block;margin-top:1px}
+.topbar-links{display:flex;gap:16px;align-items:center}
+.top-link{
+  font-family:var(--mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;
+  color:var(--text-muted);transition:.2s;padding:6px 12px;border-radius:6px;
+}
+.top-link:hover{color:var(--text);background:var(--bg-elevated)}
+.top-link.active{color:var(--veka-red);background:var(--veka-red-soft)}
+.home-btn{
+  border:1px solid var(--border);border-radius:6px;
+  padding:6px 14px;color:var(--text-muted);font-family:var(--mono);font-size:11px;
+  transition:.2s;
+}
+.home-btn:hover{border-color:var(--veka-red);color:var(--veka-red)}
+
+/* ============================================================
+   HERO
+   ============================================================ */
+.hero{padding:60px 0 40px;border-bottom:1px solid var(--border)}
+.hero-eyebrow{
+  font-family:var(--mono);font-size:11px;letter-spacing:.28em;text-transform:uppercase;
+  color:var(--veka-red);display:flex;align-items:center;gap:12px;margin-bottom:20px;
+}
+.hero-eyebrow::before{content:"";width:28px;height:2px;background:var(--veka-red)}
+.hero-title{font-family:var(--display);font-weight:700;font-size:clamp(32px,5vw,64px);letter-spacing:-.03em;line-height:1.05;margin-bottom:16px}
+.hero-desc{color:var(--text-muted);font-size:clamp(15px,1.6vw,18px);max-width:65ch;line-height:1.6}
+
+/* ============================================================
+   LAYOUT GRID (Sidebar + Content)
+   ============================================================ */
+.app-layout{
+  display:grid;grid-template-columns:260px 1fr;gap:40px;
+  padding:40px 0;align-items:start;
+}
+@media(max-width:900px){.app-layout{grid-template-columns:1fr}}
+
+/* ============================================================
+   SIDEBAR (FILTERS)
+   ============================================================ */
+.sidebar{
+  position:sticky;top:100px;
+  background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius-lg);
+  padding:24px;
+}
+.filter-group{margin-bottom:28px}
+.filter-group:last-child{margin-bottom:0}
+.filter-label{
+  font-family:var(--mono);font-size:10px;letter-spacing:.18em;text-transform:uppercase;
+  color:var(--text-faint);margin-bottom:14px;display:block;
+}
+.cat-list{display:flex;flex-direction:column;gap:6px}
+.cat-btn{
+  text-align:left;width:100%;padding:8px 12px;border-radius:6px;
+  color:var(--text-muted);font-size:13px;transition:.2s;
+  display:flex;justify-content:space-between;align-items:center;
+}
+.cat-btn:hover{background:var(--bg-elevated);color:var(--text)}
+.cat-btn.active{background:var(--veka-red-soft);color:var(--veka-red);font-weight:500}
+.cat-count{font-family:var(--mono);font-size:10px;color:var(--text-faint)}
+.cat-btn.active .cat-count{color:var(--veka-red)}
+
+/* ============================================================
+   MAIN CONTENT
+   ============================================================ */
+.search-bar{
+  position:relative;margin-bottom:24px;display:flex;gap:12px;
+}
+.search-input{
+  flex:1;background:var(--bg-card);border:1px solid var(--border);color:var(--text);
+  border-radius:var(--radius);padding:14px 20px 14px 44px;font-family:var(--body);font-size:15px;
+  transition:.2s;
+}
+.search-input:focus{outline:none;border-color:var(--veka-red)}
+.search-input::placeholder{color:var(--text-faint)}
+.search-icon{
+  position:absolute;left:16px;top:50%;transform:translateY(-50%);
+  font-size:16px;color:var(--text-faint);pointer-events:none;
+}
+.results-meta{
+  font-family:var(--mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--text-muted);margin-bottom:20px;
+}
+
+/* Prompt Grid */
+.prompt-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:20px}
+
+/* Prompt Card */
+.p-card{
+  background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius-lg);
+  padding:24px;display:flex;flex-direction:column;transition:.2s;position:relative;
+}
+.p-card:hover{border-color:var(--border-strong);transform:translateY(-2px);box-shadow:0 8px 30px rgba(0,0,0,.3)}
+.p-cat{
+  font-family:var(--mono);font-size:9px;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--veka-red);margin-bottom:8px;
+}
+.p-title{font-family:var(--display);font-weight:600;font-size:18px;margin-bottom:8px;line-height:1.3;padding-right:30px}
+.p-use{font-size:13px;color:var(--text-muted);margin-bottom:16px;line-height:1.5;flex:1}
+.p-guardrail{
+  background:rgba(245,166,35,.08);border:1px solid rgba(245,166,35,.2);
+  border-radius:6px;padding:8px 12px;font-size:11px;color:var(--amber);
+  margin-bottom:16px;display:flex;gap:8px;align-items:flex-start;line-height:1.4;
+}
+.p-guardrail::before{content:"!";font-family:var(--mono);font-weight:700}
+.p-actions{display:flex;justify-content:space-between;align-items:center;border-top:1px solid var(--border);padding-top:16px;margin-top:auto}
+.p-btn{
+  background:var(--bg-elevated);border:1px solid var(--border);color:var(--text-muted);
+  border-radius:6px;padding:6px 14px;font-family:var(--mono);font-size:11px;letter-spacing:.06em;
+  transition:.2s;
+}
+.p-btn:hover{border-color:var(--veka-red);color:var(--veka-red)}
+.p-btn.copied{border-color:var(--green);color:var(--green)}
+.fav-btn{
+  position:absolute;top:20px;right:20px;
+  color:var(--text-faint);font-size:18px;transition:.2s;
+}
+.fav-btn:hover{color:var(--veka-red);transform:scale(1.1)}
+.fav-btn.active{color:var(--amber)}
+
+/* ============================================================
+   MODAL
+   ============================================================ */
+.modal-overlay{
+  position:fixed;inset:0;background:rgba(8,10,14,.9);backdrop-filter:blur(8px);
+  z-index:200;display:flex;align-items:center;justify-content:center;
+  opacity:0;pointer-events:none;transition:.2s;padding:24px;
+}
+.modal-overlay.show{opacity:1;pointer-events:all}
+.modal{
+  background:var(--bg-card);border:1px solid var(--border-strong);border-radius:var(--radius-xl);
+  width:100%;max-width:700px;max-height:90vh;display:flex;flex-direction:column;
+  box-shadow:0 24px 60px rgba(0,0,0,.6);transform:translateY(20px);transition:.3s cubic-bezier(.2,.7,.2,1);
+}
+.modal-overlay.show .modal{transform:translateY(0)}
+.modal-head{
+  padding:24px 32px;border-bottom:1px solid var(--border);
+  display:flex;justify-content:space-between;align-items:flex-start;
+}
+.m-cat{font-family:var(--mono);font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:var(--veka-red);margin-bottom:8px}
+.m-title{font-family:var(--display);font-weight:700;font-size:24px;line-height:1.2}
+.m-close{color:var(--text-muted);font-size:24px;line-height:1;transition:.2s}
+.m-close:hover{color:var(--veka-red)}
+.modal-body{padding:32px;overflow-y:auto;flex:1}
+.m-label{font-family:var(--mono);font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:var(--text-faint);margin-bottom:8px}
+.m-desc{font-size:14px;color:var(--text-muted);margin-bottom:24px;line-height:1.6}
+.m-prompt-box{
+  background:#090c11;border:1px solid var(--border);border-radius:var(--radius);
+  padding:20px;font-family:var(--mono);font-size:13px;line-height:1.6;color:#cdd4de;
+  white-space:pre-wrap;margin-bottom:24px;
+}
+.m-var{
+  background:rgba(245,166,35,.15);color:var(--amber);
+  border:1px solid rgba(245,166,35,.3);border-radius:4px;
+  padding:0 4px;display:inline-block;
+}
+.modal-foot{
+  padding:20px 32px;border-top:1px solid var(--border);background:var(--bg-elevated);
+  border-radius:0 0 var(--radius-xl) var(--radius-xl);
+  display:flex;justify-content:space-between;align-items:center;
+}
+.m-copy-btn{
+  background:var(--veka-red);color:#fff;border-radius:8px;padding:10px 24px;
+  font-family:var(--display);font-weight:600;font-size:15px;transition:.2s;
+}
+.m-copy-btn:hover{background:#c0001f}
+.m-copy-btn.copied{background:var(--green);color:#04231a}
+
+/* ============================================================
+   BUILD YOUR OWN TAB
+   ============================================================ */
+#build-tab{display:none;padding:40px 0}
+#build-tab.active{display:block}
+.build-grid{display:grid;grid-template-columns:1fr 1fr;gap:32px}
+@media(max-width:900px){.build-grid{grid-template-columns:1fr}}
+.build-form{
+  background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius-lg);
+  padding:32px;
+}
+.bf-field{margin-bottom:20px}
+.bf-label{
+  font-family:var(--mono);font-size:10px;letter-spacing:.18em;text-transform:uppercase;
+  color:var(--text-muted);margin-bottom:8px;display:block;
+}
+.bf-input, .bf-textarea{
+  width:100%;background:rgba(255,255,255,.03);border:1px solid var(--border);color:var(--text);
+  border-radius:8px;padding:12px 14px;font-family:var(--body);font-size:14px;transition:.2s;
+}
+.bf-textarea{resize:vertical;min-height:100px}
+.bf-input:focus, .bf-textarea:focus{outline:none;border-color:var(--veka-red)}
+.build-preview{
+  background:#090c11;border:1px solid var(--border);border-radius:var(--radius-lg);
+  padding:32px;position:sticky;top:100px;
+}
+.bp-label{font-family:var(--mono);font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:var(--veka-red);margin-bottom:16px}
+#bp-output{
+  font-family:var(--mono);font-size:13px;line-height:1.6;color:#cdd4de;
+  white-space:pre-wrap;min-height:200px;
+}
+
+/* ============================================================
+   TOAST
+   ============================================================ */
+.toast{
+  position:fixed;bottom:30px;left:50%;transform:translateX(-50%) translateY(20px);
+  background:var(--green);color:#04231a;font-family:var(--mono);font-weight:700;
+  font-size:13px;letter-spacing:.06em;padding:10px 22px;border-radius:24px;
+  z-index:400;opacity:0;transition:.3s ease;pointer-events:none;
+}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+
+/* Utilities */
+.hidden{display:none !important}
+</style>
+</head>
+<body>
+
+<div id="topbar">
+  <div class="container topbar-inner">
+    <div class="brand">
+      <svg class="brand-mark" viewBox="0 0 40 40">
+        <rect x="3" y="3" width="34" height="34" rx="2" fill="rgba(228,0,43,.12)"/>
+        <rect x="9" y="9" width="10" height="10" fill="none" stroke="#E4002B" stroke-width="1.8"/>
+        <rect x="21" y="9" width="10" height="10" fill="none" stroke="#E4002B" stroke-width="1.8"/>
+        <rect x="9" y="21" width="22" height="10" fill="none" stroke="#E4002B" stroke-width="1.8"/>
+      </svg>
+      <div>VEKA · GenAI Excellence<br><small>Prompt Library</small></div>
+    </div>
+    <div class="topbar-links">
+      <button class="top-link active" onclick="switchTab('library', this)">Library</button>
+      <button class="top-link" onclick="switchTab('build', this)">Build Your Own</button>
+      <button class="top-link" onclick="toggleFavFilter(this)" id="fav-filter-btn">★ Favourites</button>
+      <a href="../index.html" class="home-btn">← Home</a>
+    </div>
+  </div>
+</div>
+
+<!-- LIBRARY TAB -->
+<div id="library-tab">
+  <div class="hero">
+    <div class="container">
+      <div class="hero-eyebrow">The VEKA Standards</div>
+      <h1 class="hero-title">50 Pre-Tested Templates</h1>
+      <p class="hero-desc">Every prompt here has been tested for safety, tone, and reliability in the context of VEKA India. Copy, fill the brackets, and deploy.</p>
+    </div>
+  </div>
+
+  <div class="container app-layout">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <div class="filter-group">
+        <span class="filter-label">Categories</span>
+        <div class="cat-list" id="cat-list">
+          <button class="cat-btn active" onclick="setCategory('All', this)">All Prompts <span class="cat-count">50</span></button>
+          <button class="cat-btn" onclick="setCategory('Everyday Writing', this)">Everyday Writing <span class="cat-count">8</span></button>
+          <button class="cat-btn" onclick="setCategory('High-Stakes Writing', this)">High-Stakes Writing <span class="cat-count">8</span></button>
+          <button class="cat-btn" onclick="setCategory('Finance & Accounts', this)">Finance & Accounts <span class="cat-count">8</span></button>
+          <button class="cat-btn" onclick="setCategory('Operations', this)">Operations & Maint. <span class="cat-count">8</span></button>
+          <button class="cat-btn" onclick="setCategory('Sales & Customers', this)">Sales & Customers <span class="cat-count">8</span></button>
+          <button class="cat-btn" onclick="setCategory('HR & People', this)">HR & People <span class="cat-count">7</span></button>
+          <button class="cat-btn" onclick="setCategory('Productivity', this)">Personal Productivity <span class="cat-count">3</span></button>
+        </div>
+      </div>
+      <div class="filter-group">
+        <span class="filter-label">Guardrails</span>
+        <p style="font-size:12px;color:var(--text-muted);line-height:1.5">
+          Never paste real financial figures, customer contact lists, or employee confidential data into public AI tools. Always use placeholders or synthetic data. Human review is mandatory.
+        </p>
+      </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main>
+      <div class="search-bar">
+        <span class="search-icon">🔍</span>
+        <input type="text" class="search-input" id="search-input" placeholder="Search prompts (e.g. 'delay', 'SOP', 'reconciliation')..."/>
+      </div>
+      <div class="results-meta" id="results-meta">Showing 50 prompts</div>
+      <div class="prompt-grid" id="prompt-grid">
+        <!-- Cards generated by JS -->
+      </div>
+    </main>
+  </div>
+</div>
+
+<!-- BUILD YOUR OWN TAB -->
+<div id="build-tab" class="container">
+  <div class="hero-eyebrow">Infrastructure</div>
+  <h1 class="hero-title" style="font-size:32px;margin-bottom:10px">Build Your Own Template</h1>
+  <p class="hero-desc" style="margin-bottom:40px">Convert your winning prompt into a reusable template with the C·T·P·F framework.</p>
+  
+  <div class="build-grid">
+    <div class="build-form">
+      <div class="bf-field">
+        <label class="bf-label">Template Name</label>
+        <input type="text" class="bf-input" id="b-name" placeholder="e.g. Delay Notification Email" oninput="updatePreview()"/>
+      </div>
+      <div class="bf-field">
+        <label class="bf-label">Context (Situation & Variables)</label>
+        <textarea class="bf-textarea" id="b-c" placeholder="Use brackets for variables. e.g. A [PRODUCT] delivery is delayed by [DAYS]. Reason: [REASON]." oninput="updatePreview()"></textarea>
+      </div>
+      <div class="bf-field">
+        <label class="bf-label">Tone</label>
+        <input type="text" class="bf-input" id="b-t" placeholder="e.g. Professional, firm but not apologetic" oninput="updatePreview()"/>
+      </div>
+      <div class="bf-field">
+        <label class="bf-label">Persona</label>
+        <input type="text" class="bf-input" id="b-p" placeholder="e.g. VEKA Logistics Coordinator writing to a Distributor" oninput="updatePreview()"/>
+      </div>
+      <div class="bf-field">
+        <label class="bf-label">Format</label>
+        <input type="text" class="bf-input" id="b-f" placeholder="e.g. Email under 120 words with clear next steps" oninput="updatePreview()"/>
+      </div>
+      <div class="bf-field">
+        <label class="bf-label">Guardrail / Safety Check</label>
+        <input type="text" class="bf-input" id="b-g" placeholder="e.g. Never guarantee a new date unless confirmed by plant" oninput="updatePreview()"/>
+      </div>
+    </div>
+    
+    <div>
+      <div class="build-preview">
+        <div class="bp-label">Generated Template</div>
+        <div id="bp-output">Start typing to generate your template...</div>
+        <button class="m-copy-btn" id="b-copy-btn" style="width:100%;margin-top:24px" onclick="copyBuild()">Copy Full Template</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL -->
+<div class="modal-overlay" id="modal-overlay" onclick="if(event.target===this) closeModal()">
+  <div class="modal">
+    <div class="modal-head">
+      <div>
+        <div class="m-cat" id="m-cat">Category</div>
+        <div class="m-title" id="m-title">Title</div>
+      </div>
+      <button class="m-close" onclick="closeModal()">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="m-label">When to use this</div>
+      <div class="m-desc" id="m-desc">Description</div>
+      
+      <div class="p-guardrail" id="m-guardrail" style="margin-bottom:24px">Guardrail</div>
+      
+      <div class="m-label">The Prompt Template</div>
+      <div class="m-prompt-box" id="m-prompt">Prompt goes here</div>
+    </div>
+    <div class="modal-foot">
+      <div style="font-size:13px;color:var(--text-muted)">Replace <span class="m-var">[BRACKETED]</span> items with your details before running.</div>
+      <button class="m-copy-btn" id="m-copy-btn" onclick="copyModalPrompt()">Copy Template</button>
+    </div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast">Copied to clipboard ✓</div>
+
+<script>
+/* ============================================================
+   DATA: 50 PROMPTS (Compact Representation)
+   ============================================================ */
+// To deliver 50 prompts efficiently, we define them in an array. 
+const PROMPTS = [
+  // 1-8: Everyday Writing
+  {id:1, c:'Everyday Writing', t:'The Quick Follow-Up', d:'When someone owes you an answer but you don\'t want to sound aggressive.', g:'Do not assume blame; stick to facts.', p:'PERSONA: A professional at VEKA India writing to an internal colleague.\nCONTEXT: I am waiting for [DOCUMENT/ANSWER] which was due on [DATE]. I cannot proceed with [MY TASK] until I have it.\nTONE: Polite, assuming they just forgot, but clear that it is blocking me.\nFORMAT: 3-line email or Teams message.'},
+  {id:2, c:'Everyday Writing', t:'Meeting Summary & Actions', d:'Turn rough meeting notes into a clean action list.', g:'Only assign tasks that were actually agreed upon.', p:'PERSONA: Meeting organiser at VEKA.\nCONTEXT: We just had a meeting about [TOPIC]. Below are my rough notes.\nTONE: Clear, structured, objective.\nFORMAT: Bulleted list with a specific "ACTION ITEMS" section mapping [PERSON] to [TASK].\nNOTES: [PASTE NOTES]'},
+  {id:3, c:'Everyday Writing', t:'Decline an Invitation/Request', d:'Saying no professionally without closing the door.', g:'Avoid over-explaining the "why".', p:'PERSONA: Busy VEKA manager.\nCONTEXT: I have been asked to [REQUEST/ATTEND MEETING] by [PERSON]. I cannot do it because [BRIEF REASON].\nTONE: Professional, appreciative, but firm on the boundary.\nFORMAT: 2-3 line email.'},
+  {id:4, c:'Everyday Writing', t:'Out of Office (Standard & Urgent)', d:'Clear handover OOO message.', g:'Always provide a real escalation contact.', p:'PERSONA: VEKA employee going on leave.\nCONTEXT: I am away from [START DATE] to [END DATE]. For urgent matters regarding [TOPIC], contact [NAME] at [EMAIL/PHONE].\nTONE: Helpful and clear.\nFORMAT: Standard OOO auto-reply format.'},
+  {id:5, c:'Everyday Writing', t:'Requesting Clarification', d:'When instructions from a manager or colleague are too vague.', g:'Do not sound accusatory.', p:'PERSONA: VEKA employee writing to [MANAGER/COLLEAGUE].\nCONTEXT: They asked me to do [TASK], but I am missing [SPECIFIC INFORMATION].\nTONE: Proactive and helpful, not confused.\nFORMAT: Short email with bulleted questions.'},
+  {id:6, c:'Everyday Writing', t:'The "Just Checking In" Replacement', d:'A follow-up that actually adds value rather than just nagging.', g:'Always provide one piece of new/useful info.', p:'PERSONA: VEKA team member checking on [PROJECT].\nCONTEXT: Waiting for [DELIVERABLE] from [PERSON]. Since we last spoke, I have completed [MY PART].\nTONE: Collaborative.\nFORMAT: Short email.'},
+  {id:7, c:'Everyday Writing', t:'Introducing Two Contacts', d:'Connecting a supplier with an internal team, or similar.', g:'State clearly why they should talk.', p:'PERSONA: VEKA employee connecting [PERSON A] and [PERSON B].\nCONTEXT: Person A needs [X]. Person B provides [X].\nTONE: Warm, professional.\nFORMAT: Email introduction, moving myself to BCC.'},
+  {id:8, c:'Everyday Writing', t:'End of Week Update', d:'Quick summary for your manager on Friday.', g:'Stick to outcomes, not just activity.', p:'PERSONA: VEKA employee reporting to manager.\nCONTEXT: End of week update. Wins: [WIN 1], [WIN 2]. Blockers: [BLOCKER]. Next week priority: [PRIORITY].\nTONE: Concise, results-oriented.\nFORMAT: Bulleted email under 150 words.'},
+  
+  // 9-16: High-Stakes Writing
+  {id:9, c:'High-Stakes Writing', t:'Firm Vendor Pushback', d:'Rejecting a mid-contract change or poor quality delivery.', g:'Hold position without burning the relationship.', p:'PERSONA: VEKA Procurement Lead writing to a Supplier.\nCONTEXT: They supplied [PRODUCT] on [DATE] which failed QC because [REASON]. We require immediate replacement.\nTONE: Firm, factual, non-emotional.\nFORMAT: Formal email with clear next steps.'},
+  {id:10, c:'High-Stakes Writing', t:'Customer Delay Notification (Fact-First)', d:'Telling a distributor their profile order is delayed.', g:'Lead with the new date and fix, not the apology.', p:'PERSONA: VEKA Logistics writing to Distributor.\nCONTEXT: Order [PO] is delayed due to [REASON]. New dispatch date is [DATE]. We can offer [PARTIAL DISPATCH/ALTERNATIVE] tomorrow.\nTONE: Accountable, calm.\nFORMAT: Email under 120 words.'},
+  {id:11, c:'High-Stakes Writing', t:'Escalating a Risk to Leadership', d:'Flagging a critical issue (e.g. machine down, supply shortage).', g:'Include the proposed solution, not just the problem.', p:'PERSONA: VEKA Plant Manager writing to Director.\nCONTEXT: [ISSUE] has occurred. Impact is [IMPACT/COST]. I recommend we immediately [PROPOSED ACTION].\nTONE: Urgent but in control.\nFORMAT: BLUF (Bottom Line Up Front) email.'},
+  {id:12, c:'High-Stakes Writing', t:'Post-Mortem / RCA Summary', d:'Summarising what went wrong and how to fix it.', g:'Focus on process failure, not human blame.', p:'PERSONA: VEKA Operations Lead.\nCONTEXT: We had a failure: [DESCRIBE EVENT]. Root cause: [CAUSE]. Fix: [PREVENTIVE ACTION].\nTONE: Objective, analytical.\nFORMAT: Formal summary report.'},
+  {id:13, c:'High-Stakes Writing', t:'Apology for VEKA Error', d:'When we actually messed up and need to own it.', g:'Acknowledge the specific impact on their business.', p:'PERSONA: VEKA Senior Manager writing to Key Customer.\nCONTEXT: We made an error on [ORDER/BILLING]. This caused them [IMPACT]. We have fixed it by [FIX] to ensure it doesn\'t repeat.\nTONE: Professional, completely accountable.\nFORMAT: Formal letter/email.'},
+  {id:14, c:'High-Stakes Writing', t:'Price Increase Notification', d:'Informing customers of a necessary price hike.', g:'Justify with market facts (raw materials, transport).', p:'PERSONA: VEKA Sales Director writing to Dealer Network.\nCONTEXT: Due to [REASON e.g. PVC resin costs], we are applying a [X%] increase effective [DATE]. Orders placed before [DATE] will be honored at old pricing.\nTONE: Firm, transparent, partnering.\nFORMAT: Official bulletin.'},
+  {id:15, c:'High-Stakes Writing', t:'Shift Handover (Structured)', d:'Passing the baton on the extrusion line.', g:'Do not guess status — if unknown, state "unknown".', p:'PERSONA: Extrusion Line Supervisor doing a handover.\nCONTEXT: [PASTE MESSY SHIFT NOTES].\nTONE: Factual, urgent items highlighted.\nFORMAT: Headings: STATUS, ACTIONS TAKEN, WATCH-OUTS, NEXT SHIFT PRIORITY.'},
+  {id:16, c:'High-Stakes Writing', t:'Rejecting a Faulty Batch Internally', d:'Notifying production that QC has stopped a run.', g:'Cite the specific tolerance or standard failed.', p:'PERSONA: VEKA QC Inspector writing to Production Lead.\nCONTEXT: Batch [NUMBER] of [PROFILE] failed QC due to [SPECIFIC DEFECT]. Run is halted.\nTONE: Clinical, urgent.\nFORMAT: Short incident alert.'},
+
+  // 17-24: Finance & Accounts
+  {id:17, c:'Finance & Accounts', t:'Ledger Reconciliation Summary', d:'Explain a messy ledger export in plain English.', g:'Mask real vendor names/amounts before pasting.', p:'PERSONA: VEKA Finance Analyst.\nCONTEXT: Here is a ledger export: [PASTE MASKED DATA]. Compare billed vs paid, list mismatches by row, and flag duplicates.\nTONE: Analytical, precise.\nFORMAT: 3-line summary + bulleted mismatch list.'},
+  {id:18, c:'Finance & Accounts', t:'Overdue Payment Chaser (Tier 1)', d:'First gentle nudge for an unpaid invoice.', g:'Assume it was an oversight.', p:'PERSONA: VEKA Accounts Receivable.\nCONTEXT: Invoice [NUMBER] for [AMOUNT] was due on [DATE].\nTONE: Friendly, helpful reminder.\nFORMAT: Short email with payment details attached.'},
+  {id:19, c:'Finance & Accounts', t:'Overdue Payment Chaser (Tier 3)', d:'Final notice before halting supply.', g:'State the exact consequence and deadline.', p:'PERSONA: VEKA Finance Manager writing to Distributor.\nCONTEXT: Invoice [NUMBER] is [X] days overdue. We will place a credit hold on account [ACC] on [DATE] if unpaid.\nTONE: Firm, final, commercial.\nFORMAT: Formal notice.'},
+  {id:20, c:'Finance & Accounts', t:'Expense Justification', d:'Explaining a variance or requesting unbudgeted spend.', g:'Tie the spend directly to a revenue or safety outcome.', p:'PERSONA: VEKA Department Head writing to Finance.\nCONTEXT: Requesting approval for [AMOUNT] for [ITEM/SERVICE]. The ROI/Risk-avoidance is [BUSINESS CASE].\nTONE: Logical, financially sound.\nFORMAT: Mini business case (Problem, Solution, Cost, ROI).'},
+  {id:21, c:'Finance & Accounts', t:'Supplier Payment Delay Notice', d:'When VEKA needs to extend payment terms.', g:'Be proactive, do not wait for them to chase.', p:'PERSONA: VEKA Accounts Payable.\nCONTEXT: Payment for [INVOICE] scheduled for [DATE] will be processed on [NEW DATE] due to [INTERNAL REASON].\nTONE: Professional, transparent.\nFORMAT: Short notification email.'},
+  {id:22, c:'Finance & Accounts', t:'Monthly Variance Report Draft', d:'Turn raw budget vs actual numbers into a narrative.', g:'Do not let AI invent reasons; supply the "why".', p:'PERSONA: Finance Manager.\nCONTEXT: Budget was [BUDGET], Actual was [ACTUAL]. The variance was caused by [PASTE ROUGH NOTES/REASONS].\nTONE: Executive summary.\nFORMAT: Paragraph explaining the variance clearly.'},
+  {id:23, c:'Finance & Accounts', t:'Credit Limit Increase Approval/Denial', d:'Responding to a dealer asking for more credit.', g:'Always state the condition of approval (e.g. prompt payment history).', p:'PERSONA: VEKA Credit Controller.\nCONTEXT: Dealer [NAME] asked for a credit increase to [AMOUNT]. Decision: [APPROVED/DENIED] because [REASON].\nTONE: Commercial, fair.\nFORMAT: Formal email.'},
+  {id:24, c:'Finance & Accounts', t:'Audit Document Request', d:'Asking internal teams for audit proofs without causing panic.', g:'Give a clear deadline and format for the proof.', p:'PERSONA: Internal Auditor.\nCONTEXT: Need [DOCUMENTS/RECEIPTS] from [TEAM] for the period [DATES] by [DEADLINE].\nTONE: Routine, helpful.\nFORMAT: Numbered list of required items.'},
+
+  // 25-32: Operations
+  {id:25, c:'Operations', t:'Standard Operating Procedure (SOP) Builder', d:'Turn messy process notes into a standard SOP.', g:'Ensure "Done When" is an observable fact.', p:'PERSONA: VEKA Operations Manager.\nCONTEXT: Create an SOP for [PROCESS NAME]. Rough notes: [PASTE NOTES].\nTONE: Imperative, clear, instructional.\nFORMAT: PURPOSE, MATERIALS, NUMBERED STEPS, SAFETY CHECKS, DONE WHEN.'},
+  {id:26, c:'Operations', t:'Maintenance Log Pattern Spotter', d:'Find the hidden failures in a maintenance export.', g:'Mask any sensitive operator names.', p:'PERSONA: Maintenance Planner.\nCONTEXT: Review this log: [PASTE MASKED LOG]. Identify top 3 recurring issues and the machine with most downtime.\nTONE: Analytical.\nFORMAT: Bulleted insight report.'},
+  {id:27, c:'Operations', t:'Safety Incident Quick-Report', d:'Drafting a readable safety alert for the floor.', g:'Focus on the hazard, not identifying the person.', p:'PERSONA: VEKA HSE Officer.\nCONTEXT: Incident: [DESCRIBE WHAT HAPPENED]. Injury/Damage: [RESULT]. Immediate action: [WHAT WE DID].\nTONE: Serious, educational.\nFORMAT: SAFETY ALERT notice for noticeboards.'},
+  {id:28, c:'Operations', t:'Production Target Miss Explanation', d:'Explaining to leadership why a shift missed target.', g:'Stick to facts (downtime, raw material issue), no excuses.', p:'PERSONA: Shift Manager.\nCONTEXT: Target was [X], we hit [Y]. Gap caused by [REASON 1] (X mins) and [REASON 2] (Y mins).\nTONE: Objective, accountable.\nFORMAT: Short shift summary.'},
+  {id:29, c:'Operations', t:'Tooling/Die Repair Request', d:'Sending a die out for refurbishment.', g:'Be exact about the defect seen on the profile.', p:'PERSONA: Extrusion Engineer writing to Toolmaker.\nCONTEXT: Die [ID NUMBER] for profile [PROFILE NAME] is producing [DESCRIBE DEFECT]. Needs refurbishment by [DATE].\nTONE: Technical, precise.\nFORMAT: Work order request.'},
+  {id:30, c:'Operations', t:'New Equipment Justification', d:'Why the plant needs a capital expenditure.', g:'Calculate the payback period in the prompt.', p:'PERSONA: Plant Manager.\nCONTEXT: We need [EQUIPMENT] costing [PRICE]. It will save [TIME/MONEY per month].\nTONE: Persuasive, ROI-focused.\nFORMAT: CapEx executive summary.'},
+  {id:31, c:'Operations', t:'Raw Material Shortage Alert', d:'Warning planning/sales about an impending stockout.', g:'Include the date we run out.', p:'PERSONA: Inventory Controller.\nCONTEXT: We will run out of [MATERIAL] on [DATE]. Expected delivery is [DATE]. Production of [PROFILES] will be impacted.\nTONE: Urgent, clear.\nFORMAT: High-priority alert.'},
+  {id:32, c:'Operations', t:'Operator Training Checklist', d:'Checklist to verify a new operator is competent.', g:'Focus on observable actions, not "understands".', p:'PERSONA: VEKA Training Lead.\nCONTEXT: Create a competency checklist for a new operator learning [MACHINE/PROCESS].\nTONE: Objective.\nFORMAT: Checkbox list of 5-7 observable actions.'},
+
+  // 33-40: Sales & Customers
+  {id:33, c:'Sales & Customers', t:'Personalised Profile Pitch (Architect)', d:'Pitching 70mm systems based on aesthetics/thermal.', g:'Do not invent test data/certifications.', p:'PERSONA: VEKA Sales Rep writing to an Architect.\nCONTEXT: Pitching [PROFILE SYSTEM]. They care about [THERMAL/AESTHETICS/GREEN RATING].\nTONE: Consultative, premium.\nFORMAT: Short email with one clear proof point.'},
+  {id:34, c:'Sales & Customers', t:'Personalised Profile Pitch (Builder)', d:'Pitching based on cost, speed, and reliability.', g:'Do not invent test data/certifications.', p:'PERSONA: VEKA Sales Rep writing to a Volume Builder.\nCONTEXT: Pitching [PROFILE SYSTEM]. They care about [LEAD TIME/PRICE PER UNIT].\nTONE: Commercial, confident.\nFORMAT: Short email highlighting supply reliability.'},
+  {id:35, c:'Sales & Customers', t:'Cold Outreach (Lead Gen)', d:'First touch to a prospective dealer.', g:'Keep it under 4 lines. Focus on THEM.', p:'PERSONA: VEKA Business Development.\nCONTEXT: Reaching out to [COMPANY NAME] who currently uses [COMPETITOR]. Our advantage: [ONE KEY BENEFIT].\nTONE: Professional, low-friction.\nFORMAT: 4-line email ending in a 15-min call ask.'},
+  {id:36, c:'Sales & Customers', t:'Following Up a Ghosted Quote', d:'When a prospect goes quiet after receiving pricing.', g:'Give them an "out" to say no.', p:'PERSONA: VEKA Sales Rep.\nCONTEXT: Sent quote [NUMBER] on [DATE] to [PROSPECT]. No reply yet.\nTONE: Helpful, not desperate.\nFORMAT: 2-line check-in.'},
+  {id:37, c:'Sales & Customers', t:'Handling a "Too Expensive" Objection', d:'Reframing price into total value/quality.', g:'Never badmouth the cheaper competitor directly.', p:'PERSONA: VEKA Sales Manager.\nCONTEXT: Prospect says our profiles are [X%] more expensive than [CHINESE/LOCAL BRAND].\nTONE: Confident in VEKA quality, educational.\nFORMAT: Email highlighting scrap rates, UV stability, and warranty.'},
+  {id:38, c:'Sales & Customers', t:'Welcome Aboard (New Dealer)', d:'Onboarding a new partner.', g:'Include clear next steps for marketing/technical support.', p:'PERSONA: VEKA Regional Manager.\nCONTEXT: [DEALER NAME] just signed the agreement. Next step is [TRAINING/FIRST SHIPMENT].\nTONE: Celebratory, partnering.\nFORMAT: Welcome email.'},
+  {id:39, c:'Sales & Customers', t:'Project Registration Confirmation', d:'Confirming price protection for a specific project.', g:'State the expiry date of the protection clearly.', p:'PERSONA: VEKA Commercial Team.\nCONTEXT: Dealer [NAME] registered project [PROJECT NAME]. We guarantee pricing until [DATE].\nTONE: Formal, supportive.\nFORMAT: Official confirmation note.'},
+  {id:40, c:'Sales & Customers', t:'Requesting a Case Study / Testimonial', d:'Asking a happy customer for a public endorsement.', g:'Make it easy for them (offer to draft it).', p:'PERSONA: VEKA Marketing/Sales.\nCONTEXT: [CUSTOMER] successfully completed [PROJECT] using our profiles. We want to feature it.\nTONE: Appreciative, respectful of their time.\nFORMAT: Email request offering to do the heavy lifting.'},
+
+  // 41-47: HR & People
+  {id:41, c:'HR & People', t:'Technical Job Description Builder', d:'Draft an accurate JD for a plant role.', g:'Write [confirm] for any specific certs you do not know.', p:'PERSONA: VEKA HR Partner.\nCONTEXT: Need a JD for [ROLE TITLE] reporting to [MANAGER ROLE]. Key task is [MAIN TASK].\nTONE: Professional, inclusive.\nFORMAT: Sections for Purpose, Responsibilities, Must-Haves.'},
+  {id:42, c:'HR & People', t:'Plain-Language Policy Rewrite', d:'Translate corporate HR speak into normal English.', g:'Do not change the actual rules/legal meaning.', p:'PERSONA: VEKA HR Manager.\nCONTEXT: Rewrite this policy clause: [PASTE DENSE POLICY].\nTONE: Clear, 8th-grade reading level, supportive.\nFORMAT: Short paragraph.'},
+  {id:43, c:'HR & People', t:'Interview Question Generator', d:'Create behavioural questions for a specific role.', g:'Focus on past behavior, not hypothetical situations.', p:'PERSONA: Hiring Manager.\nCONTEXT: Interviewing candidates for [ROLE]. Need to test for [SKILL 1] and [SKILL 2].\nTONE: Objective.\nFORMAT: 4 behavioural questions (e.g. "Tell me about a time...")'},
+  {id:44, c:'HR & People', t:'Candidate Rejection (Polite)', d:'Turning down a candidate post-interview.', g:'Do not invite legal risk; keep feedback general.', p:'PERSONA: VEKA Recruiter.\nCONTEXT: Candidate [NAME] interviewed for [ROLE] but we chose someone with more [SPECIFIC EXPERIENCE].\nTONE: Empathetic, professional, final.\nFORMAT: Standard rejection email.'},
+  {id:45, c:'HR & People', t:'Performance Review (Constructive Feedback)', d:'Structuring difficult feedback for a review.', g:'Focus on the behavior and impact, not the person.', p:'PERSONA: Manager writing review for [EMPLOYEE].\nCONTEXT: Employee is good at [STRENGTH] but needs to improve [WEAKNESS]. Impact of weakness is [IMPACT].\nTONE: Constructive, supportive, clear.\nFORMAT: SBI model (Situation, Behavior, Impact) paragraph.'},
+  {id:46, c:'HR & People', t:'New Joiner Welcome & Itinerary', d:'Day 1 email for a new employee.', g:'Ensure they know exactly where to go at 9am.', p:'PERSONA: VEKA HR / Line Manager.\nCONTEXT: [NAME] starting as [ROLE] on [DATE]. First day involves [ACTIVITY 1] and [ACTIVITY 2].\nTONE: Warm, welcoming, highly organised.\nFORMAT: Welcome email with clear schedule.'},
+  {id:47, c:'HR & People', t:'Internal Promotion Announcement', d:'Celebrating a team member moving up.', g:'Highlight their specific contributions.', p:'PERSONA: Department Head.\nCONTEXT: [NAME] is promoted to [NEW ROLE]. They previously achieved [KEY ACHIEVEMENT].\nTONE: Celebratory, proud.\nFORMAT: All-staff or department email.'},
+
+  // 48-50: Personal Productivity
+  {id:48, c:'Productivity', t:'The Brain-Dump Organiser', d:'Turn a chaotic stream of consciousness into a to-do list.', g:'N/A', p:'PERSONA: Highly organised assistant.\nCONTEXT: Here is everything on my mind: [PASTE MESSY THOUGHTS].\nTONE: Clinical, organised.\nFORMAT: Categorised task list grouped by Project and Urgency.'},
+  {id:49, c:'Productivity', t:'Document Summariser (BLUF)', d:'Get the key points of a long document fast.', g:'Do not paste confidential VEKA strategic docs.', p:'PERSONA: Executive summariser.\nCONTEXT: Read this text: [PASTE SAFE TEXT].\nTONE: Concise.\nFORMAT: BLUF (Bottom Line Up Front) followed by 3 key bullet points.'},
+  {id:50, c:'Productivity', t:'The "Pushback" Email Refiner', d:'Remove emotion from a draft you wrote while angry.', g:'Ensure the core message survives the rewrite.', p:'PERSONA: Diplomatic communications expert.\nCONTEXT: I wrote this draft while frustrated: [PASTE DRAFT].\nTONE: Calm, professional, strictly factual, zero passive-aggression.\nFORMAT: Rewrite the email to achieve the goal without the emotion.'}
+];
+
+/* ============================================================
+   APP LOGIC
+   ============================================================ */
+let activeCat = 'All';
+let searchQuery = '';
+let favourites = JSON.parse(localStorage.getItem('veka-favs') || '[]');
+let showFavsOnly = false;
+
+function renderPrompts() {
+  const grid = document.getElementById('prompt-grid');
+  
+  // Filter logic
+  const filtered = PROMPTS.filter(p => {
+    const matchCat = activeCat === 'All' || p.c === activeCat;
+    const matchSearch = p.t.toLowerCase().includes(searchQuery) || 
+                        p.d.toLowerCase().includes(searchQuery) ||
+                        p.c.toLowerCase().includes(searchQuery);
+    const matchFav = showFavsOnly ? favourites.includes(p.id) : true;
+    return matchCat && matchSearch && matchFav;
+  });
+
+  document.getElementById('results-meta').textContent = 
+    `Showing ${filtered.length} prompt${filtered.length!==1?'s':''} ${showFavsOnly ? '(Favourites)' : ''}`;
+
+  grid.innerHTML = filtered.map(p => {
+    const isFav = favourites.includes(p.id);
+    return `
+    <div class="p-card">
+      <button class="fav-btn ${isFav ? 'active' : ''}" onclick="toggleFav(${p.id}, event)" aria-label="Toggle favourite">★</button>
+      <div class="p-cat">${p.c}</div>
+      <div class="p-title">${p.t}</div>
+      <div class="p-use">${p.d}</div>
+      <div class="p-guardrail">${p.g}</div>
+      <div class="p-actions">
+        <button class="p-btn" onclick='openModal(${JSON.stringify(p).replace(/'/g, "&apos;")})'>View & Edit</button>
+        <button class="p-btn" onclick='quickCopy(this, ${JSON.stringify(p.p).replace(/'/g, "&apos;")})'>Quick Copy</button>
+      </div>
+    </div>
+  `}).join('');
+}
+
+function setCategory(cat, btn) {
+  activeCat = cat;
+  document.querySelectorAll('.cat-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  renderPrompts();
+}
+
+document.getElementById('search-input').addEventListener('input', (e) => {
+  searchQuery = e.target.value.toLowerCase();
+  renderPrompts();
+});
+
+function toggleFavFilter(btn) {
+  showFavsOnly = !showFavsOnly;
+  btn.classList.toggle('active', showFavsOnly);
+  renderPrompts();
+}
+
+function toggleFav(id, e) {
+  e.stopPropagation();
+  if (favourites.includes(id)) {
+    favourites = favourites.filter(f => f !== id);
+  } else {
+    favourites.push(id);
+  }
+  localStorage.setItem('veka-favs', JSON.stringify(favourites));
+  renderPrompts();
+}
+
+/* ============================================================
+   MODAL LOGIC
+   ============================================================ */
+function highlightVars(text) {
+  return text.replace(/\[([^\]]+)\]/g, '<span class="m-var">[$1]</span>');
+}
+
+function openModal(p) {
+  document.getElementById('m-cat').textContent = p.c;
+  document.getElementById('m-title').textContent = p.t;
+  document.getElementById('m-desc').textContent = p.d;
+  document.getElementById('m-guardrail').textContent = p.g;
+  document.getElementById('m-prompt').innerHTML = highlightVars(p.p);
+  // Store raw prompt text for copying
+  document.getElementById('m-copy-btn').dataset.raw = p.p;
+  
+  const btn = document.getElementById('m-copy-btn');
+  btn.textContent = 'Copy Template';
+  btn.classList.remove('copied');
+  
+  document.getElementById('modal-overlay').classList.add('show');
+}
+
+function closeModal() {
+  document.getElementById('modal-overlay').classList.remove('show');
+}
+
+function quickCopy(btn, text) {
+  navigator.clipboard.writeText(text).then(() => {
+    const orig = btn.textContent;
+    btn.textContent = 'Copied ✓';
+    btn.classList.add('copied');
+    showToast('Prompt copied to clipboard ✓');
+    setTimeout(() => { btn.textContent = orig; btn.classList.remove('copied'); }, 2000);
+  });
+}
+
+function copyModalPrompt() {
+  const btn = document.getElementById('m-copy-btn');
+  const text = btn.dataset.raw;
+  navigator.clipboard.writeText(text).then(() => {
+    btn.textContent = 'Copied ✓';
+    btn.classList.add('copied');
+    showToast('Template copied to clipboard ✓');
+    setTimeout(() => { btn.textContent = 'Copy Template'; btn.classList.remove('copied'); }, 2000);
+  });
+}
+
+/* ============================================================
+   TAB SWITCHING & BUILD YOUR OWN
+   ============================================================ */
+function switchTab(tab, btn) {
+  document.querySelectorAll('.top-link').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  
+  if (tab === 'library') {
+    document.getElementById('library-tab').classList.remove('hidden');
+    document.getElementById('build-tab').classList.remove('active');
+  } else {
+    document.getElementById('library-tab').classList.add('hidden');
+    document.getElementById('build-tab').classList.add('active');
+    updatePreview(); // render default state
+  }
+}
+
+function updatePreview() {
+  const c = document.getElementById('b-c').value || '[CONTEXT GOES HERE]';
+  const t = document.getElementById('b-t').value || '[TONE]';
+  const p = document.getElementById('b-p').value || '[PERSONA]';
+  const f = document.getElementById('b-f').value || '[FORMAT]';
+  
+  const raw = `PERSONA: You are a ${p}.\nCONTEXT: ${c}\nTONE: ${t}.\nFORMAT: ${f}.\nWrite it.`;
+  document.getElementById('bp-output').innerHTML = highlightVars(raw);
+  document.getElementById('b-copy-btn').dataset.raw = raw;
+}
+
+function copyBuild() {
+  const btn = document.getElementById('b-copy-btn');
+  const text = btn.dataset.raw;
+  if (!text || text.includes('[CONTEXT GOES HERE]')) {
+    showToast('Please fill out the form first');
+    return;
+  }
+  navigator.clipboard.writeText(text).then(() => {
+    btn.textContent = 'Copied ✓';
+    btn.classList.add('copied');
+    showToast('Custom template copied ✓');
+    setTimeout(() => { btn.textContent = 'Copy Full Template'; btn.classList.remove('copied'); }, 2000);
+  });
+}
+
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2800);
+}
+
+// Esc to close modal
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') closeModal();
+});
+
+// Init
+renderPrompts();
+</script>
+</body>
+</html>

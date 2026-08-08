@@ -1,0 +1,2006 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>VEKA India · GenAI Excellence — Interactive Training Deck</title>
+<meta name="description" content="VEKA India GenAI Excellence — 8-hour interactive enterprise training deck. 80% hands-on, offline-first, VEKA-specific scenarios."/>
+<style>
+/* ============================================================
+   DESIGN TOKENS — VEKA GenAI Excellence Design System
+   ============================================================ */
+:root{
+  --bg:#0E1116;
+  --bg-elevated:#151A22;
+  --bg-card:#1A212B;
+  --bg-surface:#1F2837;
+  --text:#F4F2EC;
+  --text-muted:#98A2B2;
+  --text-faint:#5C6472;
+  --border:rgba(255,255,255,.09);
+  --border-strong:rgba(255,255,255,.16);
+  --veka-red:#E4002B;
+  --veka-red-soft:rgba(228,0,43,.14);
+  --veka-red-glow:rgba(228,0,43,.06);
+  --steel:#5B8DEF;
+  --green:#24C58A;
+  --amber:#F5A623;
+  --danger:#FF4560;
+  --display:'Space Grotesk',system-ui,sans-serif;
+  --body:'Inter',system-ui,sans-serif;
+  --mono:'JetBrains Mono',ui-monospace,monospace;
+  --radius-sm:8px;
+  --radius:12px;
+  --radius-lg:16px;
+  --shadow:0 4px 24px rgba(0,0,0,.4);
+  --shadow-lg:0 18px 50px rgba(0,0,0,.6);
+  --t:.18s ease;
+  --t-slow:.45s cubic-bezier(.2,.7,.2,1);
+}
+
+/* ============================================================
+   RESET & BASE
+   ============================================================ */
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;overflow:hidden}
+body{
+  background:var(--bg);
+  color:var(--text);
+  font-family:var(--body);
+  -webkit-font-smoothing:antialiased;
+  -moz-osx-font-smoothing:grayscale;
+}
+button{cursor:pointer;font-family:inherit}
+a{color:inherit}
+
+/* blueprint grid ambience */
+body::before{
+  content:"";position:fixed;inset:0;z-index:0;pointer-events:none;
+  background-image:
+    linear-gradient(rgba(255,255,255,.02) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(255,255,255,.02) 1px,transparent 1px);
+  background-size:48px 48px;
+  mask-image:radial-gradient(ellipse at 50% 35%,#000 20%,transparent 78%);
+}
+
+/* ============================================================
+   CHROME — TOP BAR
+   ============================================================ */
+#topbar{
+  position:fixed;top:0;left:0;right:0;height:3px;z-index:100;
+  background:rgba(255,255,255,.04);
+}
+#progress-bar{
+  height:100%;width:0;
+  background:linear-gradient(90deg,var(--veka-red),#ff4560,var(--amber));
+  transition:width .5s var(--t-slow);
+}
+
+/* Brand strip */
+#brand-strip{
+  position:fixed;top:0;left:0;right:0;height:52px;z-index:99;
+  display:flex;align-items:center;justify-content:space-between;
+  padding:0 24px;
+  background:linear-gradient(180deg,rgba(14,17,22,.95) 0%,transparent 100%);
+  pointer-events:none;
+}
+#brand{
+  display:flex;align-items:center;gap:12px;pointer-events:all;
+  font-family:var(--display);font-weight:600;font-size:14px;letter-spacing:.01em;
+}
+.brand-mark{width:28px;height:28px;flex-shrink:0}
+.brand-mark rect{fill:none;stroke:var(--veka-red);stroke-width:1.5}
+.brand-mark .fill{fill:var(--veka-red-soft)}
+#brand small{
+  font-family:var(--mono);font-weight:400;color:var(--text-muted);
+  letter-spacing:.12em;font-size:9px;text-transform:uppercase;display:block;margin-top:1px;
+}
+#hour-indicator{
+  display:flex;align-items:center;gap:8px;pointer-events:none;
+  font-family:var(--mono);font-size:11px;letter-spacing:.14em;
+  text-transform:uppercase;color:var(--text-muted);
+}
+#hour-indicator .phase-tag{
+  background:var(--veka-red-soft);color:var(--veka-red);
+  padding:3px 9px;border-radius:20px;font-size:10px;letter-spacing:.1em;
+}
+#hour-indicator .slide-counter{color:var(--text-faint);margin-left:8px}
+
+/* trainer mode banner */
+#trainer-banner{
+  position:fixed;top:0;left:0;right:0;height:3px;z-index:101;
+  background:repeating-linear-gradient(45deg,var(--amber) 0,var(--amber) 8px,transparent 8px,transparent 16px);
+  display:none;
+}
+body.trainer-mode #trainer-banner{display:block}
+
+/* ============================================================
+   STAGE & SLIDES
+   ============================================================ */
+#stage{
+  position:fixed;inset:0;z-index:1;
+  display:flex;align-items:center;justify-content:center;
+}
+.slide{
+  position:absolute;inset:0;
+  padding:clamp(60px,6vh,90px) clamp(32px,5vw,90px) clamp(60px,7vh,90px);
+  display:none;flex-direction:column;justify-content:center;
+  animation:slideIn .4s var(--t-slow);
+}
+.slide.active{display:flex}
+@keyframes slideIn{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:none}}
+@media(prefers-reduced-motion:reduce){.slide{animation:none}}
+
+.wrap{width:100%;max-width:1200px;margin:0 auto}
+.wrap-narrow{width:100%;max-width:860px;margin:0 auto}
+.wrap-wide{width:100%;max-width:1400px;margin:0 auto}
+
+/* ============================================================
+   SHARED TYPOGRAPHY
+   ============================================================ */
+.eyebrow{
+  font-family:var(--mono);font-size:clamp(10px,.9vw,13px);letter-spacing:.3em;
+  text-transform:uppercase;color:var(--veka-red);
+  display:flex;align-items:center;gap:12px;margin-bottom:18px;
+}
+.eyebrow::before{content:"";width:28px;height:2px;background:var(--veka-red);flex-shrink:0}
+h1.big{
+  font-family:var(--display);font-weight:700;line-height:1.01;
+  font-size:clamp(40px,6.5vw,92px);letter-spacing:-.025em;
+}
+h2.head{
+  font-family:var(--display);font-weight:600;line-height:1.04;
+  font-size:clamp(28px,4vw,62px);letter-spacing:-.02em;
+}
+h3.sub-head{
+  font-family:var(--display);font-weight:600;line-height:1.1;
+  font-size:clamp(20px,2.4vw,34px);letter-spacing:-.01em;
+}
+.lead{
+  font-size:clamp(15px,1.6vw,21px);color:var(--text-muted);
+  max-width:64ch;line-height:1.55;margin-top:16px;
+}
+.kicker{
+  font-family:var(--mono);font-size:12px;letter-spacing:.2em;
+  text-transform:uppercase;color:var(--text-muted);
+}
+.accent{color:var(--veka-red)}
+.prompt-var{
+  background:rgba(245,166,35,.18);color:var(--amber);
+  border:1px solid rgba(245,166,35,.3);border-radius:4px;
+  padding:1px 5px;font-family:var(--mono);font-size:.9em;
+  cursor:help;
+}
+
+/* ============================================================
+   CARD PRIMITIVES
+   ============================================================ */
+.card{
+  background:var(--bg-card);border:1px solid var(--border);
+  border-radius:var(--radius-lg);padding:22px 24px;
+}
+.card.red-top{border-top:3px solid var(--veka-red)}
+.card.green-top{border-top:3px solid var(--green)}
+.card.steel-top{border-top:3px solid var(--steel)}
+.card.amber-top{border-top:3px solid var(--amber)}
+
+.aside{
+  background:var(--bg-card);border:1px solid var(--border);
+  border-left:3px solid var(--veka-red);border-radius:var(--radius);
+  padding:22px 24px;
+}
+.aside h4{
+  font-family:var(--mono);text-transform:uppercase;letter-spacing:.14em;
+  font-size:11px;color:var(--veka-red);margin-bottom:10px;
+}
+.aside p{color:var(--text-muted);line-height:1.6;font-size:14px}
+
+/* ============================================================
+   TITLE SLIDE
+   ============================================================ */
+.title-layout{display:grid;grid-template-columns:1.3fr .9fr;gap:48px;align-items:center}
+.title-art{display:grid;place-items:center}
+@media(max-width:900px){.title-layout{grid-template-columns:1fr}.title-art{display:none}}
+.stats-row{display:flex;flex-wrap:wrap;gap:24px;margin-top:36px}
+.stat{border-left:2px solid var(--veka-red);padding-left:16px}
+.stat .n{font-family:var(--display);font-size:28px;font-weight:700;color:var(--text)}
+.stat .l{font-family:var(--mono);font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:var(--text-muted);margin-top:3px}
+
+/* chamber art */
+.chamber-art{opacity:.7}
+
+/* ============================================================
+   AGENDA SLIDE
+   ============================================================ */
+.agenda-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px 32px;margin-top:24px}
+@media(max-width:900px){.agenda-grid{grid-template-columns:1fr}}
+.ag-row{
+  display:grid;grid-template-columns:52px 1fr auto;gap:14px;align-items:center;
+  padding:10px 0;border-top:1px solid var(--border);
+}
+.ag-h{font-family:var(--mono);color:var(--veka-red);font-size:12px;letter-spacing:.1em;font-weight:700}
+.ag-t{font-family:var(--display);font-weight:500;font-size:clamp(14px,1.4vw,17px)}
+.ag-t small{display:block;color:var(--text-muted);font-family:var(--body);font-weight:400;font-size:12px;margin-top:2px}
+.ag-ph{font-family:var(--mono);font-size:9px;letter-spacing:.14em;color:var(--text-faint);text-transform:uppercase}
+
+/* ============================================================
+   HOW IT WORKS SLIDE
+   ============================================================ */
+.how-cols{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:28px}
+@media(max-width:900px){.how-cols{grid-template-columns:1fr}}
+.how-card{
+  background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius-lg);
+  padding:24px;position:relative;overflow:hidden;
+}
+.how-card::before{
+  content:"";position:absolute;top:0;left:0;right:0;height:3px;
+  background:linear-gradient(90deg,var(--veka-red),transparent);
+}
+.how-num{font-family:var(--display);font-size:52px;font-weight:700;letter-spacing:-.04em;
+  color:transparent;-webkit-text-stroke:1.5px var(--border-strong);line-height:1;margin-bottom:8px}
+.how-t{font-family:var(--display);font-weight:600;font-size:18px;margin-bottom:8px}
+.how-d{color:var(--text-muted);font-size:13.5px;line-height:1.55}
+
+/* ============================================================
+   HOUR DIVIDER SLIDE
+   ============================================================ */
+.divider-layout{position:relative}
+.divider-bg-num{
+  position:absolute;right:-20px;top:50%;transform:translateY(-50%);
+  font-family:var(--display);font-weight:700;
+  font-size:clamp(160px,28vw,340px);
+  color:transparent;-webkit-text-stroke:1.5px rgba(228,0,43,.12);
+  letter-spacing:-.06em;line-height:1;pointer-events:none;user-select:none;
+}
+.divider-ph{
+  font-family:var(--mono);letter-spacing:.28em;text-transform:uppercase;
+  color:var(--veka-red);font-size:clamp(11px,1.1vw,14px);margin-bottom:20px;
+}
+.divider-title{
+  font-family:var(--display);font-weight:700;line-height:.95;
+  font-size:clamp(52px,9vw,130px);letter-spacing:-.04em;
+}
+.divider-sub{
+  color:var(--text-muted);font-size:clamp(15px,1.6vw,21px);
+  margin-top:20px;max-width:60ch;line-height:1.5;
+}
+
+/* ============================================================
+   CONCEPT SLIDE
+   ============================================================ */
+.concept-cols{display:grid;grid-template-columns:1fr 1fr;gap:32px;margin-top:28px}
+@media(max-width:900px){.concept-cols{grid-template-columns:1fr}}
+ul.pts{list-style:none;display:flex;flex-direction:column;gap:14px;margin-top:20px}
+ul.pts li{
+  position:relative;padding-left:30px;
+  font-size:clamp(14px,1.4vw,18px);line-height:1.5;color:var(--text-muted);
+}
+ul.pts li::before{
+  content:"";position:absolute;left:0;top:.55em;
+  width:12px;height:12px;border:2px solid var(--veka-red);transform:rotate(45deg);
+}
+ul.pts li b{color:var(--text)}
+
+/* ============================================================
+   DEMO / BEFORE-AFTER SLIDE
+   ============================================================ */
+.demo-grid{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-top:22px}
+@media(max-width:900px){.demo-grid{grid-template-columns:1fr}}
+.demo-card{background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius-lg);padding:22px 24px}
+.demo-card.before{border-top:3px solid #6b7280}
+.demo-card.after{border-top:3px solid var(--green)}
+.demo-tag{font-family:var(--mono);font-size:10px;letter-spacing:.18em;text-transform:uppercase;margin-bottom:12px}
+.demo-card.before .demo-tag{color:#7a8490}
+.demo-card.after .demo-tag{color:var(--green)}
+.demo-card p{font-size:14px;line-height:1.6;color:#cdd4de}
+.trainer-say{
+  margin-top:20px;
+  background:var(--veka-red-soft);border:1px dashed rgba(228,0,43,.4);
+  border-radius:var(--radius);padding:14px 18px;
+  display:flex;gap:12px;align-items:flex-start;
+}
+.trainer-say .mic{color:var(--veka-red);font-size:18px;line-height:1.2;flex-shrink:0}
+.trainer-say .say-text{font-size:14px;line-height:1.55;color:#cdd4de}
+.trainer-say .say-text b{
+  color:var(--veka-red);font-family:var(--mono);font-size:10px;
+  letter-spacing:.14em;text-transform:uppercase;display:block;margin-bottom:4px;
+}
+
+/* ============================================================
+   ACTIVITY SLIDE
+   ============================================================ */
+.activity-head{display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin-bottom:12px}
+.activity-badge{
+  font-family:var(--mono);background:var(--veka-red);color:#fff;
+  font-weight:700;font-size:11px;letter-spacing:.16em;text-transform:uppercase;
+  padding:6px 13px;border-radius:var(--radius-sm);
+}
+.activity-time{
+  display:flex;align-items:center;gap:6px;
+  font-family:var(--mono);color:var(--text-muted);font-size:12px;letter-spacing:.1em;
+}
+.brief{
+  font-size:clamp(14px,1.45vw,18px);color:var(--text-muted);
+  margin-bottom:18px;max-width:80ch;line-height:1.55;
+}
+.tiers{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:16px}
+@media(max-width:900px){.tiers{grid-template-columns:1fr}}
+.tier{
+  background:var(--bg-card);border:1px solid var(--border);
+  border-radius:var(--radius);padding:14px 16px;border-top:3px solid;
+}
+.tier.core{border-top-color:var(--steel)}
+.tier.scaffold{border-top-color:var(--green)}
+.tier.stretch{border-top-color:var(--amber)}
+.tier-label{
+  font-family:var(--mono);font-size:10px;letter-spacing:.16em;
+  text-transform:uppercase;margin-bottom:7px;font-weight:700;
+}
+.tier.core .tier-label{color:var(--steel)}
+.tier.scaffold .tier-label{color:var(--green)}
+.tier.stretch .tier-label{color:var(--amber)}
+.tier p{font-size:13px;line-height:1.5;color:#cdd4de}
+
+/* Prompt box */
+.prompt-box{
+  background:#090c11;border:1px solid var(--border);
+  border-radius:var(--radius);overflow:hidden;
+}
+.prompt-box-top{
+  display:flex;justify-content:space-between;align-items:center;
+  background:#0f131a;padding:8px 14px;border-bottom:1px solid var(--border);
+}
+.prompt-box-top .pb-label{
+  font-family:var(--mono);font-size:10px;letter-spacing:.16em;
+  color:var(--text-muted);text-transform:uppercase;
+}
+.copy-btn{
+  background:transparent;border:1px solid var(--border);color:var(--text-muted);
+  font-family:var(--mono);font-size:10px;padding:4px 10px;border-radius:6px;
+  letter-spacing:.06em;transition:var(--t);
+}
+.copy-btn:hover{border-color:var(--green);color:var(--green)}
+.copy-btn.copied{border-color:var(--green);color:var(--green)}
+.prompt-box pre{
+  font-family:var(--mono);font-size:12.5px;line-height:1.6;color:#d8e0ea;
+  padding:14px 16px;white-space:pre-wrap;max-height:28vh;overflow-y:auto;
+}
+.share-note{
+  margin-top:12px;font-size:13px;color:var(--text-faint);
+  display:flex;gap:8px;align-items:center;
+}
+.share-note b{
+  color:var(--green);font-family:var(--mono);font-size:10px;
+  letter-spacing:.14em;text-transform:uppercase;
+}
+
+/* ============================================================
+   CHECKPOINT SLIDE
+   ============================================================ */
+.checkpoint-card{
+  background:var(--bg-card);border:1px solid var(--border);
+  border-left:4px solid var(--veka-red);border-radius:var(--radius-lg);
+  padding:28px 32px;margin-top:20px;
+}
+.chk-task{font-size:clamp(16px,1.65vw,21px);line-height:1.45;margin-bottom:22px;font-weight:500}
+.rubric{display:flex;flex-direction:column;gap:10px}
+.rubric-item{
+  display:flex;gap:14px;align-items:flex-start;
+  font-size:14.5px;color:#cdd4de;line-height:1.45;
+}
+.rubric-item .check-icon{color:var(--green);font-family:var(--mono);font-size:16px;flex-shrink:0;line-height:1.4}
+.prove-badge{
+  display:inline-flex;align-items:center;gap:8px;margin-bottom:12px;
+  font-family:var(--mono);font-size:11px;letter-spacing:.2em;text-transform:uppercase;
+  background:rgba(228,0,43,.15);color:var(--veka-red);
+  border:1px solid rgba(228,0,43,.3);padding:6px 14px;border-radius:20px;
+}
+
+/* ============================================================
+   PROMPT BATTLE SLIDE
+   ============================================================ */
+.battle-layout{text-align:center}
+.battle-vs{
+  font-family:var(--display);font-size:clamp(60px,11vw,140px);
+  font-weight:700;color:var(--veka-red);letter-spacing:-.04em;line-height:.9;
+  margin:12px 0;
+}
+.battle-rules{
+  display:inline-flex;flex-direction:column;gap:10px;text-align:left;
+  margin-top:22px;background:var(--bg-card);border:1px solid var(--border);
+  border-radius:var(--radius-lg);padding:20px 28px;max-width:640px;width:100%;
+}
+.battle-rules .rule{display:flex;gap:12px;font-size:14px;color:#cdd4de;line-height:1.45}
+.battle-rules .rule b{color:var(--veka-red);font-family:var(--mono);font-size:10px;letter-spacing:.14em;flex-shrink:0;margin-top:2px}
+.battle-start{
+  margin-top:18px;
+  background:var(--veka-red);color:#fff;
+  border:none;border-radius:var(--radius);padding:12px 32px;
+  font-family:var(--display);font-size:17px;font-weight:700;
+  letter-spacing:.02em;transition:var(--t);
+  box-shadow:0 4px 20px rgba(228,0,43,.4);
+}
+.battle-start:hover{transform:translateY(-2px);box-shadow:0 8px 28px rgba(228,0,43,.5)}
+
+/* ============================================================
+   BREAK SLIDE
+   ============================================================ */
+.break-layout{text-align:center}
+.break-clock{
+  font-family:var(--display);font-size:clamp(80px,18vw,220px);
+  font-weight:700;letter-spacing:-.05em;line-height:.85;color:var(--text);
+}
+.break-clock span{color:var(--veka-red)}
+.break-sub{color:var(--text-muted);margin-top:18px;font-size:clamp(16px,1.7vw,22px)}
+
+/* ============================================================
+   DATA SAFETY SLIDE
+   ============================================================ */
+.safety-grid{display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-top:24px}
+@media(max-width:900px){.safety-grid{grid-template-columns:1fr}}
+.safety-card{background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius-lg);padding:22px 24px}
+.safety-card.danger{border-top:3px solid var(--danger)}
+.safety-card.ok{border-top:3px solid var(--green)}
+.safety-title{font-family:var(--mono);font-size:10px;letter-spacing:.18em;text-transform:uppercase;margin-bottom:14px}
+.safety-card.danger .safety-title{color:var(--danger)}
+.safety-card.ok .safety-title{color:var(--green)}
+.safety-list{list-style:none;display:flex;flex-direction:column;gap:8px}
+.safety-list li{font-size:14px;color:#cdd4de;line-height:1.45;display:flex;gap:8px;align-items:flex-start}
+.safety-list li::before{content:"→";color:var(--text-faint);flex-shrink:0;margin-top:1px}
+.safety-card.danger .safety-list li::before{content:"✕";color:var(--danger)}
+.safety-card.ok .safety-list li::before{content:"✓";color:var(--green)}
+
+/* ============================================================
+   TEMPLATE BUILDER SLIDE
+   ============================================================ */
+.template-flow{display:grid;grid-template-columns:1fr auto 1fr;gap:20px;align-items:center;margin-top:24px}
+@media(max-width:900px){.template-flow{grid-template-columns:1fr}.template-arrow{display:none}}
+.template-arrow{font-family:var(--mono);font-size:32px;color:var(--veka-red);text-align:center}
+.tpl-box{background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius-lg);padding:20px}
+.tpl-label{font-family:var(--mono);font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:var(--text-muted);margin-bottom:10px}
+.tpl-content{font-family:var(--mono);font-size:13px;line-height:1.6;color:#cdd4de;white-space:pre-wrap}
+
+/* ============================================================
+   CAPSTONE CANVAS SLIDE
+   ============================================================ */
+.capstone-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:22px}
+@media(max-width:900px){.capstone-grid{grid-template-columns:1fr}}
+.cap-field{
+  background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius);
+  padding:14px 16px;
+}
+.cap-field-label{
+  font-family:var(--mono);font-size:9px;letter-spacing:.18em;
+  text-transform:uppercase;color:var(--text-faint);margin-bottom:6px;
+}
+.cap-field-value{font-size:14px;color:var(--text-muted);font-style:italic;line-height:1.4}
+.cap-steps{display:flex;gap:0;margin-top:20px;border:1px solid var(--border);border-radius:var(--radius-lg);overflow:hidden}
+.cap-step{
+  flex:1;padding:12px 8px;text-align:center;border-right:1px solid var(--border);
+  background:var(--bg-elevated);transition:var(--t);
+}
+.cap-step:last-child{border-right:none}
+.cap-step.active{background:var(--veka-red-soft)}
+.cap-step-num{font-family:var(--mono);font-size:10px;color:var(--veka-red);margin-bottom:4px}
+.cap-step-label{font-size:11px;color:var(--text-muted);font-weight:500}
+
+/* ============================================================
+   SHOWCASE SLIDE
+   ============================================================ */
+.showcase-steps{counter-reset:s;display:flex;flex-direction:column;gap:12px;margin-top:22px}
+.showcase-step{
+  display:grid;grid-template-columns:44px 1fr;gap:16px;align-items:baseline;
+  border-top:1px solid var(--border);padding-top:12px;
+}
+.showcase-step::before{
+  counter-increment:s;content:counter(s,decimal-leading-zero);
+  font-family:var(--mono);color:var(--veka-red);font-size:14px;
+}
+.showcase-step .st{font-family:var(--display);font-size:clamp(14px,1.4vw,18px);font-weight:500}
+.showcase-step .sd{color:var(--text-muted);font-size:13px;margin-top:2px;line-height:1.45}
+
+/* Scoring grid for showcase/capstone */
+.score-criteria{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin-top:20px}
+@media(max-width:900px){.score-criteria{grid-template-columns:1fr 1fr}}
+.score-crit{
+  background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius);
+  padding:14px 12px;text-align:center;
+}
+.score-crit-label{font-size:12px;color:var(--text-muted);line-height:1.4;margin-bottom:8px}
+.score-crit-max{font-family:var(--display);font-size:26px;font-weight:700;color:var(--veka-red)}
+
+/* ============================================================
+   THIRTY-DAY PLAN SLIDE
+   ============================================================ */
+.plan-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-top:22px}
+@media(max-width:900px){.plan-grid{grid-template-columns:1fr 1fr}}
+.plan-week{
+  background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius-lg);
+  padding:18px 16px;
+}
+.plan-week-label{
+  font-family:var(--mono);font-size:9px;letter-spacing:.2em;text-transform:uppercase;
+  color:var(--veka-red);margin-bottom:10px;
+}
+.plan-habit{font-size:13px;color:var(--text-muted);line-height:1.55}
+.plan-commitment{
+  margin-top:22px;background:var(--veka-red-soft);border:1px solid rgba(228,0,43,.3);
+  border-radius:var(--radius);padding:16px 20px;
+}
+.plan-commitment p{font-size:14px;color:var(--text);line-height:1.55}
+
+/* ============================================================
+   CLOSING SLIDE
+   ============================================================ */
+.closing-layout{display:grid;grid-template-columns:1.2fr .8fr;gap:48px;align-items:center}
+@media(max-width:900px){.closing-layout{grid-template-columns:1fr}}
+.closing-stats{display:flex;flex-direction:column;gap:14px;margin-top:28px}
+.closing-stat{display:flex;align-items:baseline;gap:14px;border-top:1px solid var(--border);padding-top:14px}
+.closing-stat .cs-label{font-family:var(--mono);font-size:11px;color:var(--text-muted);letter-spacing:.12em;text-transform:uppercase}
+.closing-stat .cs-val{font-family:var(--display);font-weight:700;color:var(--veka-red);font-size:22px}
+
+/* ============================================================
+   TRAINER NOTES (hidden in participant mode)
+   ============================================================ */
+.trainer-notes{
+  margin-top:16px;padding:14px 18px;
+  background:rgba(245,166,35,.06);border:1px solid rgba(245,166,35,.2);
+  border-radius:var(--radius);display:none;
+}
+body.trainer-mode .trainer-notes{display:block}
+.tn-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:10px}
+.tn-item .tn-label{
+  font-family:var(--mono);font-size:9px;letter-spacing:.18em;text-transform:uppercase;
+  color:var(--amber);margin-bottom:4px;
+}
+.tn-item .tn-val{font-size:13px;color:#cdd4de;line-height:1.45}
+
+/* ============================================================
+   FLOATING TIMER
+   ============================================================ */
+#timer-widget{
+  position:fixed;bottom:70px;right:20px;z-index:50;
+  background:var(--bg-card);border:1px solid var(--border-strong);
+  border-radius:var(--radius-lg);padding:16px 18px;
+  box-shadow:var(--shadow-lg);min-width:200px;
+  display:none;
+}
+#timer-widget.visible{display:block}
+.timer-header{
+  display:flex;justify-content:space-between;align-items:center;
+  font-family:var(--mono);font-size:9px;letter-spacing:.18em;text-transform:uppercase;
+  color:var(--text-muted);margin-bottom:8px;
+}
+.timer-label{color:var(--veka-red)}
+#timer-display{
+  font-family:var(--display);font-weight:700;font-size:52px;
+  line-height:1;letter-spacing:-.03em;font-variant-numeric:tabular-nums;
+  text-align:center;padding:6px 0;
+}
+.timer-ring-wrap{position:relative;margin:0 auto 4px;width:100%;max-width:140px}
+.timer-ring{display:block;transform:rotate(-90deg)}
+.timer-ring-bg{fill:none;stroke:var(--border-strong);stroke-width:4}
+.timer-ring-fg{
+  fill:none;stroke:var(--veka-red);stroke-width:4;
+  stroke-linecap:round;stroke-dasharray:283;stroke-dashoffset:0;
+  transition:stroke-dashoffset 1s linear, stroke .5s ease;
+}
+.timer-ring-fg.warning{stroke:var(--amber)}
+.timer-ring-fg.danger{stroke:var(--danger)}
+.timer-time{
+  position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
+  font-family:var(--display);font-weight:700;font-size:26px;letter-spacing:-.02em;
+  font-variant-numeric:tabular-nums;
+}
+.timer-controls{display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;margin-top:10px}
+.timer-btn{
+  background:var(--bg-elevated);border:1px solid var(--border);color:var(--text);
+  border-radius:var(--radius-sm);padding:7px 4px;font-family:var(--mono);
+  font-size:11px;letter-spacing:.04em;transition:var(--t);
+}
+.timer-btn:hover{border-color:var(--veka-red);color:var(--veka-red)}
+.timer-btn.primary{background:var(--veka-red);border-color:var(--veka-red);color:#fff}
+.timer-btn.primary:hover{background:#c0001f}
+#timer-done-msg{
+  display:none;text-align:center;padding:8px;
+  font-family:var(--mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--veka-red);animation:pulse 1s infinite;
+}
+#timer-widget.done #timer-done-msg{display:block}
+@keyframes pulse{50%{opacity:.3}}
+
+/* ============================================================
+   LEADERBOARD OVERLAY
+   ============================================================ */
+.overlay{
+  position:fixed;inset:0;z-index:200;
+  background:rgba(8,10,14,.95);backdrop-filter:blur(10px);
+  display:none;overflow-y:auto;
+  padding:clamp(32px,5vw,72px);
+}
+.overlay.show{display:block;animation:fadeIn .25s ease}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+.overlay-close{
+  position:absolute;top:24px;right:28px;
+  background:none;border:1px solid var(--border);color:var(--text);
+  width:40px;height:40px;border-radius:var(--radius);font-size:18px;
+  transition:var(--t);display:grid;place-items:center;
+}
+.overlay-close:hover{border-color:var(--veka-red);color:var(--veka-red)}
+.overlay-title{font-family:var(--display);font-size:clamp(24px,3.5vw,44px);font-weight:700;margin-bottom:6px}
+.overlay-sub{font-family:var(--mono);font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--text-muted)}
+
+/* Agenda map overlay */
+#agenda-ov .journey{margin-top:28px;display:flex;flex-direction:column;gap:0}
+.journey-phase{margin-bottom:28px}
+.journey-phase-label{
+  font-family:var(--mono);font-size:10px;letter-spacing:.2em;text-transform:uppercase;
+  color:var(--veka-red);padding-bottom:10px;margin-bottom:10px;
+  border-bottom:1px solid var(--border);
+}
+.journey-slides{display:flex;flex-wrap:wrap;gap:8px}
+.journey-btn{
+  background:var(--bg-elevated);border:1px solid var(--border);color:var(--text);
+  border-radius:var(--radius);padding:10px 14px;text-align:left;
+  transition:var(--t);min-width:130px;
+}
+.journey-btn:hover{border-color:var(--veka-red);transform:translateY(-2px)}
+.journey-btn.current{border-color:var(--veka-red);background:var(--veka-red-soft)}
+.journey-btn.divider-btn{border-color:rgba(228,0,43,.3)}
+.journey-btn .jb-idx{font-family:var(--mono);color:var(--veka-red);font-size:10px;letter-spacing:.12em}
+.journey-btn .jb-title{font-size:12px;color:#cdd4de;margin-top:4px;line-height:1.3}
+
+/* Leaderboard overlay */
+#lb-ov .lb-content{margin-top:24px;max-width:780px}
+.lb-table{width:100%;border-collapse:collapse;margin-bottom:20px}
+.lb-table th{
+  font-family:var(--mono);text-transform:uppercase;letter-spacing:.14em;font-size:10px;
+  color:var(--text-muted);text-align:left;padding:10px 14px;border-bottom:1px solid var(--border);
+}
+.lb-table td{padding:14px;border-bottom:1px solid var(--border)}
+.lb-rank{font-family:var(--mono);color:var(--text-faint);width:36px}
+.lb-rank.first{color:var(--amber);font-weight:700}
+.lb-team-name{font-family:var(--display);font-size:18px;font-weight:600}
+.lb-score{font-family:var(--display);font-weight:700;font-size:28px;color:var(--veka-red);text-align:right;width:70px}
+.lb-badges{font-size:12px;color:var(--text-muted);font-style:italic}
+.lb-adjust{display:flex;gap:5px;align-items:center;flex-wrap:wrap}
+.lb-btn{
+  background:var(--bg-elevated);border:1px solid var(--border);color:var(--text);
+  width:32px;height:32px;border-radius:var(--radius-sm);font-size:14px;
+  transition:var(--t);display:grid;place-items:center;
+}
+.lb-btn:hover{border-color:var(--veka-red);color:var(--veka-red)}
+.lb-btn-multi{
+  background:transparent;border:1px solid var(--border-strong);color:var(--text-muted);
+  font-family:var(--mono);font-size:10px;padding:5px 9px;border-radius:var(--radius-sm);
+  letter-spacing:.06em;transition:var(--t);
+}
+.lb-btn-multi:hover{border-color:var(--green);color:var(--green)}
+.lb-add{display:flex;gap:10px;margin-bottom:20px;flex-wrap:wrap}
+.lb-add input{
+  flex:1;min-width:200px;background:var(--bg-elevated);border:1px solid var(--border);
+  color:var(--text);border-radius:var(--radius);padding:10px 16px;
+  font-family:var(--body);font-size:14px;
+}
+.lb-add input::placeholder{color:var(--text-faint)}
+.lb-add input:focus{outline:none;border-color:var(--veka-red)}
+.lb-add-btn{
+  background:var(--veka-red);border:none;color:#fff;border-radius:var(--radius);
+  padding:0 22px;font-family:var(--display);font-weight:600;font-size:14px;
+  transition:var(--t);
+}
+.lb-add-btn:hover{background:#c0001f}
+.lb-rules{
+  background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius);
+  padding:16px 20px;font-size:13px;line-height:1.7;color:var(--text-muted);
+}
+.lb-rules b{color:var(--text)}
+.lb-reset-btn{
+  background:none;border:1px solid var(--border);color:var(--text-muted);
+  border-radius:var(--radius-sm);padding:7px 16px;font-family:var(--mono);
+  font-size:11px;letter-spacing:.1em;transition:var(--t);margin-top:14px;
+}
+.lb-reset-btn:hover{border-color:var(--danger);color:var(--danger)}
+
+/* achievement toast */
+.achievement-toast{
+  position:fixed;top:70px;right:24px;z-index:300;
+  background:var(--bg-card);border:1px solid rgba(245,166,35,.4);
+  border-left:4px solid var(--amber);border-radius:var(--radius);
+  padding:14px 18px;max-width:280px;
+  transform:translateX(320px);transition:.4s var(--t-slow);
+  box-shadow:var(--shadow-lg);
+}
+.achievement-toast.show{transform:translateX(0)}
+.ach-label{font-family:var(--mono);font-size:9px;letter-spacing:.2em;text-transform:uppercase;color:var(--amber);margin-bottom:4px}
+.ach-title{font-family:var(--display);font-size:16px;font-weight:700}
+.ach-desc{font-size:12px;color:var(--text-muted);margin-top:3px}
+
+/* ============================================================
+   BOTTOM NAVIGATION BAR
+   ============================================================ */
+#botbar{
+  position:fixed;bottom:14px;left:0;right:0;z-index:99;
+  display:flex;align-items:center;justify-content:center;gap:8px;
+}
+.nav-btn{
+  background:var(--bg-elevated);border:1px solid var(--border);color:var(--text);
+  border-radius:var(--radius);width:40px;height:36px;font-size:17px;
+  transition:var(--t);display:grid;place-items:center;
+}
+.nav-btn:hover{border-color:var(--veka-red);color:var(--veka-red);transform:translateY(-1px)}
+.nav-btn.active{border-color:var(--amber);color:var(--amber)}
+#slide-counter{
+  font-family:var(--mono);font-size:11px;color:var(--text-muted);
+  min-width:70px;text-align:center;letter-spacing:.1em;
+}
+.nav-divider{width:1px;height:22px;background:var(--border)}
+
+/* keyboard hints */
+.kbd-hint{
+  position:fixed;bottom:16px;font-family:var(--mono);font-size:10px;
+  color:var(--text-faint);letter-spacing:.12em;z-index:98;
+}
+#hint-l{left:24px}
+#hint-r{right:24px;text-align:right}
+
+/* ============================================================
+   TOAST NOTIFICATION
+   ============================================================ */
+.toast{
+  position:fixed;bottom:70px;left:50%;
+  transform:translateX(-50%) translateY(20px);
+  background:var(--green);color:#04231a;
+  font-family:var(--mono);font-weight:700;font-size:13px;letter-spacing:.06em;
+  padding:10px 22px;border-radius:24px;z-index:400;
+  opacity:0;transition:.3s ease;pointer-events:none;white-space:nowrap;
+}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+
+/* ============================================================
+   TRAINER PANEL (Shift+T)
+   ============================================================ */
+#trainer-panel{
+  position:fixed;bottom:58px;left:0;right:0;z-index:90;
+  background:rgba(245,166,35,.04);border-top:1px solid rgba(245,166,35,.15);
+  padding:12px 28px;display:none;backdrop-filter:blur(8px);
+}
+body.trainer-mode #trainer-panel{display:flex;gap:20px;flex-wrap:wrap;align-items:flex-start}
+.tp-section{flex:1;min-width:140px}
+.tp-label{
+  font-family:var(--mono);font-size:9px;letter-spacing:.2em;text-transform:uppercase;
+  color:var(--amber);margin-bottom:4px;
+}
+.tp-value{font-size:12px;color:#cdd4de;line-height:1.5}
+.trainer-mode-badge{
+  position:fixed;top:8px;left:50%;transform:translateX(-50%);z-index:102;
+  background:var(--amber);color:#2a1800;font-family:var(--mono);font-size:10px;
+  letter-spacing:.2em;text-transform:uppercase;padding:3px 16px;border-radius:0 0 8px 8px;
+  display:none;
+}
+body.trainer-mode .trainer-mode-badge{display:block}
+
+/* ============================================================
+   RESPONSIVE SAFETY NET
+   ============================================================ */
+@media(max-width:640px){
+  .tiers{grid-template-columns:1fr}
+  .demo-grid{grid-template-columns:1fr}
+  .concept-cols{grid-template-columns:1fr}
+  .plan-grid{grid-template-columns:1fr 1fr}
+  .score-criteria{grid-template-columns:1fr 1fr}
+  #hint-l,#hint-r{display:none}
+}
+@media(max-height:600px){
+  .slide{padding:48px clamp(24px,4vw,70px) 48px}
+  h2.head{font-size:clamp(22px,3.5vw,40px)}
+  .lead{font-size:14px}
+}
+
+/* ============================================================
+   SCROLLABLE CONTENT SAFETY
+   ============================================================ */
+.slide-scroll{
+  overflow-y:auto;max-height:calc(100vh - 120px);
+  scrollbar-width:thin;scrollbar-color:var(--border) transparent;
+}
+.slide-scroll::-webkit-scrollbar{width:4px}
+.slide-scroll::-webkit-scrollbar-track{background:transparent}
+.slide-scroll::-webkit-scrollbar-thumb{background:var(--border-strong);border-radius:4px}
+</style>
+</head>
+<body>
+
+<!-- TRAINER INDICATORS -->
+<div id="trainer-banner" aria-hidden="true"></div>
+<div class="trainer-mode-badge" aria-hidden="true">⚡ TRAINER MODE ACTIVE — Shift+T to exit</div>
+
+<!-- PROGRESS BAR -->
+<div id="topbar" aria-hidden="true"><div id="progress-bar"></div></div>
+
+<!-- BRAND STRIP -->
+<div id="brand-strip">
+  <div id="brand">
+    <svg class="brand-mark" viewBox="0 0 40 40" aria-hidden="true">
+      <g class="chamber">
+        <rect class="fill" x="3" y="3" width="34" height="34" rx="2" fill="rgba(228,0,43,.12)" stroke="none"/>
+        <rect x="9" y="9" width="10" height="10" fill="none" stroke="#E4002B" stroke-width="1.8"/>
+        <rect x="21" y="9" width="10" height="10" fill="none" stroke="#E4002B" stroke-width="1.8"/>
+        <rect x="9" y="21" width="22" height="10" fill="none" stroke="#E4002B" stroke-width="1.8"/>
+      </g>
+    </svg>
+    <div>VEKA · GenAI Excellence<br><small>NxtWave Enterprise Training</small></div>
+  </div>
+  <div id="hour-indicator">
+    <span id="phase-tag" class="phase-tag" style="display:none"></span>
+    <span id="hour-tag"></span>
+    <span id="slide-tag" class="slide-counter"></span>
+  </div>
+</div>
+
+<!-- STAGE -->
+<div id="stage" role="main" aria-label="Training slides"></div>
+
+<!-- TIMER WIDGET -->
+<div id="timer-widget" role="timer" aria-label="Activity timer">
+  <div class="timer-header">
+    <span>Activity Timer</span>
+    <span class="timer-label" id="timer-label">—</span>
+  </div>
+  <div class="timer-ring-wrap">
+    <svg class="timer-ring" viewBox="0 0 100 100" width="100" height="100">
+      <circle class="timer-ring-bg" cx="50" cy="50" r="45"/>
+      <circle class="timer-ring-fg" id="timer-ring-fg" cx="50" cy="50" r="45"/>
+    </svg>
+    <div class="timer-time" id="timer-disp">00:00</div>
+  </div>
+  <div id="timer-done-msg">TIME UP ✓</div>
+  <div class="timer-controls">
+    <button class="timer-btn primary" id="timer-start-btn" onclick="timerCtrl.toggle()" aria-label="Start or pause timer">Start</button>
+    <button class="timer-btn" onclick="timerCtrl.reset()" aria-label="Reset timer">Reset</button>
+    <button class="timer-btn" onclick="timerCtrl.adjustMin(1)" aria-label="Add one minute">+1m</button>
+    <button class="timer-btn" onclick="timerCtrl.adjustMin(-1)" aria-label="Remove one minute">-1m</button>
+    <button class="timer-btn" onclick="document.getElementById('timer-widget').classList.remove('visible')" aria-label="Hide timer" style="grid-column:span 2">Hide</button>
+  </div>
+</div>
+
+<!-- AGENDA OVERLAY -->
+<div class="overlay" id="agenda-ov" role="dialog" aria-label="Training agenda" aria-modal="true">
+  <button class="overlay-close" onclick="uiCtrl.closeAll()" aria-label="Close agenda">✕</button>
+  <div class="wrap">
+    <div class="overlay-title">Jump to any moment</div>
+    <div class="overlay-sub">8 hours · 3 phases + capstone</div>
+    <div class="journey" id="journey-map"></div>
+  </div>
+</div>
+
+<!-- LEADERBOARD OVERLAY -->
+<div class="overlay" id="lb-ov" role="dialog" aria-label="Leaderboard" aria-modal="true">
+  <button class="overlay-close" onclick="uiCtrl.closeAll()" aria-label="Close leaderboard">✕</button>
+  <div class="wrap">
+    <div class="overlay-title">Live Leaderboard</div>
+    <div class="overlay-sub">Trainer-controlled · auto-saves between sessions</div>
+    <div class="lb-content">
+      <div class="lb-add">
+        <input id="lb-name-input" placeholder="Add a team name…" aria-label="New team name"/>
+        <button class="lb-add-btn" onclick="lbCtrl.addTeam()">Add Team</button>
+      </div>
+      <table class="lb-table" id="lb-table" aria-label="Team scores">
+        <thead><tr>
+          <th>#</th><th>Team</th><th>Badges</th><th style="text-align:right">Points</th><th>Adjust</th>
+        </tr></thead>
+        <tbody id="lb-body"></tbody>
+      </table>
+      <div class="lb-rules">
+        <b>Scoring:</b> Best Prompt of the Hour <b>+3</b> · Win a Prompt Battle <b>+5</b> · Stretch challenge <b>+2</b> · Help a neighbour <b>+1</b> · Prompt Library contribution <b>+2</b> · Capstone demo <b>+5</b> (winner <b>+10</b>). Audience reaction bonus <b>+3</b>.<br>
+        The points are the excuse. The momentum is the point.
+      </div>
+      <button class="lb-reset-btn" onclick="lbCtrl.resetAll()" aria-label="Reset all scores">Reset all scores</button>
+    </div>
+  </div>
+</div>
+
+<!-- ACHIEVEMENT TOAST -->
+<div class="achievement-toast" id="ach-toast" role="status" aria-live="polite">
+  <div class="ach-label">Achievement Unlocked</div>
+  <div class="ach-title" id="ach-title">—</div>
+  <div class="ach-desc" id="ach-desc">—</div>
+</div>
+
+<!-- TRAINER PANEL (Shift+T) -->
+<div id="trainer-panel" role="complementary" aria-label="Trainer notes">
+  <div class="tp-section"><div class="tp-label">Objective</div><div class="tp-value" id="tp-obj">—</div></div>
+  <div class="tp-section"><div class="tp-label">Time</div><div class="tp-value" id="tp-time">—</div></div>
+  <div class="tp-section"><div class="tp-label">Watch For</div><div class="tp-value" id="tp-watch">—</div></div>
+  <div class="tp-section"><div class="tp-label">Rescue</div><div class="tp-value" id="tp-rescue">—</div></div>
+  <div class="tp-section"><div class="tp-label">Debrief</div><div class="tp-value" id="tp-debrief">—</div></div>
+</div>
+
+<!-- BOTTOM NAV -->
+<nav id="botbar" aria-label="Slide navigation">
+  <button class="nav-btn" onclick="deckCtrl.prev()" aria-label="Previous slide" title="← Previous">‹</button>
+  <div id="slide-counter" aria-live="polite">01 / 01</div>
+  <button class="nav-btn" onclick="deckCtrl.next()" aria-label="Next slide" title="→ Next">›</button>
+  <div class="nav-divider"></div>
+  <button class="nav-btn" onclick="uiCtrl.toggleAgenda()" aria-label="Open agenda (G)" title="Agenda (G)" id="agenda-btn">⊞</button>
+  <button class="nav-btn" onclick="uiCtrl.toggleBoard()" aria-label="Open leaderboard (L)" title="Leaderboard (L)" id="lb-btn">★</button>
+  <button class="nav-btn" onclick="timerCtrl.showWidget()" aria-label="Show timer (T)" title="Timer (T)" id="timer-btn">⏱</button>
+  <button class="nav-btn" onclick="uiCtrl.toggleFullscreen()" aria-label="Fullscreen (F)" title="Fullscreen (F)">⛶</button>
+</nav>
+<div class="kbd-hint" id="hint-l" aria-hidden="true">← → navigate · Space next · Home · End</div>
+<div class="kbd-hint" id="hint-r" aria-hidden="true">G agenda · L board · T timer · F full · Shift+T trainer</div>
+
+<!-- TOAST -->
+<div class="toast" id="main-toast" role="status" aria-live="polite"></div>
+
+<script>
+/* ============================================================
+   SLIDE DATA — VEKA GenAI Excellence 8-Hour Training
+   All prompts VEKA-specific, three-tiered, with trainer notes.
+   ============================================================ */
+
+const SLIDES = [
+
+/* ——— FRONT MATTER ——— */
+{
+  type:'title',
+  trainer:{obj:'Set the room expectation and create energy.',time:'5 min',watch:'Nervous participants. Check who looks uncertain — approach them first during Hour 1.',rescue:'If energy is low: "How many of you rewrote the same email more than twice last week? Today that stops."',debrief:'N/A'}
+},
+{
+  type:'agenda',
+  trainer:{obj:'Give the big picture so participants know the journey.',time:'3 min',watch:'People checking phones — the agenda slide earns attention for Hour 1.',rescue:'If questions: "We cover all of it. Trust the sequence."',debrief:'N/A'}
+},
+{
+  type:'howto',
+  trainer:{obj:'Explain the learning philosophy: 80% doing.',time:'2 min',watch:'None — keep it fast.',rescue:'N/A',debrief:'N/A'}
+},
+
+/* ——— HOUR 1: IGNITE ——— */
+{type:'divider',hour:1,ph:'Phase 1 · Precision Communication',num:'01',title:'Ignite',
+ sub:'Why this changes your Monday morning — and your first personal win.',
+ trainer:{obj:'Create the "wow" — every participant gets something real in the first hour.',time:'60 min total',watch:'N/A',rescue:'N/A',debrief:'N/A'}},
+
+{type:'concept',hour:1,ey:'Hour 1 · The case',title:'AI on the VEKA floor, not in a lab',
+ lead:'This is not about robots. It is about giving every desk — extrusion, finance, sales, HR — a fast, tireless drafting partner for the writing and data work that eats your day.',
+ pts:[
+  '<b>The email you rewrite five times</b> — vendor chasers, shift handovers, delay notices — drafted in seconds, in your voice.',
+  '<b>The reconciliation you dread</b> — messy Tally/SAP exports turned into a clean, explained summary.',
+  '<b>The report nobody has time for</b> — maintenance logs and SOPs, structured and searchable.',
+  'You stay the expert. AI is the fast intern who never gets tired and never takes it personally when you say "redo it."'],
+ aside:{h:'The one mindset shift',p:'Stop asking AI a question. Start giving it a briefing — role, context, what good looks like. Today you learn to brief like a manager, not search like a user.'},
+ trainer:{obj:'Land the WHY — make it personal to their actual daily frustrations.',time:'8 min',watch:'Look for nodding on the email example — that is your moment to pause and say "how many of you?"',rescue:'If no engagement: "Tell me one thing you wrote last week that took longer than it should."',debrief:'Ask: which of these three hits closest to your Monday morning?'}},
+
+{type:'demo',hour:1,ey:'Hour 1 · The wow',title:'Watch a robotic email become a VEKA email',
+ before:{tag:'Before — the generic AI answer',p:'"Dear Sir, I am writing to inform you that your delivery is delayed. We apologize for the inconvenience. Please be assured we value your business. Kind regards." — polite, hollow, and clearly written by a machine.'},
+ after:{tag:'After — briefed like a manager',p:'A three-line note to a profile supplier: names the exact PO and reel batch, states the revised dispatch window, offers a partial dispatch to keep the line running, and asks for written confirmation by end of day — firm, specific, unmistakably human.'},
+ say:{cue:'Say while it runs',line:'"Same tool. Same 20 seconds. The only thing that changed is that I told it who I am, who I'm writing to, and what a good outcome looks like. That gap — that\'s the whole day."'},
+ trainer:{obj:'Create visible proof that the tool transforms with direction.',time:'6 min',watch:'Watch for the room reaction when After is revealed — use that energy.',rescue:'If output feels generic: paste one real detail. The room sees it sharpen instantly.',debrief:'Ask: what specific word in the After output could only have come from knowing the situation?'}},
+
+{type:'concept',hour:1,ey:'Hour 1 · The frame',title:'You are the director. AI is the crew.',
+ lead:'A director never asks the crew "what should this movie be?" They describe the shot. All day we practise describing the shot.',
+ pts:[
+  '<b>Direction beats questions.</b> "Draft a firm-but-warm reminder to a late supplier" beats "write an email".',
+  '<b>Examples beat adjectives.</b> Paste one email you liked; ask for that style.',
+  '<b>Iteration is the job.</b> First draft is clay. "Make it shorter / firmer / add the PO number" is where quality lives.'],
+ aside:{h:'Reassurance for the nervous',p:'You cannot break it. There is no wrong prompt — only a first draft you improve. If you can brief a colleague, you can brief this.'},
+ trainer:{obj:'Lock in the 3 core principles before the first activity.',time:'5 min',watch:'Participants who look anxious — the "you cannot break it" line is for them.',rescue:'"Think of it like briefing a smart new colleague on their first day."',debrief:'Ask: which of these three is hardest for you? That\'s what we\'ll practice most.'}},
+
+{type:'activity',hour:1,ey:'Hour 1 · Your turn',title:'Your first real win',min:12,
+ brief:'Pick one small writing task from YOUR actual desk this week. We are getting everyone a usable output in the first hour — proof it works for you, not for a demo.',
+ core:'Draft one real message you owe someone — a reminder, a thank-you, a short internal update. Give the AI your role, the reader, and the outcome you want.',
+ scaffold:'Use the starter below and just fill the blanks. That is a complete, professional prompt.',
+ stretch:'Generate the message in two tones (formal + friendly) in one go, then ask the AI which is better for your reader and why.',
+ prompt:'You are helping me, a [YOUR ROLE] at VEKA India, write a short [EMAIL / MESSAGE].\nReader: [WHO — e.g., a supplier, my manager, my team].\nSituation: [WHAT IS HAPPENING IN 1-2 LINES].\nI want the reader to: [THE OUTCOME — e.g., confirm a new date, approve this, feel reassured].\nTone: professional, warm, and specific. Keep it under 120 words.\nBefore writing, ask me up to 2 questions if anything is unclear.',
+ share:'Drop your favourite line in the chat. Best one wins the first +3 of the day.',
+ trainer:{obj:'Every participant produces something real in the first hour.',time:'12 min activity + 3 min share',watch:'Anyone sitting frozen — go to them immediately and ask what they wrote last week.',rescue:'"Just tell me the message in one sentence. We\'ll build the prompt together." "Add one concrete detail — a name, date or number."',debrief:'Read two examples aloud. Ask the room: what makes the second one better?'}},
+
+{type:'checkpoint',hour:1,task:'Show me an output you would actually send today, with zero further edits.',
+ rubric:['Specific to a real VEKA situation (names a PO, a shift, a person, a date)','Clear single outcome the reader is asked to do','Sounds like a person, not a policy document','You improved it at least once with a follow-up instruction'],
+ trainer:{obj:'Gate the hour before moving on — no hand-wavy outputs pass.',time:'5 min',watch:'Participants who show generic outputs — ask "where is the PO number?"',rescue:'For weak outputs: "Ask AI to add one concrete detail. Run it again."',debrief:'Celebrate the best one. Ask what one word they changed that made it land.'}},
+
+/* ——— HOUR 2: ANATOMY ——— */
+{type:'divider',hour:2,ph:'Phase 1 · Precision Communication',num:'02',title:'The anatomy of a great prompt',
+ sub:'Four levers that turn generic mush into precision output: Context · Tone · Persona · Format.',
+ trainer:{obj:'Teach C·T·P·F as a durable mental model.',time:'60 min total',watch:'N/A',rescue:'N/A',debrief:'N/A'}},
+
+{type:'concept',hour:2,ey:'Hour 2 · The framework',title:'C · T · P · F — the four levers',
+ lead:'Every strong prompt pulls some combination of these. Learn them once, use them for the rest of your career.',
+ pts:[
+  '<b>Context</b> — the situation, constraints, and any real detail (PO numbers, dates, the reader\'s mood).',
+  '<b>Tone</b> — firm, apologetic, celebratory, neutral-technical. Name it explicitly.',
+  '<b>Persona</b> — who the AI is being ("a senior VEKA procurement lead") and who it writes to.',
+  '<b>Format</b> — email, bullet brief, table, 3 options, under 100 words. Say the shape you want.'],
+ aside:{h:'Memory hook',p:'"Can These Prompts Fly?" — Context, Tone, Persona, Format. If an output disappoints, one of these four is missing. Add it and re-run.'},
+ trainer:{obj:'Make CTPF stick in memory — use the mnemonic.',time:'7 min',watch:'Write CTPF large on the whiteboard — keep it visible all day.',rescue:'If confused: "It\'s four questions: Where are we? How should it sound? Who is AI being? What shape should the answer take?"',debrief:'Ask: which lever do you usually skip?'}},
+
+{type:'demo',hour:2,ey:'Hour 2 · Live reveal',title:'One request, four levers, live',
+ before:{tag:'Lever 0 — bare request',p:'"Write a message about a machine breakdown." → vague, generic, unusable on the floor.'},
+ after:{tag:'Levers stacked one by one',p:'Add Persona (maintenance supervisor) → Context (Extruder 3, seal failure, synthetic timings) → Tone (calm, no blame) → Format (3-line WhatsApp update + 1-line action). The room watches it sharpen with every addition.'},
+ say:{cue:'Say as you add Format',line:'"Notice I never made it longer — I made it more directed. Precision isn\'t more words. It\'s fewer, aimed better."'},
+ trainer:{obj:'Demonstrate each lever visually and progressively.',time:'7 min',watch:'Watch for the moment the room leans forward — that is the Format addition.',rescue:'If output is still generic after all four: "Let\'s add one real number — a machine ID, a time, a batch."',debrief:'Ask: which lever changed the output most? Why?'}},
+
+{type:'activity',hour:2,ey:'Hour 2 · Your turn',title:'The before/after rescue',min:10,
+ brief:'I will paste a deliberately weak prompt. Your job: rescue it using C·T·P·F and prove the output got measurably better.',
+ core:'Take the weak prompt "write something about a price increase to a customer" and rebuild it with all four levers. Run both. Keep the receipts.',
+ scaffold:'Fill the four-lever template below — one line each. Do not overthink; one good line per lever beats a paragraph.',
+ stretch:'Add a fifth constraint: "give me 3 versions on a warmth-vs-firmness scale (1 = softest, 3 = firmest)" and pick which suits a long-standing customer vs a new one.',
+ prompt:'PERSONA: You are a [ROLE] at VEKA India writing to [READER].\nCONTEXT: [THE REAL SITUATION IN 2-3 LINES, WITH ANY NUMBERS OR DATES].\nTONE: [e.g., firm but respectful; we are not apologising, we are informing].\nFORMAT: [e.g., email under 130 words, with a clear subject line and one call to action].\nWrite it. Then, in one line, tell me which word you chose most carefully and why.',
+ share:'Post your BEFORE and AFTER side by side. Biggest visible jump = Best Prompt of the Hour (+3).',
+ trainer:{obj:'Participants practise all four levers simultaneously.',time:'10 min activity + 3 min share',watch:'Anyone only adding one lever — ask "which of the other three did you skip?"',rescue:'"If output is still generic: Add one concrete detail — a name, date or number."',debrief:'Read the best BEFORE/AFTER pair aloud. Ask: what single word made the biggest difference?'}},
+
+{type:'battle',hour:2,ey:'Hour 2 · Prompt battle #1',title:'Fewest words, best email',min:5,
+ rules:['One scenario: a polite-but-final payment reminder to a 45-day-overdue distributor (synthetic).','You get 90 seconds to write the prompt. Word limit on the PROMPT: 60 words.','We score the OUTPUT: clarity, correct firmness, and whether it names a concrete next step.','Room votes. Winning table +5. Ties broken by whoever used the fewest words.'],
+ trainer:{obj:'Create healthy competition around precision.',time:'5 min + 2 min voting',watch:'Make sure outputs are being judged on the named criteria, not just who sounds confident.',rescue:'If all prompts are long: "Cut the instructions that say what NOT to do and only say what TO do."',debrief:'Announce winner. Award +5. Ask: what word did the winner use that we all should steal?'}},
+
+{type:'checkpoint',hour:2,task:'Name the four levers from memory, then show one prompt where you used at least three of them deliberately.',
+ rubric:['All four levers recalled (Context · Tone · Persona · Format)','At least three applied on purpose, not by accident','You can point to the exact line each lever changed','Output is tighter than your Hour 1 attempt'],
+ trainer:{obj:'Confirm CTPF is internalised before moving on.',time:'4 min',watch:'Anyone who cannot name all four — pair them with someone who can for Hour 3.',rescue:'Write C·T·P·F on the board. "Point to the line in your prompt that gives me each one."',debrief:'N/A'}},
+
+{type:'break',min:10,label:'10',sub:'Stretch, water, breathe. Back in 10 — Phase 1 finishes with the emails that actually keep the plant running.'},
+
+/* ——— HOUR 3: HIGH-STAKES WRITING ——— */
+{type:'divider',hour:3,ph:'Phase 1 · Precision Communication',num:'03',title:'High-Stakes Writing',
+ sub:'Vendor negotiation · shift handovers · delay & crisis logistics. Where a bad email costs real money.',
+ trainer:{obj:'Produce three reusable communication artefacts.',time:'60 min total',watch:'N/A',rescue:'N/A',debrief:'N/A'}},
+
+{type:'concept',hour:3,ey:'Hour 3 · Why this matters',title:'The three emails that carry risk',
+ lead:'These are the messages where tone, precision and speed decide whether a problem stays small. We build reusable approaches for all three.',
+ pts:[
+  '<b>Vendor negotiation</b> — hold your position, protect the relationship, leave a door open.',
+  '<b>Shift handover</b> — nothing lost between shifts; the next team knows exactly what is live.',
+  '<b>Delay & crisis comms</b> — inform fast, own the facts, give the customer something to act on.'],
+ aside:{h:'Golden rule for crisis comms',p:'Lead with the fact and the fix, not the apology. "Dispatch moves to Thursday; here is the partial we can send tomorrow" beats three sorry-sentences.'},
+ trainer:{obj:'Frame the stakes so the activities feel real.',time:'5 min',watch:'Finance and HR people may not relate to "shift handover" — ask them what their high-stakes moment is.',rescue:'"High-stakes" = any message you would want your manager to read before sending.',debrief:'N/A'}},
+
+{type:'activity',hour:3,ey:'Hour 3 · Your turn',title:'The vendor negotiation email',min:9,
+ brief:'A profile-compound supplier has quoted a 7% price rise mid-contract (synthetic). You need to push back without blowing up a relationship you depend on.',
+ core:'Draft a reply that acknowledges their costs, holds firm on the contracted price, and proposes one constructive alternative (staggered rise, longer term, volume commitment).',
+ scaffold:'Use the template below — it already contains the negotiation structure; you supply the numbers.',
+ stretch:'Ask the AI to also produce the supplier\'s likely counter-reply, then draft your response to THAT. You now have the whole exchange pre-thought.',
+ prompt:'You are a procurement lead at VEKA India. Write a reply to a supplier who wants a 7% price increase mid-contract.\nGoals, in order: (1) keep the relationship warm, (2) hold the contracted price for the current term, (3) offer ONE constructive alternative.\nUse a calm, senior, non-confrontational tone. Reference the contract without threatening.\nFormat: email under 160 words + a one-line internal note to my manager summarising my position.',
+ share:'What alternative did you offer? Cleverest concession wins the hour.',
+ trainer:{obj:'Practise holding position while preserving relationship.',time:'9 min activity + 3 min share',watch:'Outputs that apologise immediately — push back: "Where is the position?"',rescue:'"Start with their strongest argument. Acknowledge it. Then hold your ground."',debrief:'Read two emails. Ask: which one would the supplier respect more? Why?'}},
+
+{type:'activity',hour:3,ey:'Hour 3 · Your turn',title:'The shift-handover note',min:8,
+ brief:'End of B-shift on the extrusion line. The next team must inherit reality, not guesswork. Turn rough notes into a clean, scannable handover.',
+ core:'Paste 4-5 messy bullet points (synthetic: "extruder 2 running slow, changed filter 3pm, PO#4471 profiles on hold pending QC, night order priority = white 70mm") and get a structured handover.',
+ scaffold:'Use the template; it forces the AI into a fixed, repeatable handover shape your whole line can adopt.',
+ stretch:'Turn it into a reusable handover FORMAT with fixed headings (Status / Actions taken / Watch-outs / Priority for next shift) so every handover looks identical — the seed of an SOP.',
+ prompt:'Turn my rough end-of-shift notes into a clear handover for the incoming extrusion shift at VEKA.\nUse these fixed headings: LINE STATUS · ACTIONS TAKEN THIS SHIFT · WATCH-OUTS · PRIORITY FOR NEXT SHIFT.\nKeep each point one line, factual, no filler. Flag anything safety- or quality-related in CAPS.\nMy rough notes:\n[PASTE 4-6 MESSY BULLETS HERE — see data/synthetic/shift-notes.txt]',
+ share:'Post your headings version — we vote the cleanest to become a line standard.',
+ trainer:{obj:'Create a reusable handover template from messy raw notes.',time:'8 min activity + 3 min share',watch:'Anyone creating a wall of text — remind them: "One line per point. Your colleague is tired."',rescue:'"Tell AI: keep each point under 12 words."',debrief:'Vote the cleanest. Ask: what would happen on the floor if every shift used this format?'}},
+
+{type:'activity',hour:3,ey:'Hour 3 · Your turn',title:'Delay & crisis logistics comms',min:9,
+ brief:'A transporter breakdown delays a distributor\'s order by two days (synthetic). Write the customer message that keeps trust intact.',
+ core:'Fact + fix + reassurance, in that order. Give the customer a concrete option (partial dispatch, revised slot, direct contact).',
+ scaffold:'Fill the crisis template — it already sequences fact→fix→next step so you cannot bury the important part.',
+ stretch:'Generate three versions calibrated to relationship value: key account (most proactive, phone-call offer), standard, and new customer. Same facts, different care.',
+ prompt:'You are a logistics coordinator at VEKA India. A transporter breakdown delays a distributor\'s order by 2 days.\nWrite a message that: (1) states the new dispatch date up front, (2) offers a partial dispatch tomorrow to keep their site moving, (3) gives my direct line for questions.\nTone: accountable and calm, NOT over-apologetic. Under 120 words. Subject line included.',
+ share:'Fact-first or sorry-first? Read two aloud. The room feels the difference instantly.',
+ trainer:{obj:'Lock in the Fact → Fix → Option → Reassurance structure.',time:'9 min activity + 3 min share',watch:'Any output that opens with "Sorry" or "Apologise" — ask the room to notice it.',rescue:'"Delete the first sentence. Does the message improve? Usually yes."',debrief:'Read one sorry-first and one fact-first. Ask: which one would you rather receive at 6pm on a Friday?'}},
+
+{type:'checkpoint',hour:3,task:'Produce all three artefacts (negotiation reply, structured handover, crisis note). One must be reusable by a colleague with no editing.',
+ rubric:['Negotiation holds position AND keeps the door open','Handover uses fixed, repeatable headings','Crisis note leads with fact + fix, not apology','At least one artefact is genuinely hand-off-ready'],
+ trainer:{obj:'Confirm three outputs before lunch.',time:'4 min',watch:'Anyone with only one output — pair them.',rescue:'"Which of the three is closest to done? Polish that one first."',debrief:'N/A'}},
+
+{type:'break',min:45,label:'45',sub:'Lunch. After lunch we stop writing and start working the data — SAP, Tally, SOPs, maintenance logs.'},
+
+/* ——— HOUR 4: FINANCE & OPERATIONS ——— */
+{type:'divider',hour:4,ph:'Phase 2 · Functional Mastery',num:'04',title:'Finance & Operations',
+ sub:'AI beside SAP and Tally — reconciliation, reporting, SOP standardisation, maintenance-log analysis.',
+ trainer:{obj:'Demonstrate AI as an analyst layer beside existing systems.',time:'60 min total',watch:'N/A',rescue:'N/A',debrief:'N/A'}},
+
+{type:'datasafety',
+ trainer:{obj:'Set the data safety frame before any data work.',time:'3 min',watch:'Do not skip this — it matters legally and professionally.',rescue:'N/A',debrief:'N/A'}},
+
+{type:'concept',hour:4,ey:'Hour 4 · The principle',title:'AI does not replace SAP. It sits next to it.',
+ lead:'Your systems of record stay exactly where they are. AI is the layer that reads the messy export, explains it, drafts the summary, and catches what the eye misses.',
+ pts:[
+  '<b>Export → explain.</b> Paste a raw ledger dump; get a plain-English reconciliation summary with flags.',
+  '<b>Data → decision.</b> Turn a maintenance log into "here are the 3 machines to watch and why".',
+  '<b>Chaos → standard.</b> Turn one person\'s process into an SOP the whole team can follow.',
+  '<b>Safety first:</b> use synthetic or masked data today; never paste real customer or salary data into public tools.'],
+ aside:{h:'Say this out loud',p:'"AI is not your auditor and not your source of truth. It is your fastest first-pass analyst. You still sign off."'},
+ trainer:{obj:'Establish the mental model: AI as analyst assistant, not replacement.',time:'6 min',watch:'Finance people may be nervous about accuracy — the "flag, don\'t fix" principle is key here.',rescue:'If pushback on accuracy: "AI flags, you decide. Same as a junior analyst."',debrief:'Ask: where is the biggest data frustration in your role? We\'ll hit it in the next activity.'}},
+
+{type:'demo',hour:4,ey:'Hour 4 · Live reveal',title:'Messy reconciliation → clean summary',
+ before:{tag:'Before — a wall of rows',p:'A synthetic 30-line vendor ledger extract: mismatched invoice vs payment amounts, two duplicate entries, one currency typo. To the eye: exhausting.'},
+ after:{tag:'After — 20 seconds',p:'AI returns: total invoiced vs paid, three specific mismatches with row references, two suspected duplicates, and a one-line "what to check first". The room audibly reacts.'},
+ say:{cue:'Say at the reveal',line:'"It didn\'t do your job. It did the 40 minutes of squinting before your job. You start where the thinking actually begins."'},
+ trainer:{obj:'Create the post-lunch wow moment with financial data.',time:'6 min',watch:'Use the vendor-ledger.csv from the synthetic data pack.',rescue:'If output misses the currency typo: "Tell AI: also check for inconsistent currency symbols."',debrief:'Ask: which of the three mismatches in our sample would be most dangerous in real work?'}},
+
+{type:'activity',hour:4,ey:'Hour 4 · Your turn',title:'Reconciliation & reporting (SAP/Tally)',min:11,
+ brief:'Work on the synthetic ledger provided in the data pack. Get AI to reconcile and explain — then produce a summary you could paste into a report.',
+ core:'Ask AI to compare invoiced vs paid, list mismatches with row numbers, flag duplicates, and give a 3-line summary for your manager.',
+ scaffold:'Paste the sample data under the template below; it tells the AI exactly what to check and how to answer.',
+ stretch:'Ask for the output as a clean table (columns: Row · Issue · Amount · Action) AND a short note on which check you would automate first if this ran weekly.',
+ prompt:'You are a finance analyst at VEKA India. Below is a raw vendor ledger extract (synthetic training data).\nDo three things:\n(1) Reconcile invoiced vs paid and give the totals.\n(2) List every mismatch and suspected duplicate WITH the row number.\n(3) Write a 3-line summary for my manager.\nIf a value looks like a typo (e.g. inconsistent currency symbol), flag it — do not silently correct it.\nDATA:\n[PASTE THE VENDOR-LEDGER.CSV ROWS HERE]',
+ share:'Who caught the currency typo? First to flag it correctly, +2.',
+ trainer:{obj:'Practise structured analytical prompting on real-looking data.',time:'11 min activity + 3 min share',watch:'Anyone who did not find the Rs/INR mismatch — it is in Row 4.',rescue:'"Tell AI: also check for any inconsistent currency formats across rows."',debrief:'Ask: if you ran this every month on your actual ledger, how much time would that save?'}},
+
+{type:'activity',hour:4,ey:'Hour 4 · Your turn',title:'SOP standardisation',min:10,
+ brief:'Every plant has processes that live in one person\'s head. Convert a described process into a clean, numbered SOP anyone can follow.',
+ core:'Describe a routine you own in a few messy sentences (synthetic: profile colour-changeover on the line). Get a numbered SOP with a safety note and a "done when" check.',
+ scaffold:'Use the template; it produces a consistent SOP skeleton — purpose, materials, steps, safety, sign-off.',
+ stretch:'Ask AI to also generate a 5-question competency check to confirm a new operator actually learned the SOP.',
+ prompt:'Turn my description into a standard operating procedure for VEKA India.\nStructure: PURPOSE · WHO DOES THIS · MATERIALS/TOOLS · STEPS (numbered) · SAFETY & QUALITY CHECKS · DONE WHEN.\nWrite steps as short imperatives ("Do X"). Put any safety-critical step in bold.\nIf any step is unclear from my description, write [confirm with team lead] rather than guessing.\nMy description of the process:\n[DESCRIBE THE PROCESS IN YOUR OWN MESSY WORDS]',
+ share:'Post your "DONE WHEN" line — the hardest and most useful part of any SOP.',
+ trainer:{obj:'Convert tacit knowledge into shareable structure.',time:'10 min activity + 3 min share',watch:'"Done When" is hardest — prompt participants who leave it vague.',rescue:'"Tell AI: write the Done When as a condition a new operator can objectively check."',debrief:'Vote the clearest "Done When". Ask: how many processes in your department have no SOP yet?'}},
+
+{type:'activity',hour:4,ey:'Hour 4 · Your turn',title:'Maintenance-log analysis',min:9,
+ brief:'A month of breakdown entries hides a pattern. Let AI surface it so planning beats firefighting.',
+ core:'Paste a synthetic month of log lines (machine, date, issue, downtime). Ask for the top recurring issues, the worst machine by downtime, and one preventive suggestion.',
+ scaffold:'Use the template; paste the sample log block from the synthetic data pack underneath it.',
+ stretch:'Ask for a priority ranking that weighs downtime × frequency, and a one-line business case for the single fix worth doing first.',
+ prompt:'You are a maintenance planner at VEKA India. Below is one month of breakdown log entries (synthetic training data).\nTell me:\n(1) The 3 most frequent issue types.\n(2) The machine with the most total downtime — give the number.\n(3) One recurring pattern I might be missing.\n(4) One preventive action worth trialling.\nBe specific and cite the row numbers or figures you used.\nLOG:\n[PASTE THE MAINTENANCE-LOG.CSV ROWS HERE]',
+ share:'Which machine is the quiet villain? First correct answer with evidence, +2.',
+ trainer:{obj:'Demonstrate pattern detection in operational data.',time:'9 min activity + 3 min share',watch:'Answer: EXT-2 bearing failure is the pattern — runs from Mar 1 to Mar 22.',rescue:'"Tell AI to group by machine first, then by issue type."',debrief:'Ask: if your maintenance team did this analysis monthly, what would change about how you plan?'}},
+
+{type:'checkpoint',hour:4,task:'Produce a reconciliation summary, one SOP, and one maintenance insight — each based on the synthetic data, each defensible.',
+ rubric:['Reconciliation cites specific rows, does not invent numbers','SOP is numbered, has a safety note and a "done when"','Maintenance insight is backed by the log figures','You used synthetic/masked data throughout — no real records'],
+ trainer:{obj:'Gate before moving to Sales & HR.',time:'4 min',watch:'Anyone whose reconciliation output has no row references — not defensible.',rescue:'"Tell AI: for every finding, cite the row number."',debrief:'N/A'}},
+
+/* ——— HOUR 5: SALES & HR ——— */
+{type:'divider',hour:5,ph:'Phase 2 · Functional Mastery',num:'05',title:'Sales & HR',
+ sub:'Personalised PVC-profile pitching · lead generation · technical job descriptions · policy drafting.',
+ trainer:{obj:'Demonstrate personalisation at scale for two departments.',time:'60 min total',watch:'N/A',rescue:'N/A',debrief:'N/A'}},
+
+{type:'concept',hour:5,ey:'Hour 5 · The principle',title:'Personalisation at scale',
+ lead:'The same product, framed for the person in front of you. AI lets one salesperson or one HR lead write like they have all afternoon — for every contact.',
+ pts:[
+  '<b>Sales:</b> one profile, many buyers — an architect cares about aesthetics & thermal specs; a builder cares about lead time & price.',
+  '<b>HR:</b> accurate technical JDs without begging engineering for wording; policies in plain, consistent language.',
+  '<b>The trap:</b> generic personalisation is worse than none. We feed AI the specifics that make it land.'],
+ aside:{h:'The tell of a good sales prompt',p:'It contains the buyer\'s WORLD — their project, their pressure, their objection — not just their name. Name-merge is not personalisation.'},
+ trainer:{obj:'Land the distinction between personalisation and name-merge.',time:'5 min',watch:'Sales participants may already know this — make sure they apply it, not just nod.',rescue:'If confused: "Personalisation = you know their deadline. Name-merge = you typed their name."',debrief:'N/A'}},
+
+{type:'activity',hour:5,ey:'Hour 5 · Your turn',title:'Personalised PVC-profile pitch',min:10,
+ brief:'Same product — VEKA\'s 70mm PVC window profile (synthetic framing) — pitched to two very different buyers.',
+ core:'Write one pitch to an architect (thermal performance, aesthetics, certifications) and one to a volume builder (lead time, price-per-unit, install speed).',
+ scaffold:'Use the template twice, changing only the BUYER block. Feel how the same product bends to the reader.',
+ stretch:'Add the buyer\'s likely objection ("imported profiles are cheaper") and have AI pre-empt it inside the pitch, not after.',
+ prompt:'You are a VEKA India sales specialist. Write a short pitch for our 70mm PVC window profile.\nBUYER: [ARCHITECT who cares about thermal performance & design | or | BUILDER who cares about lead time & cost].\nLead with the ONE benefit that buyer cares about most.\nInclude one concrete proof point and one clear next step (sample, quote, site visit).\nTone: confident, consultative, not salesy. Under 130 words.',
+ share:'Read the two pitches back to back. The room hears personalisation click into place.',
+ trainer:{obj:'Create visible proof that the same prompt with different buyer context produces genuinely different outputs.',time:'10 min activity + 3 min share',watch:'Outputs that differ only in the first sentence — push harder.',rescue:'"Change the lead benefit completely. What does an architect lose sleep over vs a builder?"',debrief:'Read both aloud. Ask: which words would not appear in the other version? Those are the personalisation words.'}},
+
+{type:'activity',hour:5,ey:'Hour 5 · Your turn',title:'Lead-generation messaging',min:8,
+ brief:'A cold first-touch to a prospective fabricator or dealer (synthetic). Earn a reply, not a delete.',
+ core:'Write a 4-line outreach: relevant hook, one reason VEKA fits them specifically, a low-friction ask (15-min call / sample).',
+ scaffold:'Use the template — it keeps you short and reader-focused, the two things cold outreach usually fails at.',
+ stretch:'Generate a 3-message sequence (first touch, gentle nudge at day 4, final value-add at day 9) so no lead goes cold by accident.',
+ prompt:'Write a short cold outreach message from VEKA India to a [FABRICATOR / DEALER / BUILDER].\nOpen with something relevant to THEIR business, not about us.\nIn one line, say why VEKA specifically fits them.\nEnd with a single low-effort ask. Max 4 short lines.\nNo jargon, no "I hope this email finds you well."\nTheir context: [ONE LINE ON WHO THEY ARE / WHAT THEY BUILD].',
+ share:'Post your opening line only. If it earns a reply, it earns +3.',
+ trainer:{obj:'Practise reader-first cold outreach.',time:'8 min activity + 2 min share',watch:'Any output that opens with "We at VEKA" — that is about us, not them.',rescue:'"Delete everything about VEKA from line 1. Start with something about their world."',debrief:'Read the strongest opening line. Ask: would you reply to that? Why?'}},
+
+{type:'activity',hour:5,ey:'Hour 5 · Your turn',title:'Technical JD + policy drafting',min:9,
+ brief:'HR track: produce an accurate technical job description and a plain-language policy clause — without a three-day wait for engineering to reply.',
+ core:'Draft a JD for an "Extrusion Line Technician" with responsibilities, must-have skills, and nice-to-haves. Then draft a short, clear leave-policy clause.',
+ scaffold:'Use the JD template; it prompts you for the few specifics that keep AI from inventing fake qualifications.',
+ stretch:'Ask AI to rewrite the policy clause at a Grade-8 reading level AND flag any sentence that could be read two ways — then fix them.',
+ prompt:'You are an HR partner at VEKA India. Draft a job description for an [ROLE, e.g., Extrusion Line Technician].\nSections: ROLE PURPOSE · KEY RESPONSIBILITIES (5-7) · MUST-HAVE SKILLS · NICE-TO-HAVE · WHO YOU REPORT TO.\nBe specific to PVC profile manufacturing.\nDo NOT invent certifications — if unsure, write "[confirm with plant lead]".\nKeep it inclusive and jargon-light.',
+ share:'Which JD line would actually make a good technician apply? Sharpest one, +2.',
+ trainer:{obj:'Practise HR drafting with guardrails against invented facts.',time:'9 min activity + 3 min share',watch:'Any certification in the JD that seems invented — ask the participant: "Where does that come from?"',rescue:'"Ask AI: which of these skills did you infer vs which did I provide? Replace inferred ones with [confirm]."',debrief:'Ask HR participants: how long does a JD usually take you? How long did this take?'}},
+
+{type:'battle',hour:5,ey:'Hour 5 · Prompt battle #2',title:'Sell it in six lines',min:5,
+ rules:['Scenario: turn a shy prospect ("just browsing profiles") into a booked sample request.','90 seconds to write the prompt. The OUTPUT must be six lines or fewer.','Scored on: relevance to the buyer, a real reason to act now, and one clear next step.','Room vote. Winning table +5. Bonus +2 if it pre-empts an objection.'],
+ trainer:{obj:'Sharpen constraint-based prompting for sales scenarios.',time:'5 min + 2 min voting',watch:'Any output over 6 lines is disqualified — enforce it.',rescue:'For outputs that are lists: "Tell AI: no bullet points. Six continuous lines."',debrief:'Announce winner. Ask: what was the one word that made the room vote for that one?'}},
+
+{type:'checkpoint',hour:5,task:'Show two differentiated sales pitches for the same profile, plus either a JD or a policy clause that HR could publish with light edits.',
+ rubric:['The two pitches genuinely differ in lead-benefit, not just wording','Outreach is short and reader-first','JD/policy avoids invented facts (uses "[confirm]" where unsure)','Language is inclusive and plain'],
+ trainer:{obj:'Gate before the template-building phase.',time:'4 min',watch:'Anyone whose two pitches are near-identical — their personalisation needs work.',rescue:'Ask them: "What does this buyer lose sleep over that the other buyer does not?"',debrief:'N/A'}},
+
+{type:'break',min:10,label:'10',sub:'Reset. Next we stop making one-off prompts and start building assets your whole team reuses.'},
+
+/* ——— HOUR 6: FROM PROMPT TO ASSET ——— */
+{type:'divider',hour:6,ph:'Phase 3 · Strategic Leadership',num:'06',title:'From Prompt to Asset',
+ sub:'Turn your best prompts into parameterised templates — and contribute to the VEKA Prompt Library.',
+ trainer:{obj:'Make the leap from personal tool to team infrastructure.',time:'60 min total',watch:'N/A',rescue:'N/A',debrief:'N/A'}},
+
+{type:'concept',hour:6,ey:'Hour 6 · The leap',title:'A prompt is personal. A template scales.',
+ lead:'This is the HOD-level move: stop solving the same problem daily, and turn your winning prompt into a fill-in-the-blank template the whole department uses identically.',
+ pts:[
+  '<b>Find the variables.</b> Anything that changes each time becomes a [BRACKETED SLOT].',
+  '<b>Lock the structure.</b> The parts that make it good — tone, format, checks — stay fixed.',
+  '<b>Name it, describe it, share it.</b> A template nobody can find is not an asset.'],
+ aside:{h:'The consistency payoff',p:'When ten people use the same handover template, every handover looks identical — and a new joiner is productive on day one instead of week three.'},
+ trainer:{obj:'Frame template-building as infrastructure, not just reuse.',time:'6 min',watch:'HODs in the room tend to engage strongly here — use them.',rescue:'"Think of your best prompt from today. How many times in a year does your team need that output? Multiply by 10 minutes."',debrief:'N/A'}},
+
+{type:'demo',hour:6,ey:'Hour 6 · Live reveal',title:'Turn a winning prompt into a template',
+ before:{tag:'Before — a great one-off',p:'The crisis-comms prompt from Hour 3 — brilliant, but rewritten from scratch every single time by every person.'},
+ after:{tag:'After — a reusable template',p:'The same prompt with [DELAY REASON], [NEW DATE], [CUSTOMER TIER] as slots, a fixed tone, and a one-line usage note. Anyone on the team drops in three values and sends. The room realises they just built infrastructure.'},
+ say:{cue:'Say at the reveal',line:'"You just stopped being the only person who can write this email. That\'s not a prompt any more — that\'s a process."'},
+ trainer:{obj:'Make the template concept tangible and immediately desirable.',time:'6 min',watch:'If the room goes quiet, that\'s the "infrastructure" realisation. Give it a beat.',rescue:'"How long did it take you to build the crisis prompt? Now imagine a new joiner having it on day one."',debrief:'Ask: which prompt from today would save your team the most time if it were a shared template?'}},
+
+{type:'activity',hour:6,ey:'Hour 6 · Your turn',title:'Build your department template',min:12,
+ brief:'Take your best prompt from today and convert it into a clean, reusable template your team could adopt tomorrow.',
+ core:'Identify every variable, wrap it in [BRACKETS], write a one-line "how to use this" note, and give it a findable name.',
+ scaffold:'Use the meta-prompt below — AI will help you find the variables and format the template.',
+ stretch:'Create a completed worked example in addition to the template, and a one-line guardrail note.',
+ prompt:'Take this prompt and convert it into a reusable team template:\n[PASTE YOUR BEST PROMPT FROM TODAY]\nInstructions:\n1. Identify every element that changes each time — wrap each in [SQUARE BRACKETS].\n2. Keep everything that makes the prompt good (tone, format instructions, safety checks) as fixed text.\n3. Give the template a short descriptive name.\n4. Write a one-line "WHEN TO USE" note.\n5. Write one guardrail line ("Never..." or "Always...").\n6. Provide a worked example with the brackets filled in.',
+ share:'Who built the most reusable template? One that multiple departments could use scores higher.',
+ trainer:{obj:'Produce one team-grade template per participant.',time:'12 min activity + 4 min share',watch:'Templates with vague variables — push for specificity.',rescue:'"If the [BRACKET] could be anything, it needs a more specific label — e.g., not [PERSON] but [SUPPLIER NAME]."',debrief:'Ask three participants to read their template names. Vote the most useful for the whole VEKA team.'}},
+
+{type:'checkpoint',hour:6,task:'Present your template with: name, when to use, variables, fixed instructions, one guardrail, and a worked example.',
+ rubric:['Template name is findable (not "My Template")','Variables are clearly labelled — specific, not vague','Fixed instructions preserve what makes it good','Guardrail addresses the most likely failure mode','Worked example is filled in, not empty'],
+ trainer:{obj:'Gate before Capstone — templates are the bridge to Hour 7.',time:'4 min',watch:'Anyone without a worked example — ask them to fill one in before Capstone.',rescue:'"Just fill your own template with a real case from today."',debrief:'N/A'}},
+
+/* ——— HOUR 7: CAPSTONE ——— */
+{type:'divider',hour:7,ph:'Capstone',num:'07',title:'Capstone Sprint',
+ sub:'One bottleneck. One AI solution. Test it, break it, fix it, prove it.',
+ trainer:{obj:'Every participant builds something they will use Monday.',time:'60 min total',watch:'N/A',rescue:'N/A',debrief:'N/A'}},
+
+{type:'concept',hour:7,ey:'Hour 7 · The mission',title:'Find a real bottleneck. Build the real fix.',
+ lead:'The Capstone is not a presentation exercise. It is a working solution you test at least three times before the showcase.',
+ pts:[
+  '<b>Too vague:</b> "Transform procurement with AI." → Not a project.',
+  '<b>Good:</b> "Auto-draft my Monday supplier chasers." → A project.',
+  '<b>Test 3× before you declare done.</b> If it only works once, it is not reliable.',
+  '<b>Human signs off.</b> Every capstone solution must specify the human check.'],
+ aside:{h:'The test of a real project',p:'If your colleague could run it without you explaining it, it is a project. If they need you in the room, it is still a one-off.'},
+ trainer:{obj:'Set expectations: specific, tested, provably better.',time:'5 min',watch:'Participants choosing vague projects — intervene early.',rescue:'"Tell me the task in one sentence. If it starts with \'Transform\' or \'Revolutionise\', try again."',debrief:'N/A'}},
+
+{type:'capstone',hour:7,
+ trainer:{obj:'Guide participants through the 7-step capstone build.',time:'50 min',watch:'The Define step is where vague projects survive — interrogate it.',rescue:'"If you cannot complete sentence: \'Every [FREQUENCY], I spend [TIME] on [TASK] and the output is [OUTPUT]\' — you are not ready to build yet."',debrief:'N/A'}},
+
+/* ——— HOUR 8: SHOWCASE & SUSTAIN ——— */
+{type:'divider',hour:8,ph:'Capstone',num:'08',title:'Showcase & Sustain',
+ sub:'90-second demos · judging · VEKA Prompt Library · 30-day plan.',
+ trainer:{obj:'Celebrate real work and create sustained commitment.',time:'60 min total',watch:'N/A',rescue:'N/A',debrief:'N/A'}},
+
+{type:'showcase',hour:8,
+ trainer:{obj:'Each participant/table gets a 90-second demo slot.',time:'5 min per team',watch:'Watch for participants who downplay their solution — prompt them to show the before/after.',rescue:'"Tell us the one number. How much time does this save per week?"',debrief:'N/A'}},
+
+{type:'leaderboard-reveal',hour:8,
+ trainer:{obj:'Announce final scores and winners.',time:'5 min',watch:'N/A',rescue:'N/A',debrief:'Award winner badge. Announce that winning solution enters the VEKA Prompt Library.'}},
+
+{type:'thirtydays',hour:8,
+ trainer:{obj:'Create written Monday commitments before people leave the room.',time:'8 min',watch:'People who write vague plans — ask for a specific task on a specific day.',rescue:'"What is the one task you will use AI for on Monday? Write the prompt now."',debrief:'N/A'}},
+
+{type:'closing',hour:8,
+ trainer:{obj:'Land the emotional close. Leave the room proud of what they built.',time:'5 min',watch:'N/A',rescue:'N/A',debrief:'"You didn\'t learn about AI today. You used it."'}}
+
+]; // end SLIDES
+
+/* ============================================================
+   SLIDE RENDERER
+   ============================================================ */
+function highlightVars(text){
+  return text.replace(/\[([^\]]+)\]/g,
+    '<span class="prompt-var" title="Replace this with your specific value">[$1]</span>');
+}
+
+function renderSlide(s){
+  switch(s.type){
+
+  case 'title': return `
+<div class="wrap title-layout">
+  <div>
+    <div class="eyebrow">VEKA India · GenAI Excellence</div>
+    <h1 class="big">Write.<br>Work.<br>Build.<br>Deploy.</h1>
+    <p class="lead">One day. 80% doing. Real outputs you use on Monday.</p>
+    <div class="stats-row">
+      <div class="stat"><div class="n">8</div><div class="l">Hours</div></div>
+      <div class="stat"><div class="n">80%</div><div class="l">Hands-on</div></div>
+      <div class="stat"><div class="n">1</div><div class="l">Capstone</div></div>
+      <div class="stat"><div class="n">50+</div><div class="l">Prompts</div></div>
+    </div>
+    <div class="kicker" style="margin-top:28px">NxtWave Enterprise Training · VEKA India · ${new Date().getFullYear()}</div>
+  </div>
+  <div class="title-art">
+    <svg width="260" height="260" viewBox="0 0 260 260" class="chamber-art" aria-hidden="true">
+      <rect x="10" y="10" width="240" height="240" rx="4" fill="none" stroke="rgba(228,0,43,.15)" stroke-width="1.5"/>
+      <rect x="30" y="30" width="80" height="80" fill="none" stroke="#E4002B" stroke-width="2"/>
+      <rect x="30" y="30" width="80" height="80" fill="rgba(228,0,43,.08)"/>
+      <rect x="150" y="30" width="80" height="80" fill="none" stroke="#E4002B" stroke-width="2"/>
+      <rect x="150" y="30" width="80" height="80" fill="rgba(228,0,43,.08)"/>
+      <rect x="30" y="150" width="200" height="80" fill="none" stroke="#E4002B" stroke-width="2"/>
+      <rect x="30" y="150" width="200" height="80" fill="rgba(228,0,43,.06)"/>
+      <line x1="10" y1="130" x2="250" y2="130" stroke="rgba(228,0,43,.2)" stroke-width="1" stroke-dasharray="4,6"/>
+      <line x1="130" y1="10" x2="130" y2="250" stroke="rgba(228,0,43,.2)" stroke-width="1" stroke-dasharray="4,6"/>
+    </svg>
+  </div>
+</div>`;
+
+  case 'agenda': return `
+<div class="wrap-wide slide-scroll">
+  <div class="eyebrow">Full day agenda</div>
+  <h2 class="head">Your 8-hour journey</h2>
+  <div class="agenda-grid" style="margin-top:22px">
+    ${[
+      {h:'01',t:'Ignite',s:'Your first real win in the first hour',ph:'Phase 1'},
+      {h:'02',t:'Anatomy of a Prompt',s:'Context · Tone · Persona · Format',ph:'Phase 1'},
+      {h:'03',t:'High-Stakes Writing',s:'Vendor · handover · crisis comms',ph:'Phase 1'},
+      {h:'04',t:'Finance & Operations',s:'SAP/Tally · SOPs · maintenance logs',ph:'Phase 2'},
+      {h:'05',t:'Sales & HR',s:'Pitching · leads · JDs · policy',ph:'Phase 2'},
+      {h:'06',t:'From Prompt to Asset',s:'Templates + the VEKA Prompt Library',ph:'Phase 3'},
+      {h:'07',t:'Capstone Sprint',s:'Find a bottleneck · build the fix',ph:'Capstone'},
+      {h:'08',t:'Showcase & Sustain',s:'Demos · judging · 30-day plan',ph:'Capstone'},
+    ].map(r=>`<div class="ag-row">
+      <div class="ag-h">H${r.h}</div>
+      <div class="ag-t">${r.t}<small>${r.s}</small></div>
+      <div class="ag-ph">${r.ph}</div>
+    </div>`).join('')}
+  </div>
+</div>`;
+
+  case 'howto': return `
+<div class="wrap">
+  <div class="eyebrow">How this works</div>
+  <h2 class="head">The philosophy: 80% doing</h2>
+  <div class="how-cols">
+    <div class="how-card">
+      <div class="how-num">01</div>
+      <div class="how-t">Three tiers, one task</div>
+      <div class="how-d">Every activity has a <span style="color:var(--steel)">Core</span> path, a <span style="color:var(--green)">Scaffold</span> with a template, and a <span style="color:var(--amber)">Stretch</span> for those who are ahead. Nobody waits.</div>
+    </div>
+    <div class="how-card">
+      <div class="how-num">02</div>
+      <div class="how-t">Real content only</div>
+      <div class="how-d">We use VEKA scenarios and synthetic data. Not generic demos. If your output isn't something you'd actually send — we iterate until it is.</div>
+    </div>
+    <div class="how-card">
+      <div class="how-num">03</div>
+      <div class="how-t">Human always decides</div>
+      <div class="how-d">AI is the fast first-pass analyst. You sign off. Every output needs a human review. This is not optional — it is the safety principle of the entire day.</div>
+    </div>
+  </div>
+  <div class="aside" style="margin-top:22px">
+    <h4>The central shift</h4>
+    <p><strong style="color:var(--text)">STOP</strong> asking AI a question. &nbsp;<strong style="color:var(--veka-red)">START</strong> giving AI a briefing. Direction beats questions. Always.</p>
+  </div>
+</div>`;
+
+  case 'divider': return `
+<div class="wrap divider-layout">
+  <div class="divider-bg-num" aria-hidden="true">${s.num}</div>
+  <div>
+    <div class="divider-ph">${s.ph}</div>
+    <h2 class="head divider-title">${s.title}</h2>
+    <p class="divider-sub">${s.sub}</p>
+  </div>
+</div>`;
+
+  case 'concept': return `
+<div class="wrap slide-scroll">
+  <div class="eyebrow">${s.ey}</div>
+  <h2 class="head" style="font-size:clamp(22px,3.2vw,46px)">${s.title}</h2>
+  <div class="concept-cols">
+    <div>
+      <p class="lead" style="margin-top:12px">${s.lead}</p>
+      <ul class="pts">${s.pts.map(p=>`<li>${p}</li>`).join('')}</ul>
+    </div>
+    <div class="aside" style="align-self:start">
+      <h4>${s.aside.h}</h4>
+      <p>${s.aside.p}</p>
+    </div>
+  </div>
+  ${renderTrainerNotes(s.trainer)}
+</div>`;
+
+  case 'demo': return `
+<div class="wrap slide-scroll">
+  <div class="eyebrow">${s.ey}</div>
+  <h2 class="head" style="font-size:clamp(20px,3vw,42px)">${s.title}</h2>
+  <div class="demo-grid">
+    <div class="demo-card before">
+      <div class="demo-tag">✕ ${s.before.tag}</div>
+      <p>${s.before.p}</p>
+    </div>
+    <div class="demo-card after">
+      <div class="demo-tag">✓ ${s.after.tag}</div>
+      <p>${s.after.p}</p>
+    </div>
+  </div>
+  <div class="trainer-say">
+    <div class="mic">🎤</div>
+    <div class="say-text"><b>${s.say.cue}</b>${s.say.line}</div>
+  </div>
+  ${renderTrainerNotes(s.trainer)}
+</div>`;
+
+  case 'activity': return `
+<div class="wrap slide-scroll">
+  <div class="activity-head">
+    <span class="activity-badge">Your Turn</span>
+    <span class="activity-time">⏱ ${s.min} min</span>
+    <span class="kicker" style="margin-left:8px">${s.ey}</span>
+  </div>
+  <h2 class="head" style="font-size:clamp(20px,3vw,42px);margin-bottom:10px">${s.title}</h2>
+  <p class="brief">${s.brief}</p>
+  <div class="tiers">
+    <div class="tier core"><div class="tier-label">Core</div><p>${s.core}</p></div>
+    <div class="tier scaffold"><div class="tier-label">Scaffold</div><p>${s.scaffold}</p></div>
+    <div class="tier stretch"><div class="tier-label">Stretch</div><p>${s.stretch}</p></div>
+  </div>
+  <div class="prompt-box">
+    <div class="prompt-box-top">
+      <span class="pb-label">Starter Prompt — copy & personalise</span>
+      <button class="copy-btn" onclick="copyPrompt(this)" aria-label="Copy prompt">Copy</button>
+    </div>
+    <pre>${highlightVars(s.prompt)}</pre>
+  </div>
+  ${s.share ? `<div class="share-note"><b>Share:</b> ${s.share}</div>` : ''}
+  ${renderTrainerNotes(s.trainer)}
+</div>`;
+
+  case 'checkpoint': return `
+<div class="wrap slide-scroll">
+  <div class="eyebrow">Hour ${s.hour} · Checkpoint</div>
+  <span class="prove-badge">◆ Prove it</span>
+  <h2 class="head" style="font-size:clamp(22px,3.5vw,50px);margin-bottom:4px">Gate ${s.hour}</h2>
+  <div class="checkpoint-card">
+    <div class="chk-task">${s.task}</div>
+    <div class="rubric">
+      ${s.rubric.map(r=>`<div class="rubric-item"><span class="check-icon">◆</span>${r}</div>`).join('')}
+    </div>
+  </div>
+  ${renderTrainerNotes(s.trainer)}
+</div>`;
+
+  case 'battle': return `
+<div class="wrap-narrow">
+  <div class="eyebrow">${s.ey}</div>
+  <div class="battle-layout">
+    <h2 class="head">${s.title}</h2>
+    <div class="battle-vs">VS</div>
+    <div class="battle-rules">
+      ${s.rules.map((r,i)=>`<div class="rule"><b>${String(i+1).padStart(2,'0')}</b>${r}</div>`).join('')}
+    </div>
+    <button class="battle-start" onclick="timerCtrl.setAndStart(${s.min})" style="margin-top:20px">
+      Start ${s.min}-Minute Battle ⏱
+    </button>
+  </div>
+  ${renderTrainerNotes(s.trainer)}
+</div>`;
+
+  case 'break': return `
+<div class="wrap break-layout">
+  <div class="break-clock">${s.label}<span>min</span></div>
+  <div class="break-sub">${s.sub}</div>
+</div>`;
+
+  case 'datasafety': return `
+<div class="wrap slide-scroll">
+  <div class="eyebrow">Before we touch data</div>
+  <h2 class="head" style="font-size:clamp(24px,3.5vw,52px)">The Hard Line — Data</h2>
+  <p class="lead">Training and experimentation: <strong style="color:var(--text)">synthetic or masked data only.</strong></p>
+  <div class="safety-grid" style="margin-top:20px">
+    <div class="safety-card danger">
+      <div class="safety-title">Never put into public AI tools</div>
+      <ul class="safety-list">
+        <li>Real customer names, emails, phone numbers</li>
+        <li>Live financial figures — invoices, salaries, margins</li>
+        <li>Confidential employee information</li>
+        <li>Trade secrets or pricing strategy</li>
+        <li>Any data marked confidential in your systems</li>
+      </ul>
+    </div>
+    <div class="safety-card ok">
+      <div class="safety-title">Safe to use</div>
+      <ul class="safety-list">
+        <li>Synthetic data (like our training pack)</li>
+        <li>Masked data (names changed, amounts generalised)</li>
+        <li>Your own writing tasks and communication</li>
+        <li>Process descriptions without proprietary details</li>
+        <li>Real data only in approved internal AI tools</li>
+      </ul>
+    </div>
+  </div>
+  <div class="aside" style="margin-top:18px">
+    <h4>Who signs off</h4>
+    <p>AI does not sign off. AI flags. <strong style="color:var(--text)">You sign off.</strong> Human responsibility is not optional.</p>
+  </div>
+</div>`;
+
+  case 'capstone': return `
+<div class="wrap slide-scroll">
+  <div class="eyebrow">Hour 7 · Capstone Sprint</div>
+  <h2 class="head" style="font-size:clamp(22px,3vw,46px)">Capstone Canvas</h2>
+  <p class="brief">One bottleneck. One solution. Test it 3 times. Prove it works.</p>
+  <div class="capstone-grid">
+    <div class="cap-field"><div class="cap-field-label">Problem</div><div class="cap-field-value">What repetitive task am I eliminating?</div></div>
+    <div class="cap-field"><div class="cap-field-label">Current process</div><div class="cap-field-value">How is it done now, step by step?</div></div>
+    <div class="cap-field"><div class="cap-field-label">Frequency</div><div class="cap-field-value">Daily / weekly / per shift?</div></div>
+    <div class="cap-field"><div class="cap-field-label">Current time</div><div class="cap-field-value">How long does it take today?</div></div>
+    <div class="cap-field"><div class="cap-field-label">Desired output</div><div class="cap-field-value">What should the AI produce?</div></div>
+    <div class="cap-field"><div class="cap-field-label">Available input</div><div class="cap-field-value">What data / text / notes can I paste?</div></div>
+  </div>
+  <div class="cap-steps" style="margin-top:18px">
+    <div class="cap-step active"><div class="cap-step-num">01</div><div class="cap-step-label">Define</div></div>
+    <div class="cap-step"><div class="cap-step-num">02</div><div class="cap-step-label">Build</div></div>
+    <div class="cap-step"><div class="cap-step-num">03</div><div class="cap-step-label">Test</div></div>
+    <div class="cap-step"><div class="cap-step-num">04</div><div class="cap-step-label">Break</div></div>
+    <div class="cap-step"><div class="cap-step-num">05</div><div class="cap-step-label">Fix</div></div>
+    <div class="cap-step"><div class="cap-step-num">06</div><div class="cap-step-label">Prove</div></div>
+    <div class="cap-step"><div class="cap-step-num">07</div><div class="cap-step-label">Demo</div></div>
+  </div>
+  <div class="aside" style="margin-top:16px">
+    <h4>Test it 3 times before done</h4>
+    <p>If it only works once, it is not reliable. Test with different inputs. Note what broke. Fix it. That is the job.</p>
+  </div>
+  ${renderTrainerNotes(s.trainer)}
+</div>`;
+
+  case 'showcase': return `
+<div class="wrap slide-scroll">
+  <div class="eyebrow">Hour 8 · The showcase</div>
+  <h2 class="head" style="font-size:clamp(24px,3.5vw,52px)">90-Second Demo</h2>
+  <div class="showcase-steps">
+    <div class="showcase-step"><div class="st">State the problem</div><div class="sd">In one sentence — what repetitive task did you target?</div></div>
+    <div class="showcase-step"><div class="st">Show the before</div><div class="sd">How long did it take? What did the output look like?</div></div>
+    <div class="showcase-step"><div class="st">Run it live</div><div class="sd">Paste your prompt. Show the output in real time.</div></div>
+    <div class="showcase-step"><div class="st">Show the after</div><div class="sd">Time saved. Quality change. One number.</div></div>
+    <div class="showcase-step"><div class="st">State the human check</div><div class="sd">What does the human review before it goes out?</div></div>
+  </div>
+  <div class="score-criteria" style="margin-top:20px">
+    <div class="score-crit"><div class="score-crit-label">Problem<br>Clarity</div><div class="score-crit-max">/5</div></div>
+    <div class="score-crit"><div class="score-crit-label">Solution<br>Reliability</div><div class="score-crit-max">/5</div></div>
+    <div class="score-crit"><div class="score-crit-label">Before/After<br>Impact</div><div class="score-crit-max">/5</div></div>
+    <div class="score-crit"><div class="score-crit-label">Reusability</div><div class="score-crit-max">/5</div></div>
+    <div class="score-crit"><div class="score-crit-label">Demo<br>Confidence</div><div class="score-crit-max">/5</div></div>
+  </div>
+  <div class="kicker" style="margin-top:16px;color:var(--amber)">Audience reaction bonus +3 · Every demo +5 · Winner +10</div>
+  ${renderTrainerNotes(s.trainer)}
+</div>`;
+
+  case 'leaderboard-reveal': return `
+<div class="wrap">
+  <div class="eyebrow">Hour 8 · Final scores</div>
+  <h2 class="head">And the winner is…</h2>
+  <p class="lead">Open the leaderboard (L) to reveal final scores. The winning solution enters the VEKA Prompt Library.</p>
+  <div style="margin-top:28px;display:flex;gap:16px;flex-wrap:wrap">
+    <button onclick="uiCtrl.toggleBoard()" style="background:var(--veka-red);border:none;color:#fff;border-radius:var(--radius);padding:14px 28px;font-family:var(--display);font-size:18px;font-weight:700;cursor:pointer;">Open Live Leaderboard →</button>
+    <button onclick="showAchievement('SHOWCASE WINNER','Best Capstone of the Day')" style="background:var(--bg-card);border:1px solid var(--amber);color:var(--amber);border-radius:var(--radius);padding:14px 28px;font-family:var(--mono);font-size:13px;cursor:pointer;letter-spacing:.08em">Award Winner Badge</button>
+  </div>
+  ${renderTrainerNotes(s.trainer)}
+</div>`;
+
+  case 'thirtydays': return `
+<div class="wrap slide-scroll">
+  <div class="eyebrow">Hour 8 · Follow-through</div>
+  <h2 class="head">My GenAI 30-Day Plan</h2>
+  <p class="brief">Written commitment before you leave the room. If it isn't written, it isn't a plan.</p>
+  <div class="plan-grid">
+    <div class="plan-week"><div class="plan-week-label">Week 1 — Monday</div><div class="plan-habit">Use AI for one real task from today's list. Time how long it takes vs before.</div></div>
+    <div class="plan-week"><div class="plan-week-label">Week 2 — Build</div><div class="plan-habit">Share your best template with one colleague. Walk them through it.</div></div>
+    <div class="plan-week"><div class="plan-week-label">Week 3 — Teach</div><div class="plan-habit">Show one person in your team what you learned. Teaching forces mastery.</div></div>
+    <div class="plan-week"><div class="plan-week-label">Week 4 — Review</div><div class="plan-habit">Review with your HOD. How many hours saved? What to improve?</div></div>
+  </div>
+  <div class="plan-commitment" style="margin-top:20px">
+    <p><strong style="color:var(--veka-red)">My Monday commitment:</strong> On Monday, I will use AI to [TASK] and I will share the output with [PERSON].<br><br>
+    <strong style="color:var(--text-muted)">The metric I will track:</strong> [HOW YOU WILL KNOW IT WORKED]</p>
+  </div>
+  ${renderTrainerNotes(s.trainer)}
+</div>`;
+
+  case 'closing': return `
+<div class="wrap closing-layout">
+  <div>
+    <div class="eyebrow">VEKA GenAI Excellence</div>
+    <h1 class="big" style="font-size:clamp(36px,5.5vw,78px)">
+      You didn't learn about AI today.<br>
+      You <span class="accent">used</span> it.
+    </h1>
+    <p class="lead" style="margin-top:18px">You leave with real drafts, reusable templates in the VEKA library, a working capstone, and a 30-day plan. The floor, the finance desk, and HR all just got faster.</p>
+    <div class="closing-stats">
+      <div class="closing-stat"><div class="cs-label">Your habit starts</div><div class="cs-val">Monday</div></div>
+      <div class="closing-stat"><div class="cs-label">Your team gets</div><div class="cs-val">Your template</div></div>
+      <div class="closing-stat"><div class="cs-label">The loop continues</div><div class="cs-val">Every week</div></div>
+    </div>
+    <div class="kicker" style="margin-top:28px">NxtWave · GenAI Excellence — VEKA India · Thank you</div>
+  </div>
+  <div class="title-art">
+    <svg width="220" height="220" viewBox="0 0 260 260" class="chamber-art" aria-hidden="true">
+      <rect x="10" y="10" width="240" height="240" rx="4" fill="none" stroke="rgba(228,0,43,.2)" stroke-width="1.5"/>
+      <rect x="30" y="30" width="80" height="80" fill="rgba(228,0,43,.12)" stroke="#E4002B" stroke-width="2"/>
+      <rect x="150" y="30" width="80" height="80" fill="rgba(228,0,43,.12)" stroke="#E4002B" stroke-width="2"/>
+      <rect x="30" y="150" width="200" height="80" fill="rgba(228,0,43,.09)" stroke="#E4002B" stroke-width="2"/>
+    </svg>
+  </div>
+</div>`;
+
+  default: return `<div class="wrap"><h2 class="head">${s.type||'Slide'}</h2></div>`;
+  }
+}
+
+function renderTrainerNotes(t){
+  if(!t) return '';
+  return `<div class="trainer-notes">
+    <div class="tn-grid">
+      ${t.obj ? `<div class="tn-item"><div class="tn-label">Objective</div><div class="tn-val">${t.obj}</div></div>` : ''}
+      ${t.time ? `<div class="tn-item"><div class="tn-label">Time</div><div class="tn-val">${t.time}</div></div>` : ''}
+      ${t.watch ? `<div class="tn-item"><div class="tn-label">Watch for</div><div class="tn-val">${t.watch}</div></div>` : ''}
+      ${t.rescue ? `<div class="tn-item"><div class="tn-label">Rescue line</div><div class="tn-val">${t.rescue}</div></div>` : ''}
+      ${t.debrief ? `<div class="tn-item"><div class="tn-label">Debrief</div><div class="tn-val">${t.debrief}</div></div>` : ''}
+    </div>
+  </div>`;
+}
+
+/* ============================================================
+   BUILD SLIDE ELEMENTS
+   ============================================================ */
+const stage = document.getElementById('stage');
+const slideEls = [];
+SLIDES.forEach((s, i) => {
+  const el = document.createElement('section');
+  el.className = 'slide';
+  el.dataset.idx = i;
+  el.dataset.hour = s.hour || '';
+  el.dataset.ph = s.ph || '';
+  if (s.min && (s.type === 'activity' || s.type === 'battle' || s.type === 'break')) {
+    el.dataset.min = s.min;
+  }
+  el.innerHTML = renderSlide(s);
+  stage.appendChild(el);
+  slideEls.push(el);
+});
+
+/* ============================================================
+   DECK CONTROLLER
+   ============================================================ */
+const deckCtrl = {
+  i: 0,
+  show(n) {
+    this.i = Math.max(0, Math.min(slideEls.length - 1, n));
+    slideEls.forEach((el, idx) => el.classList.toggle('active', idx === this.i));
+    this.updateChrome();
+    timerCtrl.attachSlide(slideEls[this.i]);
+    this.updateTrainerPanel();
+  },
+  next() { this.show(this.i + 1); },
+  prev() { this.show(this.i - 1); },
+  updateChrome() {
+    const cur = slideEls[this.i];
+    const total = slideEls.length;
+    // progress bar
+    document.getElementById('progress-bar').style.width = (this.i / (total - 1) * 100) + '%';
+    // counter
+    document.getElementById('slide-counter').textContent =
+      String(this.i + 1).padStart(2, '0') + ' / ' + String(total).padStart(2, '0');
+    // hour tag
+    const h = cur.dataset.hour;
+    const ph = cur.dataset.ph;
+    const htag = document.getElementById('hour-tag');
+    const ptag = document.getElementById('phase-tag');
+    if (h) {
+      htag.textContent = `Hour ${h} / 8`;
+      htag.style.display = '';
+    } else {
+      htag.textContent = '';
+      htag.style.display = 'none';
+    }
+    if (ph) { ptag.textContent = ph; ptag.style.display = ''; }
+    else { ptag.style.display = 'none'; }
+    // slide tag
+    document.getElementById('slide-tag').textContent = `· ${String(this.i + 1).padStart(2, '0')}`;
+    // journey map current
+    document.querySelectorAll('.journey-btn').forEach(b => {
+      b.classList.toggle('current', +b.dataset.idx === this.i);
+    });
+  },
+  updateTrainerPanel() {
+    const s = SLIDES[this.i];
+    const t = s?.trainer;
+    document.getElementById('tp-obj').textContent = t?.obj || '—';
+    document.getElementById('tp-time').textContent = t?.time || '—';
+    document.getElementById('tp-watch').textContent = t?.watch || '—';
+    document.getElementById('tp-rescue').textContent = t?.rescue || '—';
+    document.getElementById('tp-debrief').textContent = t?.debrief || '—';
+  }
+};
+
+/* ============================================================
+   TIMER CONTROLLER
+   ============================================================ */
+const timerCtrl = {
+  total: 0, left: 0, running: false, iv: null,
+  circumference: 2 * Math.PI * 45, // r=45
+  attachSlide(el) {
+    const m = el.dataset.min;
+    if (m) {
+      this.set(+m);
+      document.getElementById('timer-widget').classList.add('visible');
+      document.getElementById('timer-label').textContent = m + ' min';
+    } else {
+      this.stop();
+      document.getElementById('timer-widget').classList.remove('visible');
+    }
+  },
+  showWidget() { document.getElementById('timer-widget').classList.toggle('visible'); },
+  set(min) {
+    this.stop();
+    this.total = min * 60;
+    this.left = this.total;
+    this.paint();
+    document.getElementById('timer-widget').classList.remove('done');
+    document.getElementById('timer-done-msg').style.display = 'none';
+    document.getElementById('timer-start-btn').textContent = 'Start';
+  },
+  setAndStart(min) {
+    this.set(min);
+    document.getElementById('timer-widget').classList.add('visible');
+    this.toggle();
+  },
+  paint() {
+    const m = Math.floor(this.left / 60);
+    const sec = this.left % 60;
+    document.getElementById('timer-disp').textContent =
+      String(m).padStart(2, '0') + ':' + String(sec).padStart(2, '0');
+    // ring
+    const ring = document.getElementById('timer-ring-fg');
+    const pct = this.total > 0 ? (this.left / this.total) : 0;
+    const offset = this.circumference * (1 - pct);
+    ring.style.strokeDashoffset = offset;
+    ring.classList.remove('warning', 'danger');
+    if (pct <= 0.1) ring.classList.add('danger');
+    else if (pct <= 0.25) ring.classList.add('warning');
+  },
+  toggle() {
+    if (this.left <= 0) this.set(this.total / 60 || 5);
+    this.running = !this.running;
+    document.getElementById('timer-start-btn').textContent = this.running ? 'Pause' : 'Resume';
+    if (this.running) {
+      this.iv = setInterval(() => {
+        if (this.left > 0) { this.left--; this.paint(); }
+        else { this.done(); }
+      }, 1000);
+    } else { clearInterval(this.iv); }
+  },
+  stop() { this.running = false; clearInterval(this.iv); },
+  reset() {
+    this.stop();
+    if (this.total > 0) this.set(this.total / 60);
+    document.getElementById('timer-start-btn').textContent = 'Start';
+  },
+  adjustMin(d) {
+    const newLeft = Math.max(10, this.left + d * 60);
+    this.left = newLeft;
+    if (!this.running) this.total = newLeft;
+    this.paint();
+  },
+  done() {
+    this.stop();
+    document.getElementById('timer-widget').classList.add('done');
+    document.getElementById('timer-done-msg').style.display = 'block';
+    document.getElementById('timer-start-btn').textContent = 'Restart';
+    showToast('Time! Hands up when you have something to share.');
+  }
+};
+
+/* ============================================================
+   LEADERBOARD CONTROLLER (with localStorage)
+   ============================================================ */
+const lbCtrl = {
+  key: 'veka-lb-v2',
+  teams: null,
+  load() {
+    try {
+      const d = localStorage.getItem(this.key);
+      this.teams = d ? JSON.parse(d) : [
+        {n:'Extrusion',s:0,badges:[]},
+        {n:'Finance',s:0,badges:[]},
+        {n:'Sales',s:0,badges:[]},
+        {n:'HR & Ops',s:0,badges:[]}
+      ];
+    } catch(e) {
+      this.teams = [{n:'Extrusion',s:0,badges:[]},{n:'Finance',s:0,badges:[]},{n:'Sales',s:0,badges:[]},{n:'HR & Ops',s:0,badges:[]}];
+    }
+  },
+  save() {
+    try { localStorage.setItem(this.key, JSON.stringify(this.teams)); } catch(e){}
+  },
+  render() {
+    const sorted = [...this.teams].map((t,i)=>({...t,_orig:i})).sort((a,b)=>b.s-a.s);
+    const tbody = document.getElementById('lb-body');
+    tbody.innerHTML = sorted.map((tm, rank) => `
+      <tr>
+        <td class="lb-rank ${rank===0?'first':''}">${rank+1}</td>
+        <td class="lb-team-name">${tm.n}</td>
+        <td class="lb-badges">${(tm.badges||[]).join(' ') || '—'}</td>
+        <td class="lb-score">${tm.s}</td>
+        <td>
+          <div class="lb-adjust">
+            <button class="lb-btn" onclick="lbCtrl.bump(${tm._orig},1)" aria-label="Add 1 point">+</button>
+            <button class="lb-btn" onclick="lbCtrl.bump(${tm._orig},-1)" aria-label="Remove 1 point">−</button>
+            <button class="lb-btn-multi" onclick="lbCtrl.bump(${tm._orig},3)">+3</button>
+            <button class="lb-btn-multi" onclick="lbCtrl.bump(${tm._orig},5)">+5</button>
+            <button class="lb-btn-multi" onclick="lbCtrl.bump(${tm._orig},10)">+10</button>
+          </div>
+        </td>
+      </tr>`).join('');
+  },
+  bump(i, d) {
+    this.teams[i].s = Math.max(0, (this.teams[i].s || 0) + d);
+    this.save(); this.render();
+    if (d > 0) showToast(`+${d} for ${this.teams[i].n}`);
+  },
+  addTeam() {
+    const inp = document.getElementById('lb-name-input');
+    const v = inp.value.trim();
+    if (v) {
+      this.teams.push({n:v,s:0,badges:[]});
+      inp.value = ''; this.save(); this.render();
+      showToast(`${v} added to the leaderboard`);
+    }
+  },
+  awardBadge(teamIdx, badge) {
+    if (!this.teams[teamIdx].badges) this.teams[teamIdx].badges = [];
+    this.teams[teamIdx].badges.push(badge);
+    this.save(); this.render();
+  },
+  resetAll() {
+    if (confirm('Reset all scores to 0? This cannot be undone.')) {
+      this.teams.forEach(t => { t.s = 0; t.badges = []; });
+      this.save(); this.render();
+      showToast('Scores reset');
+    }
+  }
+};
+lbCtrl.load();
+lbCtrl.render();
+
+/* ============================================================
+   AGENDA / JOURNEY MAP
+   ============================================================ */
+const PHASES = [
+  {label:'Front Matter',types:['title','agenda','howto']},
+  {label:'Phase 1 · Precision Communication',ph:'Phase 1 · Precision Communication'},
+  {label:'Phase 2 · Functional Mastery',ph:'Phase 2 · Functional Mastery'},
+  {label:'Phase 3 · Strategic Leadership',ph:'Phase 3 · Strategic Leadership'},
+  {label:'Capstone',ph:'Capstone'},
+];
+
+function buildJourneyMap() {
+  const container = document.getElementById('journey-map');
+  // Group slides by phase
+  const phaseGroups = {};
+  SLIDES.forEach((s, i) => {
+    let phLabel = s.ph || (s.hour ? (s.ph || 'Phase ' + Math.ceil(s.hour/2)) : 'Front Matter');
+    if (!s.hour && !s.ph) phLabel = 'Front Matter';
+    if (!phaseGroups[phLabel]) phaseGroups[phLabel] = [];
+    phaseGroups[phLabel].push({s, i});
+  });
+
+  Object.entries(phaseGroups).forEach(([ph, items]) => {
+    const phDiv = document.createElement('div');
+    phDiv.className = 'journey-phase';
+    phDiv.innerHTML = `<div class="journey-phase-label">${ph}</div><div class="journey-slides" id="phase-${ph.replace(/\s/g,'_')}"></div>`;
+    container.appendChild(phDiv);
+    const slidesDiv = phDiv.querySelector('.journey-slides');
+    items.forEach(({s, i}) => {
+      const btn = document.createElement('button');
+      btn.className = 'journey-btn' + (s.type === 'divider' ? ' divider-btn' : '');
+      btn.dataset.idx = i;
+      let title = s.title || s.type;
+      if (s.type === 'checkpoint') title = `Gate ${s.hour}`;
+      else if (s.type === 'break') title = s.label ? `Break · ${s.label}min` : 'Break';
+      else if (s.type === 'battle') title = s.title || 'Prompt Battle';
+      else if (s.type === 'datasafety') title = 'Data Safety';
+      else if (s.type === 'capstone') title = 'Capstone Canvas';
+      else if (s.type === 'showcase') title = 'Showcase';
+      else if (s.type === 'thirtydays') title = '30-Day Plan';
+      else if (s.type === 'leaderboard-reveal') title = 'Final Scores';
+      else if (s.type === 'closing') title = 'Closing';
+      else if (s.type === 'title') title = 'Title';
+      else if (s.type === 'agenda') title = 'Agenda';
+      else if (s.type === 'howto') title = 'How It Works';
+      btn.innerHTML = `<div class="jb-idx">${String(i+1).padStart(2,'0')}${s.hour?' · H'+s.hour:''}</div><div class="jb-title">${title}</div>`;
+      btn.onclick = () => { deckCtrl.show(i); uiCtrl.closeAll(); };
+      slidesDiv.appendChild(btn);
+    });
+  });
+}
+buildJourneyMap();
+
+/* ============================================================
+   UI CONTROLLER
+   ============================================================ */
+const uiCtrl = {
+  toggleAgenda() {
+    document.getElementById('agenda-ov').classList.toggle('show');
+    document.getElementById('lb-ov').classList.remove('show');
+  },
+  toggleBoard() {
+    document.getElementById('lb-ov').classList.toggle('show');
+    document.getElementById('agenda-ov').classList.remove('show');
+    lbCtrl.render();
+  },
+  closeAll() {
+    document.getElementById('agenda-ov').classList.remove('show');
+    document.getElementById('lb-ov').classList.remove('show');
+  },
+  toggleFullscreen() {
+    if (!document.fullscreenElement) {
+      document.documentElement.requestFullscreen && document.documentElement.requestFullscreen();
+    } else {
+      document.exitFullscreen && document.exitFullscreen();
+    }
+  },
+  toggleTrainerMode() {
+    document.body.classList.toggle('trainer-mode');
+    const isTrainer = document.body.classList.contains('trainer-mode');
+    try { localStorage.setItem('veka-trainer-mode', isTrainer ? '1' : '0'); } catch(e){}
+    showToast(isTrainer ? '⚡ Trainer Mode ON — Shift+T to exit' : 'Participant Mode active');
+  }
+};
+
+// Restore trainer mode
+try {
+  if (localStorage.getItem('veka-trainer-mode') === '1') {
+    document.body.classList.add('trainer-mode');
+  }
+} catch(e){}
+
+/* ============================================================
+   HELPERS
+   ============================================================ */
+function copyPrompt(btn) {
+  const pre = btn.closest('.prompt-box').querySelector('pre');
+  // Get plain text (strip HTML tags from highlighted vars)
+  const text = pre.textContent || pre.innerText;
+  navigator.clipboard.writeText(text).then(() => {
+    btn.textContent = 'Copied ✓';
+    btn.classList.add('copied');
+    setTimeout(() => { btn.textContent = 'Copy'; btn.classList.remove('copied'); }, 1800);
+    showToast('Prompt copied to clipboard ✓');
+  }).catch(() => {
+    btn.textContent = 'Select & copy';
+    setTimeout(() => { btn.textContent = 'Copy'; }, 2000);
+  });
+}
+
+let toastTimer;
+function showToast(msg) {
+  const t = document.getElementById('main-toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => t.classList.remove('show'), 2800);
+}
+
+let achTimer;
+function showAchievement(title, desc) {
+  const toast = document.getElementById('ach-toast');
+  document.getElementById('ach-title').textContent = title;
+  document.getElementById('ach-desc').textContent = desc;
+  toast.classList.add('show');
+  clearTimeout(achTimer);
+  achTimer = setTimeout(() => toast.classList.remove('show'), 4000);
+}
+
+/* ============================================================
+   KEYBOARD NAVIGATION
+   ============================================================ */
+document.addEventListener('keydown', e => {
+  if (['INPUT','TEXTAREA','SELECT'].includes(e.target.tagName)) return;
+  switch(e.key) {
+    case 'ArrowRight': case ' ': case 'PageDown': deckCtrl.next(); e.preventDefault(); break;
+    case 'ArrowLeft': case 'PageUp': deckCtrl.prev(); e.preventDefault(); break;
+    case 'Home': deckCtrl.show(0); break;
+    case 'End': deckCtrl.show(slideEls.length - 1); break;
+    case 'f': case 'F': uiCtrl.toggleFullscreen(); break;
+    case 'g': case 'G': uiCtrl.toggleAgenda(); break;
+    case 'l': case 'L': uiCtrl.toggleBoard(); break;
+    case 't': case 'T':
+      if (e.shiftKey) uiCtrl.toggleTrainerMode();
+      else timerCtrl.showWidget();
+      break;
+    case 'Escape': uiCtrl.closeAll(); break;
+  }
+});
+
+/* Touch / swipe */
+let swipeX = 0;
+document.addEventListener('touchstart', e => swipeX = e.touches[0].clientX, {passive: true});
+document.addEventListener('touchend', e => {
+  const dx = e.changedTouches[0].clientX - swipeX;
+  if (Math.abs(dx) > 60) { dx < 0 ? deckCtrl.next() : deckCtrl.prev(); }
+}, {passive: true});
+
+/* ============================================================
+   INIT
+   ============================================================ */
+deckCtrl.show(0);
+</script>
+</body>
+</html>
