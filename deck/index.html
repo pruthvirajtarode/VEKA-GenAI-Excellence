@@ -1,1247 +1,1012 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>VEKA India | Microsoft Copilot — Day 2 | NxtWave</title>
-    <meta name="description" content="VEKA India Microsoft Copilot 2-Day Training: From Data to Decision — 8 Hours, 5 Core Apps, 4 Case Studies.">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="css/main.css">
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>VEKA India · GenAI Excellence — Live Webinar Deck</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#09090b;
+    --bg-glass: rgba(26, 33, 43, 0.45);
+    --bg2:rgba(21, 26, 34, 0.6);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    --panel:#1A212B;
+    --ink:#F4F2EC;
+    --muted:#98A2B2;
+    --line:rgba(255,255,255,.09);
+    --red:#E4002B;        /* VEKA crimson — primary accent */
+    --red-soft:rgba(228,0,43,.14);
+    --steel:#5B8DEF;      /* Core tier */
+    --green:#24C58A;      /* Scaffold tier */
+    --amber:#F5A623;      /* Stretch tier */
+    --display:'Space Grotesk',system-ui,sans-serif;
+    --body:'Inter',system-ui,sans-serif;
+    --mono:'JetBrains Mono',ui-monospace,monospace;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{height:100%}
+  body{
+    background:var(--bg);
+    color:var(--ink);
+    font-family:var(--body);
+    overflow:hidden;
+    -webkit-font-smoothing:antialiased;
+  }
+  /* blueprint grid ambience */
+  body::before{
+    content:"";position:fixed;inset:0;z-index:0;pointer-events:none;
+    background-image:
+      linear-gradient(rgba(255,255,255,.025) 1px,transparent 1px),
+      linear-gradient(90deg,rgba(255,255,255,.025) 1px,transparent 1px);
+    background-size:44px 44px;
+    mask-image:radial-gradient(ellipse at 50% 40%,#000 30%,transparent 82%);
+  }
+
+  /* ---------- stage ---------- */
+  #stage{position:fixed;inset:0;z-index:1;display:flex;align-items:center;justify-content:center}
+  .slide{
+    position:absolute;inset:0;
+    padding:clamp(28px,4.5vw,80px);
+    display:none;flex-direction:column;justify-content:center;
+    animation:slideIn .5s cubic-bezier(.2,.7,.2,1);
+  }
+  .slide.active{display:flex}
+  @keyframes slideIn{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+  @media (prefers-reduced-motion:reduce){.slide{animation:none}}
+  .wrap{width:100%;max-width:1180px;margin:0 auto}
+
+  /* ---------- shared type ---------- */
+  .eyebrow{
+    font-family:var(--mono);font-size:clamp(11px,1vw,14px);letter-spacing:.28em;
+    text-transform:uppercase;color:var(--red);display:flex;align-items:center;gap:12px;margin-bottom:20px;
+  }
+  .eyebrow::before{content:"";width:34px;height:2px;background:var(--red)}
+  h1.big{
+    font-family:var(--display);font-weight:800;line-height:1.02;
+    font-size:clamp(38px,6.2vw,88px);letter-spacing:-.03em;
+    background: linear-gradient(135deg, #fff 0%, #e5e5e5 50%, #a3a3a3 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+  h2.head{font-family:var(--display);font-weight:600;line-height:1.05;
+    font-size:clamp(28px,4.2vw,58px);letter-spacing:-.015em}
+  .lead{font-size:clamp(16px,1.7vw,23px);color:var(--muted);max-width:60ch;line-height:1.5;margin-top:18px}
+  .kicker{font-family:var(--mono);font-size:13px;letter-spacing:.2em;text-transform:uppercase;color:var(--muted)}
+
+  /* ---------- chrome: top bar ---------- */
+  #topbar{position:fixed;top:0;left:0;right:0;height:6px;z-index:6;background:rgba(255,255,255,.05)}
+  #progress{height:100%;width:0;background:linear-gradient(90deg,var(--red),#ff5a78);transition:width .4s ease}
+  #brand{position:fixed;top:20px;left:26px;z-index:6;display:flex;align-items:center;gap:12px;
+    font-family:var(--display);font-weight:600;letter-spacing:.02em;font-size:15px}
+  #brand .mark{width:26px;height:26px}
+  #brand small{font-family:var(--mono);font-weight:400;color:var(--muted);letter-spacing:.14em;
+    font-size:10px;text-transform:uppercase}
+  #hourtag{position:fixed;top:22px;right:26px;z-index:6;font-family:var(--mono);font-size:12px;
+    letter-spacing:.14em;color:var(--muted);text-transform:uppercase}
+  #hourtag b{color:var(--ink)}
+
+  /* ---------- chrome: bottom bar ---------- */
+  #botbar{position:fixed;bottom:16px;left:0;right:0;z-index:6;display:flex;align-items:center;
+    justify-content:center;gap:14px}
+  .navbtn{background:var(--bg2);border:1px solid var(--line);color:var(--ink);border-radius:10px;
+    width:42px;height:38px;font-size:18px;cursor:pointer;transition:.18s;display:grid;place-items:center}
+  .navbtn:hover{border-color:var(--red);color:var(--red);transform:translateY(-2px);box-shadow: 0 4px 12px rgba(228,0,43,0.3);}
+  #counter{font-family:var(--mono);font-size:12px;color:var(--muted);min-width:74px;text-align:center;letter-spacing:.1em}
+  .ghost{position:fixed;bottom:18px;z-index:6;font-family:var(--mono);font-size:11px;color:#5c6472;letter-spacing:.12em}
+  #hintL{left:26px}
+  #hintR{right:26px;text-align:right}
+
+  /* ---------- profile-chamber signature ---------- */
+  .chamber{display:block}
+  .chamber rect{fill:none;stroke:var(--red);stroke-width:2}
+  .chamber .fill{fill:var(--red-soft)}
+
+  /* ---------- TITLE slide ---------- */
+  .title-grid{display:grid;grid-template-columns:1.35fr .8fr;gap:40px;align-items:center}
+  .title-grid .art{display:grid;place-items:center}
+  @media(max-width:860px){.title-grid{grid-template-columns:1fr}.title-grid .art{display:none}}
+  .metarow{display:flex;flex-wrap:wrap;gap:26px;margin-top:34px}
+  .metarow div span{display:block}
+  .metarow .n{font-family:var(--display);font-size:26px;font-weight:700}
+  .metarow .l{font-family:var(--mono);font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--muted);margin-top:4px}
+
+  /* ---------- AGENDA ---------- */
+  .agenda{display:grid;grid-template-columns:repeat(2,1fr);gap:12px 26px;margin-top:26px}
+  @media(max-width:860px){.agenda{grid-template-columns:1fr}}
+  .agrow{display:grid;grid-template-columns:56px 1fr auto;gap:16px;align-items:baseline;
+    padding:12px 0;border-top:1px solid var(--line)}
+  .agrow .h{font-family:var(--mono);color:var(--red);font-size:13px;letter-spacing:.1em}
+  .agrow .t{font-family:var(--display);font-weight:500;font-size:clamp(15px,1.5vw,19px)}
+  .agrow .t small{display:block;color:var(--muted);font-family:var(--body);font-weight:400;font-size:13px;margin-top:2px}
+  .agrow .ph{font-family:var(--mono);font-size:10px;letter-spacing:.14em;color:var(--muted);text-transform:uppercase}
+
+  /* ---------- CONCEPT ---------- */
+  .cols{display:grid;grid-template-columns:1fr 1fr;gap:28px;margin-top:30px}
+  @media(max-width:860px){.cols{grid-template-columns:1fr}}
+  ul.pts{list-style:none;display:flex;flex-direction:column;gap:16px;margin-top:26px}
+  ul.pts li{position:relative;padding-left:34px;font-size:clamp(15px,1.5vw,19px);line-height:1.45}
+  ul.pts li::before{content:"";position:absolute;left:0;top:.55em;width:14px;height:14px;
+    border:2px solid var(--red);transform:rotate(45deg)}
+  ul.pts li b{color:var(--ink)}
+  .aside{background:var(--bg2);border:1px solid var(--line);border-left:3px solid var(--red);
+    border-radius:12px;padding:24px 26px}
+  .aside h4{font-family:var(--mono);text-transform:uppercase;letter-spacing:.14em;font-size:12px;
+    color:var(--red);margin-bottom:12px}
+  .aside p{color:var(--muted);line-height:1.5;font-size:15px}
+
+  /* ---------- DEMO (before / after) ---------- */
+  .demo-grid{display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-top:24px}
+  @media(max-width:860px){.demo-grid{grid-template-columns:1fr}}
+  .card{background:var(--bg2);border:1px solid var(--line);border-radius:14px;padding:22px 24px}
+  .card.before{border-top:3px solid #6b7280}
+  .card.after{border-top:3px solid var(--green)}
+  .card .tag{font-family:var(--mono);font-size:11px;letter-spacing:.16em;text-transform:uppercase;margin-bottom:12px}
+  .card.before .tag{color:#9aa4b2}
+  .card.after .tag{color:var(--green)}
+  .card p{font-size:15px;line-height:1.55;color:#d4d8de}
+  .demoscript{margin-top:22px;background:var(--red-soft);border:1px dashed rgba(228,0,43,.5);
+    border-radius:12px;padding:16px 20px;display:flex;gap:14px;align-items:flex-start}
+  .demoscript .mic{color:var(--red);font-size:20px;line-height:1}
+  .demoscript .say{font-size:15px;line-height:1.5}
+  .demoscript .say b{color:var(--red);font-family:var(--mono);font-size:11px;letter-spacing:.14em;
+    text-transform:uppercase;display:block;margin-bottom:4px}
+
+  /* ---------- ACTIVITY (YOUR TURN) ---------- */
+  .yt-head{display:flex;align-items:center;gap:16px;flex-wrap:wrap}
+  .yt-badge{font-family:var(--mono);background:var(--red);color:#fff;font-weight:700;font-size:12px;
+    letter-spacing:.16em;text-transform:uppercase;padding:7px 14px;border-radius:8px}
+  .yt-min{font-family:var(--mono);color:var(--muted);font-size:13px;letter-spacing:.1em}
+  .brief{font-size:clamp(15px,1.55vw,19px);color:var(--muted);margin:14px 0 20px;max-width:78ch;line-height:1.5}
+  .tiers{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:18px}
+  @media(max-width:860px){.tiers{grid-template-columns:1fr}}
+  .tier{background:var(--bg2);border:1px solid var(--line);border-radius:12px;padding:16px 18px;border-top:3px solid}
+  .tier.core{border-top-color:var(--steel)}
+  .tier.scaffold{border-top-color:var(--green)}
+  .tier.stretch{border-top-color:var(--amber)}
+  .tier .lbl{font-family:var(--mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;margin-bottom:8px;font-weight:700}
+  .tier.core .lbl{color:var(--steel)}
+  .tier.scaffold .lbl{color:var(--green)}
+  .tier.stretch .lbl{color:var(--amber)}
+  .tier p{font-size:14px;line-height:1.45;color:#d4d8de}
+  .promptbox{background:#0a0d12;border:1px solid var(--line);border-radius:12px;overflow:hidden}
+  .promptbox .pb-top{display:flex;justify-content:space-between;align-items:center;
+    background:#12161d;padding:8px 14px;border-bottom:1px solid var(--line)}
+  .promptbox .pb-top span{font-family:var(--mono);font-size:11px;letter-spacing:.14em;color:var(--muted);text-transform:uppercase}
+  .copybtn{background:transparent;border:1px solid var(--line);color:var(--muted);font-family:var(--mono);
+    font-size:11px;padding:4px 10px;border-radius:6px;cursor:pointer;letter-spacing:.06em}
+  .copybtn:hover{border-color:var(--green);color:var(--green)}
+  .promptbox pre{font-family:var(--mono);font-size:13.5px;line-height:1.55;color:#dfe6ee;
+    padding:16px 18px;white-space:pre-wrap;max-height:32vh;overflow:auto}
+  .share{margin-top:14px;font-size:14px;color:var(--muted);display:flex;gap:10px;align-items:center}
+  .share b{color:var(--green);font-family:var(--mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase}
+
+  /* ---------- CHECKPOINT ---------- */
+  .chk{
+    background: var(--bg-glass);
+    backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
+    border:1px solid rgba(255,255,255,0.12);
+    border-radius:16px;padding:30px 34px;margin-top:22px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+}
+  .chk .task{font-size:clamp(16px,1.7vw,22px);line-height:1.4;margin-bottom:20px}
+  .rubric{display:flex;flex-direction:column;gap:10px}
+  .rubric .r{display:grid;grid-template-columns:26px 1fr;gap:14px;align-items:baseline;font-size:15px;color:#d4d8de}
+  .rubric .r span{color:var(--green);font-family:var(--mono);font-size:18px}
+
+  /* ---------- BATTLE ---------- */
+  .battle{text-align:center}
+  .battle .vs{
+    font-family:var(--display);font-size:clamp(50px,9vw,120px);font-weight:900;
+    background: linear-gradient(135deg, #ff4d6d 0%, var(--red) 50%, #800020 100%);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    letter-spacing:-.04em;line-height:1; filter: drop-shadow(0 4px 12px rgba(228,0,43,0.4));
+}
+  .rules{display:inline-flex;flex-direction:column;gap:10px;text-align:left;margin-top:24px;
+    background:var(--bg2);border:1px solid var(--line);border-radius:14px;padding:22px 30px}
+  .rules div{font-size:15px;color:#d4d8de}
+  .rules b{color:var(--red);font-family:var(--mono);margin-right:8px}
+
+  /* ---------- BREAK ---------- */
+  .brk{text-align:center}
+  .brk .clock{font-family:var(--display);font-size:clamp(70px,16vw,200px);font-weight:700;
+    letter-spacing:-.04em;line-height:.9}
+  .brk .sub{color:var(--muted);margin-top:14px;font-size:20px}
+
+  /* ---------- DIVIDER ---------- */
+  .divider{text-align:left}
+  .divider .num{font-family:var(--display);font-weight:700;font-size:clamp(90px,20vw,260px);
+    line-height:.8;color:transparent;-webkit-text-stroke:2px var(--red);text-stroke:2px var(--red);letter-spacing:-.04em}
+  .divider .ph{font-family:var(--mono);letter-spacing:.24em;text-transform:uppercase;color:var(--red);
+    font-size:clamp(12px,1.3vw,16px);margin:26px 0 10px}
+
+  /* ---------- SHOWCASE / CLOSING ---------- */
+  .steps{counter-reset:s;display:flex;flex-direction:column;gap:14px;margin-top:24px}
+  .steps .s{display:grid;grid-template-columns:44px 1fr;gap:18px;align-items:baseline;
+    border-top:1px solid var(--line);padding-top:14px}
+  .steps .s::before{counter-increment:s;content:counter(s,decimal-leading-zero);
+    font-family:var(--mono);color:var(--red);font-size:15px}
+  .steps .s .t{font-family:var(--display);font-size:clamp(15px,1.5vw,19px);font-weight:500}
+  .steps .s .d{color:var(--muted);font-size:14px;margin-top:2px;line-height:1.4}
+
+  /* ---------- floating TIMER ---------- */
+  #timer{
+    position:fixed;bottom:66px;right:22px;z-index:8;
+    background: var(--bg-glass);
+    backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
+    border:1px solid rgba(255,255,255,0.1); border-radius:16px; padding:16px 20px; display:none;
+    box-shadow: 0 20px 40px rgba(0,0,0,0.6), inset 0 1px 0 rgba(255,255,255,0.1);
+    min-width:200px;
+}
+  #timer.show{display:block}
+  #timer .tt{font-family:var(--mono);font-size:10px;letter-spacing:.16em;text-transform:uppercase;
+    color:var(--muted);margin-bottom:6px;display:flex;justify-content:space-between}
+  #timer .tt b{color:var(--red)}
+  #tdisp{font-family:var(--display);font-weight:700;font-size:46px;line-height:1;letter-spacing:-.02em;
+    font-variant-numeric:tabular-nums}
+  #timer.done #tdisp{color:var(--red);animation:pulse 1s infinite}
+  @keyframes pulse{50%{opacity:.35}}
+  #timer .tbtns{display:flex;gap:6px;margin-top:12px}
+  #timer .tbtns button{flex:1;background:var(--bg2);border:1px solid var(--line);color:var(--ink);
+    border-radius:8px;padding:7px 0;font-family:var(--mono);font-size:11px;cursor:pointer;letter-spacing:.08em}
+  #timer .tbtns button:hover{border-color:var(--red);color:var(--red)}
+
+  /* ---------- overlays (agenda map + leaderboard) ---------- */
+  .overlay{
+    position:fixed;inset:0;z-index:20;
+    background:rgba(0, 0, 0, 0.85); backdrop-filter:blur(12px); -webkit-backdrop-filter:blur(12px);
+    display:none;padding:clamp(30px,5vw,70px);overflow:auto;
+}
+  .overlay.show{display:block}
+  .overlay .close{position:absolute;top:22px;right:26px;background:none;border:1px solid var(--line);
+    color:var(--ink);width:40px;height:40px;border-radius:10px;font-size:18px;cursor:pointer}
+  .overlay .close:hover{border-color:var(--red);color:var(--red)}
+  .overlay h3{font-family:var(--display);font-size:clamp(24px,3vw,40px);margin-bottom:8px}
+  .jump{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px;margin-top:26px}
+  .jump button{text-align:left;background:var(--bg2);border:1px solid var(--line);color:var(--ink);
+    border-radius:10px;padding:12px 14px;cursor:pointer;transition:.15s}
+  .jump button:hover{border-color:var(--red);transform:translateY(-2px)}
+  .jump button .jh{font-family:var(--mono);color:var(--red);font-size:11px;letter-spacing:.12em}
+  .jump button .jt{font-size:13px;margin-top:4px;color:#d4d8de}
+
+  /* leaderboard */
+  #lbTable{width:100%;max-width:720px;margin-top:24px;border-collapse:collapse}
+  #lbTable th{font-family:var(--mono);text-transform:uppercase;letter-spacing:.14em;font-size:11px;
+    color:var(--muted);text-align:left;padding:10px 12px;border-bottom:1px solid var(--line)}
+  #lbTable td{padding:12px;border-bottom:1px solid var(--line);font-size:16px}
+  #lbTable td.score{font-family:var(--display);font-weight:700;font-size:22px;color:var(--red)}
+  #lbTable td.rank{font-family:var(--mono);color:var(--muted)}
+  #lbTable button{background:var(--bg2);border:1px solid var(--line);color:var(--ink);width:30px;height:30px;
+    border-radius:7px;cursor:pointer;font-size:15px}
+  #lbTable button:hover{border-color:var(--red);color:var(--red)}
+  .lbadd{display:flex;gap:10px;margin-top:20px;max-width:720px}
+  .lbadd input{flex:1;background:var(--bg2);border:1px solid var(--line);color:var(--ink);
+    border-radius:9px;padding:10px 14px;font-family:var(--body);font-size:14px}
+  .lbadd button{background:var(--red);border:none;color:#fff;border-radius:9px;padding:0 20px;
+    font-weight:600;cursor:pointer}
+  .lbrules{margin-top:22px;color:var(--muted);font-size:13.5px;line-height:1.6;max-width:720px}
+  .lbrules b{color:var(--ink)}
+
+  .toast{position:fixed;bottom:120px;left:50%;transform:translateX(-50%) translateY(20px);
+    background:var(--green);color:#04231a;font-weight:600;padding:10px 20px;border-radius:10px;
+    z-index:30;opacity:0;transition:.3s;font-size:14px}
+  .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+</style>
 </head>
 <body>
 
-<div id="presentation-container">
+<div id="topbar"><div id="progress"></div></div>
 
-<!-- ═══════════════════════════════════════════════════ -->
-<!-- OPENING SEQUENCE -->
-<!-- ═══════════════════════════════════════════════════ -->
+<div id="brand">
+  <svg class="mark" viewBox="0 0 40 40"><g class="chamber">
+    <rect class="fill" x="3" y="3" width="34" height="34" rx="2"/>
+    <rect x="9" y="9" width="10" height="10"/>
+    <rect x="21" y="9" width="10" height="10"/>
+    <rect x="9" y="21" width="22" height="10"/>
+  </g></svg>
+  <div>VEKA · GenAI Excellence<br><small>NxtWave Enterprise Training</small></div>
+</div>
+<div id="hourtag"></div>
 
-<section class="slide active" id="slide-1" data-module="Opening"
-  data-trainer-objective="Welcome + Set expectations"
-  data-trainer-say="Good morning! Today is all about using Copilot in the exact context of VEKA's digital lending business. Every exercise uses VEKA scenarios, VEKA-style data, VEKA products."
-  data-trainer-time="0:00–0:10"
-  data-trainer-watch="Ensure all participants have opened the workbook at workbook/index.html">
+<div id="stage"></div>
 
-  <div class="hero-slide">
-    <div class="hero-eyebrow">VEKA INNOVATE × NxtWave</div>
-    <h1 class="hero-title">MICROSOFT<br><span class="grad-text">COPILOT</span></h1>
-    <div class="hero-sub">DAY 1 & 2 — GENAI EXCELLENCE</div>
-    <div class="hero-meta">
-      <span class="meta-pill">8 HOURS</span>
-      <span class="meta-pill">5 CORE APPS</span>
-      <span class="meta-pill">3 VEKA DATA LABS</span>
-      <span class="meta-pill">4 CASE STUDIES</span>
-      <span class="meta-pill">1 CAPSTONE</span>
-    </div>
-    <div class="hero-footer">IT &amp; PRODUCT TEAM — CORPORATE TRAINING</div>
-  </div>
-  <div class="slide-footer">
-    <span>Press Space or → to advance &nbsp;|&nbsp; Shift+T = Trainer Mode &nbsp;|&nbsp; F = Fullscreen</span>
-    <span class="badge-sim">OFFLINE TRAINING MODE</span>
-  </div>
-</section>
-
-<!-- ─── OPENING QUESTION ─── -->
-<section class="slide" id="slide-2" data-module="Opening"
-  data-trainer-say="Ask the room: How much of your actual working day is real thinking versus moving information around?"
-  data-trainer-time="2 min discussion">
-  <div class="center-slide">
-    <div class="eyebrow">OPENING QUESTION</div>
-    <h2 class="large-question">"Where does your team spend time<br><span class="grad-text">moving information</span><br>instead of<br><span style="color:var(--amber)">making decisions?</span>"</h2>
-    <div class="answer-chips" style="margin-top:3rem;">
-      <span class="chip">Email</span><span class="chip">Excel</span><span class="chip">Meetings</span>
-      <span class="chip">Documents</span><span class="chip">Presentations</span><span class="chip">Reports</span>
-      <span class="chip">API monitoring</span><span class="chip">Production analysis</span><span class="chip">Production reviews</span>
-    </div>
-  </div>
-</section>
-
-<!-- ─── VEKA COMPANY CONTEXT ─── -->
-<section class="slide" id="slide-3" data-module="Opening"
-  data-trainer-say="VEKA is not a generic company. They run digital lending infrastructure. Today every example we use will be grounded in VEKA's actual business context."
-  data-trainer-time="5 min">
-  <div class="split-slide">
-    <div class="split-left">
-      <div class="eyebrow">THE CLIENT CONTEXT</div>
-      <h2>VEKA India</h2>
-      <p class="body-lead">Extrusion Manufacturing Infrastructure.<br>AI-Native. API-First. Manufacturing-Focused.</p>
-      <div class="kpi-row">
-        <div class="kpi-card">
-          <div class="kpi-num">235+</div>
-          <div class="kpi-label">Partner Banks</div>
-        </div>
-        <div class="kpi-card">
-          <div class="kpi-num">100,000+</div>
-          <div class="kpi-label">Tons Produced</div>
-        </div>
-        <div class="kpi-card">
-          <div class="kpi-num">360+</div>
-          <div class="kpi-label">Employees</div>
-        </div>
-        <div class="kpi-card">
-          <div class="kpi-num">400+</div>
-          <div class="kpi-label">Manufacturings Distributors</div>
-        </div>
-        <div class="kpi-card">
-          <div class="kpi-num">50+</div>
-          <div class="kpi-label">Profile Types</div>
-        </div>
-      </div>
-      <div class="badge-row">
-        <span class="badge-public">PUBLIC VEKA DATA</span>
-        <span style="font-size:1.1rem;color:var(--text-muted);">As publicly stated by VEKA — veka.in</span>
-      </div>
-    </div>
-    <div class="split-right">
-      <div class="biz-chain">
-        <div class="chain-item active-chain">Raw Material Sourcing</div>
-        <div class="chain-arrow">↓</div>
-        <div class="chain-item">Extrusion Setup</div>
-        <div class="chain-arrow">↓</div>
-        <div class="chain-item">Quality Checks & Tooling</div>
-        <div class="chain-arrow">↓</div>
-        <div class="chain-item">Risk Analysis + Quality Assurance</div>
-        <div class="chain-arrow">↓</div>
-        <div class="chain-item active-chain">Finished Goods Packaging</div>
-        <div class="chain-arrow">↓</div>
-        <div class="chain-item">Logistics & Distribution</div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- ─── OPENING SCENARIO ─── -->
-<section class="slide" id="slide-4" data-module="Opening"
-  data-trainer-say="This is our opening scenario. A real VEKA operations team doing a weekly lending review. Walk them through the 5 inputs, then ask how long this would take manually."
-  data-trainer-time="5 min"
-  data-trainer-rescue="If nobody answers: suggest 3–5 hours of manual gathering across tools.">
-  <div class="full-slide">
-    <div class="eyebrow">OPENING CASE STUDY — ILLUSTRATIVE</div>
-    <h2>The VEKA Weekly Plant Operations Review</h2>
-    <div class="scenario-grid">
-      <div class="scenario-card">
-        <div class="sc-icon">📊</div>
-        <div class="sc-label">Excel</div>
-        <div class="sc-desc">500-row Manufacturing production batch metrics</div>
-      </div>
-      <div class="scenario-card">
-        <div class="sc-icon">💬</div>
-        <div class="sc-label">Teams</div>
-        <div class="sc-desc">Monthly review meeting transcript</div>
-      </div>
-      <div class="scenario-card">
-        <div class="sc-icon">📄</div>
-        <div class="sc-label">Word</div>
-        <div class="sc-desc">Product update brief</div>
-      </div>
-      <div class="scenario-card">
-        <div class="sc-icon">⚙️</div>
-        <div class="sc-label">OAM API</div>
-        <div class="sc-desc">Integration performance data</div>
-      </div>
-      <div class="scenario-card">
-        <div class="sc-icon">📧</div>
-        <div class="sc-label">Outlook</div>
-        <div class="sc-desc">Stakeholder email thread</div>
-      </div>
-    </div>
-    <div class="vs-bar">
-      <div class="vs-before"><strong>Without Copilot:</strong> 3–5 hours manual aggregation → delayed decisions</div>
-      <div class="vs-arrow">→</div>
-      <div class="vs-after"><strong>With Copilot:</strong> ONE BUSINESS QUESTION. MULTIPLE COPILOT TOUCHPOINTS.</div>
-    </div>
-  </div>
-</section>
-
-<!-- ═══════════════════════════════════════════════════ -->
-<!-- MODULE 1 — MEET COPILOT (0:10–1:00) -->
-<!-- ═══════════════════════════════════════════════════ -->
-
-<section class="slide" id="slide-5" data-module="Meet Copilot"
-  data-trainer-say="Module 1. 20 minutes. Our goal is to land the Copilot landscape, the VEKA prompt framework, and the CRITICAL data policy."
-  data-trainer-time="0:10–1:00">
-  <div class="module-title-slide">
-    <div class="mod-number">DAY 1 — MODULE 01</div>
-    <h1>MEET<br><span class="grad-text">COPILOT</span></h1>
-    <p>Landscape · Prompt Framework · Data Policy</p>
-    <div class="mod-time">20 MIN</div>
-  </div>
-</section>
-
-<!-- ─── COPILOT LANDSCAPE ─── -->
-<section class="slide" id="slide-6" data-module="Meet Copilot"
-  data-trainer-say="Three types. Think: Think with Copilot Chat. Work with M365 Copilot. Code with GitHub Copilot."
-  data-trainer-time="5 min">
-  <div class="full-slide">
-    <div class="eyebrow">Module 1 — The Copilot Landscape</div>
-    <h2>Which Copilot?</h2>
-    <div class="three-col" style="margin-top:2rem;">
-      <div class="feature-card">
-        <div class="fc-icon" style="background:linear-gradient(135deg,#10a37f,#2563eb);">C</div>
-        <h3>Copilot Chat</h3>
-        <div class="fc-tag">THINK</div>
-        <p>General research, drafting, summarising. Works on public internet knowledge + your prompts.</p>
-        <div class="opl-example">VEKA Use: Draft a product FAQ from public documents</div>
-      </div>
-      <div class="feature-card highlight-card">
-        <div class="fc-icon" style="background:#0078d4;">365</div>
-        <h3>Microsoft 365 Copilot</h3>
-        <div class="fc-tag fc-tag-blue">WORK</div>
-        <p>Embedded in Word, Excel, PowerPoint, Outlook, Teams. Works with YOUR organisation's data.</p>
-        <div class="opl-example">VEKA Use: Analyse the Manufacturing production batch dataset in Excel</div>
-      </div>
-      <div class="feature-card">
-        <div class="fc-icon" style="background:#24292e;">GH</div>
-        <h3>GitHub Copilot</h3>
-        <div class="fc-tag fc-tag-dark">CODE</div>
-        <p>AI pair programmer. Works in VS Code, IntelliJ and more. Explains, refactors, generates tests.</p>
-        <div class="opl-example">VEKA Use: Explain the VEKA ERP Java API service code</div>
-      </div>
-    </div>
-    <div class="disclaimer-bar">Feature availability may vary by Microsoft 365 license, tenant configuration, permissions, product version and organisation settings.</div>
-  </div>
-</section>
-
-<!-- ─── WHICH COPILOT ACTIVITY ─── -->
-<section class="slide" id="slide-7" data-module="Meet Copilot"
-  data-trainer-say="Interactive quiz. Read each scenario. Participants shout out which Copilot. Reveal after each."
-  data-trainer-time="5 min activity">
-  <div class="full-slide">
-    <div class="eyebrow">ACTIVITY — Which Copilot?</div>
-    <h2>Match the VEKA scenario to the right Copilot</h2>
-    <div class="quiz-grid">
-      <div class="quiz-item" onclick="this.classList.toggle('revealed')">
-        <div class="quiz-q">"I need to summarise a long VEKA product document."</div>
-        <div class="quiz-a">✅ Word / Microsoft 365 Copilot</div>
-      </div>
-      <div class="quiz-item" onclick="this.classList.toggle('revealed')">
-        <div class="quiz-q">"I need to analyse 500 Manufacturing credit records."</div>
-        <div class="quiz-a">✅ Excel Copilot</div>
-      </div>
-      <div class="quiz-item" onclick="this.classList.toggle('revealed')">
-        <div class="quiz-q">"I need a management deck on VEKA ERP API performance."</div>
-        <div class="quiz-a">✅ PowerPoint Copilot</div>
-      </div>
-      <div class="quiz-item" onclick="this.classList.toggle('revealed')">
-        <div class="quiz-q">"I need to understand a Java API validation service."</div>
-        <div class="quiz-a">✅ GitHub Copilot</div>
-      </div>
-      <div class="quiz-item" onclick="this.classList.toggle('revealed')">
-        <div class="quiz-q">"I need to prepare a meeting follow-up from today's review."</div>
-        <div class="quiz-a">✅ Teams / Outlook Copilot</div>
-      </div>
-      <div class="quiz-item" onclick="this.classList.toggle('revealed')">
-        <div class="quiz-q">"I need to research what GST filing trends mean for Manufacturing credit."</div>
-        <div class="quiz-a">✅ Copilot Chat</div>
-      </div>
-    </div>
-    <p style="text-align:center;color:var(--text-muted);font-size:1.2rem;margin-top:2rem;">Click each card to reveal the answer</p>
-  </div>
-</section>
-
-<!-- ─── VEKA PROMPT FRAMEWORK ─── -->
-<section class="slide" id="slide-8" data-module="Meet Copilot"
-  data-trainer-say="The framework that will make every Copilot session 10x better. Write this in your workbook. We will use it for every single activity today."
-  data-trainer-time="5 min">
-  <div class="full-slide">
-    <div class="eyebrow">VEKA PROMPT FRAMEWORK</div>
-    <div class="prompt-framework">
-      <div class="pf-block"><span class="pf-letter">T</span><span class="pf-word">TASK</span><span class="pf-desc">What do you want Copilot to do?</span></div>
-      <div class="pf-plus">+</div>
-      <div class="pf-block"><span class="pf-letter">C</span><span class="pf-word">CONTEXT</span><span class="pf-desc">Who is the audience? What is the goal?</span></div>
-      <div class="pf-plus">+</div>
-      <div class="pf-block"><span class="pf-letter">S</span><span class="pf-word">SOURCE</span><span class="pf-desc">Which files or data should it use?</span></div>
-      <div class="pf-plus">+</div>
-      <div class="pf-block"><span class="pf-letter">C</span><span class="pf-word">CONSTRAINT</span><span class="pf-desc">What limits? Only use provided data?</span></div>
-      <div class="pf-plus">+</div>
-      <div class="pf-block"><span class="pf-letter">O</span><span class="pf-word">OUTPUT</span><span class="pf-desc">Format, length, tone?</span></div>
-      <div class="pf-plus">+</div>
-      <div class="pf-block pf-block-check"><span class="pf-letter">✓</span><span class="pf-word">CHECK</span><span class="pf-desc">What must a human verify?</span></div>
-    </div>
-  </div>
-</section>
-
-<!-- ─── BAD vs GOOD PROMPT ─── -->
-<section class="slide" id="slide-9" data-module="Meet Copilot"
-  data-trainer-say="Show both prompts. Ask which they would send to a banking stakeholder."
-  data-trainer-rescue="The good prompt is grounded: it specifies the role, the source, the constraints, and demands verification.">
-  <div class="full-slide">
-    <div class="eyebrow">PROMPT RESCUE — ACTIVITY</div>
-    <h2>Which prompt would you use?</h2>
-    <div class="prompt-compare">
-      <div class="prompt-bad">
-        <div class="pb-label">❌ WEAK PROMPT</div>
-        <div class="pb-text">"Analyze this loan data."</div>
-        <div class="pb-issues">
-          <span class="issue-tag">No role</span>
-          <span class="issue-tag">No source</span>
-          <span class="issue-tag">No constraints</span>
-          <span class="issue-tag">No output format</span>
-          <span class="issue-tag">No verification</span>
-        </div>
-      </div>
-      <div class="prompt-good">
-        <div class="pg-label">✅ VEKA-STYLE PROMPT</div>
-        <div class="pg-text">"You are a lending operations analyst at a digital lending fintech.
-
-Using ONLY the attached synthetic Manufacturing credit production batch data, identify:
-1. Overall approval rate
-2. Which sector has the highest risk concentration
-3. Which region shows elevated DPD_30 counts
-4. Three early warning signals
-
-Do NOT invent values not present in the data.
-
-Output: bullet summary + one chart recommendation + three management actions.
-
-Flag anything that requires human verification before presenting to leadership."</div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- ─── DATA POLICY ─── -->
-<section class="slide" id="slide-10" data-module="Meet Copilot"
-  data-trainer-say="CRITICAL slide. This is VEKA-specific. We have three categories of data in this training. Make sure everyone understands what is real, what is synthetic, and what must never be fabricated."
-  data-trainer-rescue="If anyone tries to pull in real VEKA client data for the exercises — stop and redirect to the synthetic datasets.">
-  <div class="full-slide">
-    <div class="eyebrow">DATA CLASSIFICATION POLICY</div>
-    <h2>Know your data</h2>
-    <div class="data-policy-grid">
-      <div class="dp-card dp-public">
-        <div class="dp-icon">🌐</div>
-        <h3>PUBLIC VEKA DATA</h3>
-        <p>Information from VEKA's official website, public brochures and public product pages.</p>
-        <div class="dp-examples">
-          <div class="dp-ex">✓ 235+ partner banks</div>
-          <div class="dp-ex">✓ ₹6,00,000 Cr+ sanctioned</div>
-          <div class="dp-ex">✓ Product names (VEKA ERP, PMS, Manufacturing Risk Rank)</div>
-        </div>
-        <div class="badge-public" style="margin-top:1rem;">BADGE: PUBLIC</div>
-      </div>
-      <div class="dp-card dp-synthetic">
-        <div class="dp-icon">🔬</div>
-        <h3>SYNTHETIC VEKA-ALIGNED DATA</h3>
-        <p>AI-generated training datasets designed to resemble realistic VEKA business workflows.</p>
-        <div class="dp-examples">
-          <div class="dp-ex">✓ VEKA_Manufacturing_CREDIT_PORTFOLIO_TRAINING.csv</div>
-          <div class="dp-ex">✓ VEKA_BANK_STATEMENT_ANALYZER_TRAINING.csv</div>
-          <div class="dp-ex">✓ VEKA_OAM_API_OPERATIONS_TRAINING.csv</div>
-        </div>
-        <div class="badge-synthetic" style="margin-top:1rem;">BADGE: SYNTHETIC</div>
-      </div>
-      <div class="dp-card dp-confidential">
-        <div class="dp-icon">🔒</div>
-        <h3>CLIENT CONFIDENTIAL DATA</h3>
-        <p>Real internal VEKA operational data. <strong>Must NOT be fabricated.</strong> Must NOT be pasted into AI tools without proper approval.</p>
-        <div class="dp-examples">
-          <div class="dp-ex">✗ Actual customer records</div>
-          <div class="dp-ex">✗ Live production batch figures</div>
-          <div class="dp-ex">✗ Actual vendor performance metrics</div>
-        </div>
-        <div class="badge-confidential" style="margin-top:1rem;">DO NOT FABRICATE</div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- ═══════════════════════════════════════════════════ -->
-<!-- MODULE 2 — COPILOT IN DAILY APPS (1:00–4:00) -->
-<!-- ═══════════════════════════════════════════════════ -->
-
-<section class="slide" id="slide-11" data-module="Apps"
-  data-trainer-say="Module 2. One hour. We go app by app — Outlook, Word, Excel (3 data labs), PowerPoint, Teams. Every exercise uses VEKA context."
-  data-trainer-time="1:00–4:00">
-  <div class="module-title-slide">
-    <div class="mod-number">DAY 1 — MODULE 02</div>
-    <h1>COPILOT<br><span class="grad-text">IN DAILY APPS</span></h1>
-    <p>Outlook · Word · Excel · PowerPoint · Teams</p>
-    <div class="mod-time">60 MIN</div>
-  </div>
-</section>
-
-<!-- ─── OUTLOOK ─── -->
-<section class="slide" id="slide-12" data-module="Outlook"
-  data-trainer-objective="Teach participants to summarise, extract actions, and draft replies in Outlook Copilot — using ONLY what is stated in the thread."
-  data-trainer-say="Say: Open Outlook Copilot. Paste the thread. Use each prompt on the right one at a time. Watch what Copilot invents vs what is stated. That gap IS the lesson."
-  data-trainer-time="10 min"
-  data-trainer-watch="CRITICAL: Copilot may invent owners/dates not in the thread. When it does — stop the class. Say: this is a hallucination. This is why we use [CONFIRM OWNER].">
-  <div class="app-slide">
-    <div class="app-header-row">
-      <div class="app-chip outlook-chip">OUTLOOK</div>
-      <h2>Q3 Manufacturing Production Review — Email Thread Exercise</h2>
-    </div>
-    <div class="split-slide" style="margin-top:1.5rem;">
-      <div class="split-left">
-        <div class="email-mock">
-          <div class="em-header">
-            <strong>Subject:</strong> Q3 Manufacturing Production Review — Action Required<br>
-            <strong>Participants:</strong> Product · Engineering · Risk · Business · Operations
-          </div>
-          <div class="em-thread">
-            <div class="em-msg"><span class="em-from">Risk Lead:</span> "Production review is overdue. Vendor_B API showing elevated failure rate impacting underwriting TAT. Need decisions by Friday."</div>
-            <div class="em-msg"><span class="em-from">Engineering Lead:</span> "We are investigating. The PMS parser also needs an update for new HDFC statement formats."</div>
-            <div class="em-msg"><span class="em-from">Product Manager:</span> "We need a summary deck for leadership. Can someone confirm who owns the VEKA ERP fix?"</div>
-            <div class="em-msg em-unresolved"><span class="em-from">Operations Lead:</span> "I will coordinate but need clarity on timeline."</div>
-          </div>
-        </div>
-        <div class="badge-synthetic" style="margin-top:0.8rem;">SYNTHETIC VEKA-ALIGNED TRAINING DATA</div>
-        <div class="warning-box" style="margin-top:1rem;">
-          ⚠️ If owner or date is NOT in the thread: use <code>[CONFIRM OWNER]</code> / <code>[CONFIRM DATE]</code><br><strong>DO NOT INVENT.</strong>
-        </div>
-      </div>
-      <div class="split-right" style="overflow-y:auto; max-height:860px;">
-        <h3 style="margin-bottom:1rem;">Exact Copilot Prompts — Use These Live</h3>
-
-        <div style="display:flex;flex-direction:column;gap:1rem;">
-
-          <div style="background:var(--surface-2);border:1px solid var(--border);border-left:3px solid var(--ms-outlook);border-radius:8px;padding:1.2rem;">
-            <div style="font-size:1.1rem;font-weight:700;color:#60A5FA;letter-spacing:0.08em;margin-bottom:0.5rem;">STEP 1 — SUMMARISE</div>
-            <div class="prompt-box-sm" style="font-size:1.25rem;">&quot;Summarise this email thread in exactly 5 bullet points. Include: the core problem, who is involved, what has been raised, what is unclear, and what needs a decision.&quot;</div>
-          </div>
-
-          <div style="background:var(--surface-2);border:1px solid var(--border);border-left:3px solid var(--ms-outlook);border-radius:8px;padding:1.2rem;">
-            <div style="font-size:1.1rem;font-weight:700;color:#60A5FA;letter-spacing:0.08em;margin-bottom:0.5rem;">STEP 2 — DECISIONS</div>
-            <div class="prompt-box-sm" style="font-size:1.25rem;">&quot;From this thread, list only the decisions that have been formally agreed. Do not include opinions or suggestions.&quot;</div>
-          </div>
-
-          <div style="background:var(--surface-2);border:1px solid var(--border);border-left:3px solid var(--ms-outlook);border-radius:8px;padding:1.2rem;">
-            <div style="font-size:1.1rem;font-weight:700;color:var(--amber);letter-spacing:0.08em;margin-bottom:0.5rem;">STEP 3 — ACTION ITEMS ⚑ KEY</div>
-            <div class="prompt-box-sm" style="font-size:1.25rem;">&quot;Extract all action items. For each: state the action, the owner, and the due date. If the owner is not explicitly named in the thread, write [CONFIRM OWNER]. If the date is not stated, write [CONFIRM DATE]. DO NOT INVENT.&quot;</div>
-          </div>
-
-          <div style="background:var(--surface-2);border:1px solid var(--border);border-left:3px solid var(--ms-outlook);border-radius:8px;padding:1.2rem;">
-            <div style="font-size:1.1rem;font-weight:700;color:#60A5FA;letter-spacing:0.08em;margin-bottom:0.5rem;">STEP 4 — OPEN QUESTIONS</div>
-            <div class="prompt-box-sm" style="font-size:1.25rem;">&quot;List all unresolved questions or issues from this thread that need a clear answer before the team can proceed.&quot;</div>
-          </div>
-
-          <div style="background:var(--surface-2);border:1px solid rgba(245,158,11,0.5);border-left:3px solid var(--amber);border-radius:8px;padding:1.2rem;">
-            <div style="font-size:1.1rem;font-weight:700;color:var(--amber);letter-spacing:0.08em;margin-bottom:0.5rem;">STEP 5 — DRAFT REPLY ⚑ VERIFY BEFORE SENDING</div>
-            <div class="prompt-box-sm" style="font-size:1.25rem;">&quot;Draft a professional reply to the Product Manager acknowledging the open items, confirming what I will do, and flagging what needs to be decided before Friday. Tone: collaborative, senior. I will review before sending.&quot;</div>
-          </div>
-
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- ─── WORD ─── -->
-<section class="slide" id="slide-13" data-module="Word"
-  data-trainer-say="Word exercise. Participants open the rough Manufacturing Production notes from the data pack and ask Copilot to transform it into an executive brief."
-  data-trainer-time="10 min">
-  <div class="app-slide">
-    <div class="app-header-row">
-      <div class="app-chip word-chip">WORD</div>
-      <h2>From Rough Notes to Executive Business Brief</h2>
-    </div>
-    <div class="split-slide" style="margin-top:2rem;">
-      <div class="split-left">
-        <div class="rough-notes">
-          <div class="rn-label">📝 Rough Notes Input</div>
-          <p>"Manufacturing production batch review notes. Production grew 15% but retail sector showing issues. East region DPD up. PMS parser needs update. Vendor API slow. Leadership wants a deck. No timeline agreed."</p>
-        </div>
-        <div class="prompt-box-sm" style="margin-top:1.5rem;">"Transform these rough notes into a professional executive business brief. Include sections: Executive Summary, Production Status, Key Risk Signals, Operational Issues, Recommendations, Next Steps. Tone: senior banking stakeholder."</div>
-      </div>
-      <div class="split-right">
-        <div class="word-output">
-          <div class="wo-header">📄 VEKA Manufacturing Production Monitoring Review</div>
-          <div class="wo-section"><strong>Executive Summary</strong><br>The Manufacturing lending production batch grew 15% quarter-over-quarter. However, elevated DPD signals in the East region and Retail sector require immediate attention.</div>
-          <div class="wo-section"><strong>Key Risk Signals</strong><br>• Retail sector DPD_30 elevated<br>• Vendor_B API causing TAT delays<br>• PMS parser compatibility gap (HDFC format)</div>
-          <div class="wo-section"><strong>Recommendations</strong><br>• Tighten underwriting for Retail/East (via BRE)<br>• Escalate Vendor_B integration to Engineering<br>• Prioritise PMS parser update</div>
-        </div>
-        <div class="badge-illustrative" style="margin-top:1rem;">ILLUSTRATIVE CASE STUDY</div>
-        <div class="prompt-box-sm" style="margin-top:1rem;">"Now rewrite this for a senior banking stakeholder."<br>"Reduce this to one page."</div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- ─── EXCEL INTRO ─── -->
-<section class="slide" id="slide-14" data-module="Excel"
-  data-trainer-say="Excel is the core data lab. We have 3 datasets — Manufacturing Production, Production Monitoring System, VEKA ERP API Operations. Each has specific exercises."
-  data-trainer-time="2 min transition">
-  <div class="center-slide">
-    <div class="app-chip excel-chip" style="margin:0 auto 2rem;">EXCEL — 3 DATA LABS</div>
-    <h2>VEKA Data Lab</h2>
-    <div class="three-col" style="margin-top:3rem;">
-      <div class="data-lab-card">
-        <div class="dlc-num">LAB 1</div>
-        <h3>Manufacturing Production Production</h3>
-        <p>500 synthetic applications · Approval · Risk · DPD · Regional · Sector analysis</p>
-        <div style="display:flex;gap:0.8rem;flex-wrap:wrap;margin-top:auto;">
-          <div class="badge-synthetic">SYNTHETIC</div>
-          <a href="../datasets/VEKA_Manufacturing_CREDIT_PORTFOLIO_TRAINING.csv" target="_blank" style="background:rgba(33,115,70,0.2);color:#6EE7B7;border:1px solid rgba(33,115,70,0.4);padding:0.3rem 0.8rem;border-radius:4px;font-size:1.1rem;font-weight:700;text-decoration:none;cursor:pointer;">📂 Open CSV</a>
-        </div>
-      </div>
-      <div class="data-lab-card">
-        <div class="dlc-num">LAB 2</div>
-        <h3>Production Monitoring System</h3>
-        <p>1,000 synthetic transactions · Cash flow · Anomaly detection · Fraud signals</p>
-        <div style="display:flex;gap:0.8rem;flex-wrap:wrap;margin-top:auto;">
-          <div class="badge-synthetic">SYNTHETIC</div>
-          <a href="../datasets/VEKA_BANK_STATEMENT_ANALYZER_TRAINING.csv" target="_blank" style="background:rgba(33,115,70,0.2);color:#6EE7B7;border:1px solid rgba(33,115,70,0.4);padding:0.3rem 0.8rem;border-radius:4px;font-size:1.1rem;font-weight:700;text-decoration:none;cursor:pointer;">📂 Open CSV</a>
-        </div>
-      </div>
-      <div class="data-lab-card">
-        <div class="dlc-num">LAB 3</div>
-        <h3>VEKA ERP API Operations</h3>
-        <p>500 synthetic API logs · Latency · Failure rate · Vendor reliability · Bottlenecks</p>
-        <div style="display:flex;gap:0.8rem;flex-wrap:wrap;margin-top:auto;">
-          <div class="badge-synthetic">SYNTHETIC</div>
-          <a href="../datasets/VEKA_OAM_API_OPERATIONS_TRAINING.csv" target="_blank" style="background:rgba(33,115,70,0.2);color:#6EE7B7;border:1px solid rgba(33,115,70,0.4);padding:0.3rem 0.8rem;border-radius:4px;font-size:1.1rem;font-weight:700;text-decoration:none;cursor:pointer;">📂 Open CSV</a>
-        </div>
-      </div>
-    </div>
-    <div style="display:flex;gap:1.5rem;justify-content:center;margin-top:2rem;flex-wrap:wrap;">
-      <a href="../charts/index.html" target="_blank" style="background:rgba(245,158,11,0.15);color:var(--amber);border:1px solid rgba(245,158,11,0.4);padding:0.8rem 2rem;border-radius:8px;font-size:1.4rem;font-weight:700;text-decoration:none;">📊 Open Data Analytics Lab</a>
-      <a href="../workbook/index.html" target="_blank" style="background:rgba(255,255,255,0.05);color:var(--text-secondary);border:1px solid var(--border);padding:0.8rem 2rem;border-radius:8px;font-size:1.4rem;font-weight:700;text-decoration:none;">📓 Open Participant Workbook</a>
-    </div>
-  </div>
-</section>
-
-<!-- ─── EXCEL LAB 1 ─── -->
-<section class="slide" id="slide-15" data-module="Excel"
-  data-trainer-say="Open VEKA_Manufacturing_CREDIT_PORTFOLIO_TRAINING.csv in Excel. Format as a table. Ask Copilot each question one at a time and validate the answer."
-  data-trainer-time="15 min"
-  data-trainer-watch="Do not let participants accept Copilot's answer without checking it against the actual data. Ask: what evidence supports this?">
-  <div class="app-slide">
-    <div class="app-header-row">
-      <div class="app-chip excel-chip">LAB 1</div>
-      <h2>Manufacturing Production Production Analysis</h2>
-      <div style="margin-left:auto; display:flex; gap:10px;">
-        <a href="../charts/index.html" target="_blank" style="background:rgba(245,158,11,0.15);color:var(--amber);border:1px solid rgba(245,158,11,0.4);padding:0.5rem 1.2rem;border-radius:6px;font-size:1.2rem;font-weight:700;text-decoration:none;">📊 Open Interactive Charts</a>
-        <a href="../datasets/VEKA_Manufacturing_CREDIT_PORTFOLIO_TRAINING.csv" target="_blank" style="background:rgba(33,115,70,0.15);color:#6EE7B7;border:1px solid rgba(33,115,70,0.4);padding:0.5rem 1.2rem;border-radius:6px;font-size:1.2rem;font-weight:700;text-decoration:none;">📂 VEKA_Manufacturing_CREDIT_PORTFOLIO_TRAINING.csv</a>
-      </div>
-    </div>
-    <div class="split-slide" style="margin-top:1rem;">
-      <div class="split-left">
-        <div class="exercise-list">
-          <div class="ex-item"><span class="ex-num">01</span>"What is the overall approval rate?"</div>
-          <div class="ex-item"><span class="ex-num">02</span>"Which sector has the highest loan demand?"</div>
-          <div class="ex-item"><span class="ex-num">03</span>"Which region has the highest average approved loan?"</div>
-          <div class="ex-item"><span class="ex-num">04</span>"Which sector has the highest risk concentration?"</div>
-          <div class="ex-item"><span class="ex-num">05</span>"What is the average processing TAT?"</div>
-          <div class="ex-item"><span class="ex-num">06</span>"Which applications show early warning signals?"</div>
-          <div class="ex-item"><span class="ex-num">07</span>"What is the relationship between cash flow and approval?"</div>
-          <div class="ex-item"><span class="ex-num">08</span>"Which segments show elevated DPD_30?"</div>
-          <div class="ex-item"><span class="ex-num">09</span>"Create a chart: monthly application trend"</div>
-          <div class="ex-item ex-item-key"><span class="ex-num">10</span>"Create a chart: approval rate by sector"</div>
-          <div class="ex-item ex-item-key"><span class="ex-num">11</span>"Summarise the production batch for a senior executive"</div>
-        </div>
-      </div>
-      <div class="split-right">
-        <div class="verify-card">
-          <h3>⚑ ALWAYS VERIFY</h3>
-          <p>After Copilot responds, ask:</p>
-          <div class="verify-prompt">"What evidence in the dataset supports this conclusion? Show me the specific rows or calculations."</div>
-          <div style="margin-top:1.5rem; color:var(--text-muted); font-size:1.4rem;">This teaches: AI + Data + Human Verification</div>
-        </div>
-        <div class="mini-chart" style="margin-top:1.5rem;">
-          <div class="mc-label">Approval Rate by Sector (Simulated)</div>
-          <div class="bar-row"><span>Manufacturing</span><div class="bar-fill" style="width:82%;">82%</div></div>
-          <div class="bar-row"><span>Retail</span><div class="bar-fill" style="width:61%;background:var(--amber);">61%</div></div>
-          <div class="bar-row"><span>Services</span><div class="bar-fill" style="width:88%;">88%</div></div>
-          <div class="bar-row"><span>Technology</span><div class="bar-fill" style="width:87%;">87%</div></div>
-          <div class="bar-row"><span>Agriculture</span><div class="bar-fill" style="width:65%;background:var(--amber);">65%</div></div>
-          <div class="badge-synthetic" style="margin-top:1rem;">Source: Synthetic training data only</div>
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- ─── EXCEL LAB 2 ─── -->
-<section class="slide" id="slide-16" data-module="Excel"
-  data-trainer-say="PMS lab. VEKA's Production Monitoring System is one of their core products. This synthetic dataset simulates what PMS sees — inflows, outflows, EMI patterns, anomalies."
-  data-trainer-time="10 min">
-  <div class="app-slide">
-    <div class="app-header-row">
-      <div class="app-chip excel-chip">LAB 2</div>
-      <h2>Production Monitoring System (PMS) Intelligence</h2>
-      <div style="margin-left:auto; display:flex; gap:10px; align-items:center;">
-        <a href="../charts/index.html" target="_blank" style="background:rgba(245,158,11,0.15);color:var(--amber);border:1px solid rgba(245,158,11,0.4);padding:0.5rem 1.2rem;border-radius:6px;font-size:1.2rem;font-weight:700;text-decoration:none;">📊 Open Interactive Charts</a>
-        <div class="badge-synthetic">SYNTHETIC VEKA-ALIGNED DATA</div>
-      </div>
-    </div>
-    <div class="split-slide" style="margin-top:1rem;">
-      <div class="split-left">
-        <p class="body-lead">Open &nbsp;<a href="../datasets/VEKA_BANK_STATEMENT_ANALYZER_TRAINING.csv" target="_blank" style="font-family:var(--font-mono);font-size:1.6rem;color:var(--amber);background:rgba(245,158,11,0.1);padding:0.3rem 0.8rem;border-radius:4px;border:1px solid rgba(245,158,11,0.3);text-decoration:none;font-weight:600;">📂 VEKA_BANK_STATEMENT_ANALYZER_TRAINING.csv</a></p>
-        <div class="exercise-list">
-          <div class="ex-item"><span class="ex-num">01</span>"What is the average monthly cash inflow?"</div>
-          <div class="ex-item"><span class="ex-num">02</span>"Which months show outflow exceeding inflow?"</div>
-          <div class="ex-item"><span class="ex-num">03</span>"How many transactions are flagged as Anomaly?"</div>
-          <div class="ex-item"><span class="ex-num">04</span>"What category dominates anomaly transactions?"</div>
-          <div class="ex-item"><span class="ex-num">05</span>"Are there any Round_Trip or Bounce flags?"</div>
-          <div class="ex-item"><span class="ex-num">06</span>"Show a chart of transaction category by total value"</div>
-          <div class="ex-item ex-item-key"><span class="ex-num">07</span>"Create a monthly cash-flow trend chart"</div>
-          <div class="ex-item ex-item-key"><span class="ex-num">08</span>"What does this cash-flow behaviour suggest about the borrower's business health?"</div>
-        </div>
-      </div>
-      <div class="split-right">
-        <div class="opl-product-callout">
-          <h3>About VEKA's PMS</h3>
-          <p>VEKA publicly describes its Production Monitoring System as supporting:</p>
-          <ul>
-            <li>Cash-flow based lending</li>
-            <li>Business revenue verification</li>
-            <li>EMI obligation analysis</li>
-            <li>Anomaly and fraud signal detection</li>
-            <li>Alternative credit assessment</li>
-          </ul>
-          <div class="badge-public" style="margin-top:1rem;">PUBLIC VEKA DESCRIPTION</div>
-        </div>
-        <div class="warning-box" style="margin-top:1.5rem;">
-          ⚠️ Ask: "What evidence supports this financial health conclusion?"<br>
-          Do NOT accept narrative without numbers.
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- ─── EXCEL LAB 3 ─── -->
-<section class="slide" id="slide-17" data-module="Excel"
-  data-trainer-say="VEKA ERP lab. This is more technical — targeted at the IT and Engineering participants. Walk through the Finance Variance and failure rate analysis."
-  data-trainer-time="10 min">
-  <div class="app-slide">
-    <div class="app-header-row">
-      <div class="app-chip excel-chip">LAB 3</div>
-      <h2>VEKA ERP Finance Operations Intelligence</h2>
-      <div style="margin-left:auto; display:flex; gap:10px; align-items:center;">
-        <a href="../charts/index.html" target="_blank" style="background:rgba(245,158,11,0.15);color:var(--amber);border:1px solid rgba(245,158,11,0.4);padding:0.5rem 1.2rem;border-radius:6px;font-size:1.2rem;font-weight:700;text-decoration:none;">📊 Open Interactive Charts</a>
-        <div class="badge-synthetic">SYNTHETIC VEKA-ALIGNED DATA</div>
-      </div>
-    </div>
-    <div class="split-slide" style="margin-top:1rem;">
-      <div class="split-left">
-        <p class="body-lead">Open &nbsp;<a href="../datasets/VEKA_OAM_API_OPERATIONS_TRAINING.csv" target="_blank" style="font-family:var(--font-mono);font-size:1.6rem;color:var(--amber);background:rgba(245,158,11,0.1);padding:0.3rem 0.8rem;border-radius:4px;border:1px solid rgba(245,158,11,0.3);text-decoration:none;font-weight:600;">📂 VEKA_OAM_API_OPERATIONS_TRAINING.csv</a></p>
-        <div class="exercise-list">
-          <div class="ex-item"><span class="ex-num">01</span>"Which Transaction has the highest average variance?"</div>
-          <div class="ex-item"><span class="ex-num">02</span>"Which vendor has the highest failure rate?"</div>
-          <div class="ex-item"><span class="ex-num">03</span>"What percentage of requests required retries?"</div>
-          <div class="ex-item"><span class="ex-num">04</span>"Which service has the most 5xx errors?"</div>
-          <div class="ex-item"><span class="ex-num">05</span>"Which time period shows highest API traffic?"</div>
-          <div class="ex-item"><span class="ex-num">06</span>"Create a variance distribution chart by vendor"</div>
-          <div class="ex-item"><span class="ex-num">07</span>"Create a vendor reliability chart"</div>
-          <div class="ex-item ex-item-key"><span class="ex-num">08</span>"Recommend three engineering actions based ONLY on this dataset."</div>
-        </div>
-      </div>
-      <div class="split-right">
-        <div class="opl-product-callout">
-          <h3>About VEKA's VEKA ERP</h3>
-          <p>VEKA publicly describes VEKA ERP as supporting:</p>
-          <ul>
-            <li>One-stop API integration management</li>
-            <li>Multi-vendor data source connectivity</li>
-            <li>GST · Bureau · KYC · Bank · Document APIs</li>
-            <li>Microservices architecture</li>
-            <li>API monitoring + sandbox</li>
-          </ul>
-          <div class="badge-public" style="margin-top:1rem;">PUBLIC VEKA DESCRIPTION</div>
-        </div>
-        <div class="mini-chart" style="margin-top:1.5rem;">
-          <div class="mc-label">Avg API Latency by Vendor (Simulated)</div>
-          <div class="bar-row"><span>Vendor_A</span><div class="bar-fill" style="width:12%;">120ms</div></div>
-          <div class="bar-row"><span>Vendor_B</span><div class="bar-fill" style="width:85%;background:var(--danger);">850ms</div></div>
-          <div class="bar-row"><span>Vendor_C</span><div class="bar-fill" style="width:20%;">200ms</div></div>
-          <div class="bar-row"><span>Vendor_D</span><div class="bar-fill" style="width:15%;">150ms</div></div>
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- ─── POWERPOINT ─── -->
-<section class="slide" id="slide-18" data-module="PowerPoint"
-  data-trainer-say="Three PowerPoint generation scenarios. Participants pick one. Walk through the VEKA ERP deck generation as the live demo."
-  data-trainer-time="10 min">
-  <div class="app-slide">
-    <div class="app-header-row">
-      <div class="app-chip ppt-chip">POWERPOINT</div>
-      <h2>Generate Executive Decks from VEKA Documents</h2>
-    </div>
-    <div class="three-col" style="margin-top:2rem;">
-      <div class="ppt-scenario">
-        <div class="ppt-num">PPT 1</div>
-        <h3>"VEKA Extrusion Manufacturing Infrastructure at a Glance"</h3>
-        <p><strong>Input:</strong> company_profile.md + company_metrics.md</p>
-        <p><strong>Output:</strong> 8-slide executive overview</p>
-        <div class="ppt-prompt">"Create an 8-slide executive presentation from these VEKA public materials. Label all metrics as 'Publicly stated by VEKA'."</div>
-      </div>
-      <div class="ppt-scenario ppt-highlight">
-        <div class="ppt-num">PPT 2</div>
-        <h3>"VEKA ERP Simplifying Extrusion Manufacturing Integration"</h3>
-        <p><strong>Input:</strong> oam_plus.md + OAM API data</p>
-        <p><strong>Output:</strong> 10-slide architecture + analysis deck</p>
-        <div class="ppt-prompt">"Create a 10-slide presentation covering VEKA ERP integration concept, API architecture, and a synthetic operations analysis. Include charts for variance and reliability."</div>
-      </div>
-      <div class="ppt-scenario">
-        <div class="ppt-num">PPT 3</div>
-        <h3>"AI-Native Lending — From Data to Decision"</h3>
-        <p><strong>Input:</strong> omr_fit_rank.md + bsa.md + production batch data</p>
-        <p><strong>Output:</strong> 12-slide AI lending narrative</p>
-        <div class="ppt-prompt">"Create a 12-slide presentation on AI-native lending using VEKA's publicly described capabilities and the attached synthetic data analysis."</div>
-      </div>
-    </div>
-    <div class="disclaimer-bar">Feature availability may vary by licence. Speaker notes should always be reviewed by a human before presenting to leadership.</div>
-  </div>
-</section>
-
-<!-- ─── TEAMS ─── -->
-<section class="slide" id="slide-19" data-module="Teams"
-  data-trainer-say="Teams meeting transcript exercise. Open the synthetic meeting file. Ask Copilot to extract decisions, actions, open questions."
-  data-trainer-time="10 min"
-  data-trainer-rescue="Deliberately some owners and dates are missing in the transcript. If Copilot invents them — this is the hallucination detection teaching moment.">
-  <div class="app-slide">
-    <div class="app-header-row">
-      <div class="app-chip teams-chip">TEAMS</div>
-      <h2>Monthly Manufacturing Production Review Meeting</h2>
-      <a href="../company-data/VEKA_Manufacturing_PORTFOLIO_REVIEW_MEETING.txt" target="_blank" style="margin-left:auto;background:rgba(80,89,201,0.15);color:#A5B4FC;border:1px solid rgba(80,89,201,0.4);padding:0.5rem 1.2rem;border-radius:6px;font-size:1.2rem;font-weight:700;text-decoration:none;">📄 VEKA_Manufacturing_PORTFOLIO_REVIEW_MEETING.txt</a>
-    </div>
-    <div class="split-slide" style="margin-top:1.5rem;">
-      <div class="split-left">
-        <div class="meeting-transcript">
-          <div class="mt-label" style="display:flex;align-items:center;gap:1rem;">
-            <span>📋 VEKA_Manufacturing_PORTFOLIO_REVIEW_MEETING.txt</span>
-            <span class="badge-synthetic" style="margin-left:auto;font-size:1rem;">SYNTHETIC TRANSCRIPT</span>
-          </div>
-          <div class="mt-line"><span class="mt-name">Product Manager:</span> "Manufacturing production batch grew 15% QoQ. We need to act on the Retail DPD signal."</div>
-          <div class="mt-line"><span class="mt-name">Risk Lead:</span> "I recommend tightening underwriting for Retail in East region. High DPD_30 concentration."</div>
-          <div class="mt-line"><span class="mt-name">Engineering Lead:</span> "The PMS parser needs an update — new HDFC format. Timeline not confirmed yet."</div>
-          <div class="mt-line"><span class="mt-name">Operations Lead:</span> "I'll coordinate with partner banks but need someone to own the Vendor_B API fix."</div>
-          <div class="mt-line mt-unresolved"><span class="mt-name">Business Lead:</span> "Who is the owner for the VEKA ERP vendor escalation? No date agreed yet."</div>
-        </div>
-      </div>
-      <div class="split-right">
-        <h3>Copilot Task</h3>
-        <div class="prompt-box-sm">"From this meeting transcript, extract:
-1. DECISIONS made
-2. ACTION ITEMS (owner + due date)
-3. OPEN QUESTIONS
-4. Where owner is unknown → use [CONFIRM OWNER]
-5. Where date is unknown → use [CONFIRM DATE]
-DO NOT invent information."</div>
-        <div class="hallucination-alert" style="margin-top:1.5rem;">
-          <h4>🚨 SPOT THE HALLUCINATION</h4>
-          <p>If Copilot assigns an owner that is not stated in the transcript — that is a hallucination. A real team would send incorrect action items.</p>
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- ═══════════════════════════════════════════════════ -->
-<!-- BREAK -->
-<!-- ═══════════════════════════════════════════════════ -->
-
-<section class="slide" id="slide-20" data-module="Break">
-  <div class="center-slide">
-    <h1 style="font-size:8rem;">☕</h1>
-    <h2>BREAK — 10 MINUTES</h2>
-    <p>1:30 — 1:40</p>
-    <p style="margin-top:2rem; color:var(--text-muted);">Review your workbook notes. What was your strongest prompt so far?</p>
-  </div>
-</section>
-
-<!-- ═══════════════════════════════════════════════════ -->
-<!-- DAY 2 — MODULE 01 — FINANCE ANALYSIS & PRESENTATIONS (4:00–8:00) -->
-<!-- ═══════════════════════════════════════════════════ -->
-
-<section class="slide" id="slide-21" data-module="Advanced"
-  data-trainer-say="Module 3. The WOW module. We chain everything together and demonstrate the real power of Copilot across multiple applications, introduce Copilot Pages, custom Agents, and dive deep into GitHub Copilot."
-  data-trainer-time="1:30–3:00">
-  <div class="module-title-slide">
-    <div class="mod-number">DAY 2 — MODULE 01</div>
-    <h1>CROSS-APP &<br><span class="grad-text">TECHNICAL POWER USE</span></h1>
-    <p>Cross-app workflows · Copilot Pages · Advanced Grounding · Agents & Copilot Studio · GitHub Copilot</p>
-    <div class="mod-time">90 MIN</div>
-  </div>
-</section>
-
-<!-- ─── CROSS-APP WORKFLOW ─── -->
-<section class="slide" id="slide-22" data-module="Advanced"
-  data-trainer-say="This is the WOW moment. One business question — the monthly review — flows through 5 apps and produces an executive decision pack."
-  data-trainer-time="10 min demo">
-  <div class="full-slide">
-    <div class="eyebrow">THE CROSS-APP VEKA WORKFLOW</div>
-    <h2>Turn a Teams meeting into an email, a Word brief, and a deck</h2>
-    <div class="workflow-chain">
-      <div class="wf-node">
-        <div class="wf-icon teams-bg">T</div>
-        <div class="wf-label">Teams</div>
-        <div class="wf-action">Extract decisions from meeting</div>
-      </div>
-      <div class="wf-arrow">→</div>
-      <div class="wf-node">
-        <div class="wf-icon excel-bg">X</div>
-        <div class="wf-label">Excel</div>
-        <div class="wf-action">Analyse production batch data</div>
-      </div>
-      <div class="wf-arrow">→</div>
-      <div class="wf-node">
-        <div class="wf-icon word-bg">W</div>
-        <div class="wf-label">Word</div>
-        <div class="wf-action">Create management brief</div>
-      </div>
-      <div class="wf-arrow">→</div>
-      <div class="wf-node">
-        <div class="wf-icon ppt-bg">P</div>
-        <div class="wf-label">PowerPoint</div>
-        <div class="wf-action">Generate executive deck</div>
-      </div>
-      <div class="wf-arrow">→</div>
-      <div class="wf-node">
-        <div class="wf-icon outlook-bg">O</div>
-        <div class="wf-label">Outlook</div>
-        <div class="wf-action">Draft stakeholder email</div>
-      </div>
-    </div>
-    <div class="result-banner">
-      <span class="rb-icon">✓</span>
-      <span class="rb-text">RESULT: EXECUTIVE DECISION PACK</span>
-      <span class="rb-sub">Chain apps together to dramatically reduce manual aggregation.</span>
-    </div>
-  </div>
-</section>
-
-<!-- ─── COPILOT PAGES / NOTEBOOKS ─── -->
-<section class="slide" id="slide-23" data-module="Advanced"
-  data-trainer-say="Introduce Copilot Pages. It's a multiplayer AI canvas where the team can iterate on content generated by Copilot together."
-  data-trainer-time="5 min">
-  <div class="full-slide">
-    <div class="eyebrow">NEW: COPILOT PAGES / NOTEBOOKS</div>
-    <h2>A collaborative, AI-assisted canvas for iterating on content</h2>
-    <div class="split-slide" style="margin-top:2rem;">
-      <div class="split-left">
-        <div class="prompt-box-sm" style="font-size:1.3rem;">
-          "Copilot Pages turns AI-generated content into a durable, editable surface that you can share with your team. It's multiplayer AI."
-        </div>
-        <ul style="margin-top:2rem; font-size:1.4rem; line-height:1.8; color:var(--text-secondary);">
-          <li><strong>Extract:</strong> Pull data from chats, emails, and docs into a Page.</li>
-          <li><strong>Iterate:</strong> Edit alongside your team and Copilot in real-time.</li>
-          <li><strong>Share:</strong> Generate a link and embed the Page in Teams channels.</li>
-          <li><strong>Persist:</strong> The content lives on beyond a single chat session.</li>
-        </ul>
-      </div>
-      <div class="split-right">
-        <div class="opl-example-box" style="background:rgba(16,163,127,0.1); border-color:#10a37f;">
-          <h3 style="color:#10a37f;">VEKA Use Case: Policy Brainstorming</h3>
-          <p>The Risk and Product teams use a Copilot Page to draft the new <strong>Vendor API Failure Policy</strong>. They pull in historical API logs and Teams chats, then collaboratively refine the fallback procedures before publishing.</p>
-          <div class="badge-synthetic" style="margin-top:1rem;">MULTIPLAYER AI COLLABORATION</div>
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- ─── ADVANCED GROUNDING ─── -->
-<section class="slide" id="slide-24" data-module="Advanced"
-  data-trainer-say="The most important slide for accuracy. Grounding. Referencing specific files, people, and data is how we get accurate output."
-  data-trainer-time="8 min">
-  <div class="full-slide">
-    <div class="eyebrow">ADVANCED PROMPTING & GROUNDING</div>
-    <h2>Reference specific files, people, and data for accurate output</h2>
-    <div class="grounding-demo">
-      <div class="gd-step gd-step-1">
-        <div class="gd-num">1</div>
-        <h3>GROUND THE PROMPT</h3>
-        <div class="prompt-box-sm">"Using ONLY the supplied VEKA public company profile and the attached synthetic production batch dataset, prepare a management summary. Mention @Sarah for the risk metrics. Do NOT invent VEKA statistics."</div>
-      </div>
-      <div class="gd-step gd-step-2">
-        <div class="gd-num">2</div>
-        <h3>VERIFY THE OUTPUT</h3>
-        <div class="prompt-box-sm">"List every conclusion in your summary that is NOT directly supported by the data I provided. Flag them clearly."</div>
-      </div>
-      <div class="gd-step gd-step-3">
-        <div class="gd-num">3</div>
-        <h3>HUMAN DECISION</h3>
-        <div class="human-decides">The analyst reviews flagged items. Removes or marks as unverified. Presents the clean output to leadership.</div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- ─── AGENTS & EXTENSIBILITY ─── -->
-<section class="slide" id="slide-25" data-module="Advanced"
-  data-trainer-say="Explain Copilot Studio and Custom Agents in depth. Show how Declarative Agents map to VEKA's actual data needs."
-  data-trainer-time="5 min">
-  <div class="full-slide">
-    <div class="eyebrow">AGENTS & EXTENSIBILITY (DEEP DIVE)</div>
-    <h2>Building custom intelligence with Copilot Studio</h2>
-    <div class="three-col" style="margin-top:2rem;">
-      <div class="feature-card highlight-card">
-        <div class="fc-icon" style="background:#8b5cf6;">A</div>
-        <h3>Declarative Agents</h3>
-        <p>Custom tailored versions of Copilot with specific instructions, knowledge bases, and skills. Can be grounded on SharePoint sites, specific files, or Graph API.</p>
-        <div class="opl-example">VEKA Use: "VEKA ERP API Support Agent" grounded exclusively on VEKA's API swagger docs and historical incident tickets.</div>
-      </div>
-      <div class="feature-card">
-        <div class="fc-icon" style="background:#0ea5e9;">CS</div>
-        <h3>Copilot Studio Canvas</h3>
-        <p>The low-code platform to build conversational logic, manage authentication, and deploy custom agents across Teams, Web, and M365.</p>
-        <div class="opl-example">VEKA Use: Building an agent that allows Relationship Managers to query Manufacturing production batch status in natural language.</div>
-      </div>
-      <div class="feature-card">
-        <div class="fc-icon" style="background:#f59e0b;">API</div>
-        <h3>Plugins & Actions</h3>
-        <p>Enable Agents to take action by connecting to internal systems via OpenAPI specs (REST APIs) or Power Automate flows.</p>
-        <div class="opl-example">VEKA Use: Copilot fetches real-time Finance Variance via a custom VEKA ERP plugin and can trigger a JIRA ticket creation.</div>
-      </div>
-    </div>
-    <div class="disclaimer-bar">Extensibility requires appropriate administrative permissions and security reviews within the M365 tenant.</div>
-  </div>
-</section>
-
-<!-- ─── GITHUB COPILOT ADVANCED ─── -->
-<section class="slide" id="slide-26" data-module="Advanced"
-  data-trainer-say="Deep dive into GitHub Copilot for engineering. This is beyond basic code completion. Show advanced context gathering and chat."
-  data-trainer-time="5 min"
-  data-trainer-rescue="Emphasize how it understands the entire workspace, not just the active file.">
-  <div class="app-slide">
-    <div class="app-header-row">
-      <div class="app-chip github-chip">FOR ENGINEERING</div>
-      <h2>GitHub Copilot — Advanced Context & Workflows</h2>
-    </div>
-    <div class="split-slide" style="margin-top:2rem;">
-      <div class="split-left">
-        <div class="code-block" style="font-size:1.1rem; padding:1.5rem;">
-          <div class="cb-header" style="display:flex;align-items:center;gap:1rem;">
-            <a href="../company-data/code/api_service.java" target="_blank" style="color:var(--amber);text-decoration:none;font-weight:700;">api_service.java</a>
-            <span class="cb-tag">Synthetic VEKA-style code</span>
-          </div>
-          <pre><code>public class ApiService {
-  public void processRequest(String vendor, int status) {
-    if (status == 200) {
-      System.out.println("Success: " + vendor);
-    } else {
-      try {
-        throw new Exception("Failed");
-      } catch (Exception e) {
-        <span class="code-smell">// DO NOTHING ← SILENT FAILURE SMELL</span>
-      }
-    }
-  }
-}</code></pre>
-        </div>
-        <div class="prompt-box-sm" style="margin-top:1rem;">
-          <strong>@workspace /explain</strong> Why is this code failing silently, and how does it impact the VEKA ERP monitoring dashboard?
-        </div>
-      </div>
-      <div class="split-right">
-        <h3>Advanced Engineering Capabilities</h3>
-        <div class="task-list">
-          <div class="task-item"><span class="gh-badge" style="background:#2ea043;">Context</span><strong>@workspace Context:</strong> Copilot indexes your entire repository to provide accurate answers across multiple files.</div>
-          <div class="task-item"><span class="gh-badge" style="background:#1f6feb;">Chat</span><strong>Slash Commands:</strong> Use <code>/explain</code>, <code>/fix</code>, <code>/tests</code> to immediately trigger complex developer workflows.</div>
-          <div class="task-item"><span class="gh-badge" style="background:#8957e5;">Refactor</span><strong>Inline Chat (Cmd+I):</strong> Highlight the code smell and type "Refactor this to use SLF4J logging and throw a custom OAMException."</div>
-          <div class="task-item task-critical"><span class="gh-badge" style="background:#d1242f;">Test</span><strong>Automated Test Generation:</strong> Generates mocked unit tests covering edge cases like the silent failure above.</div>
-          <div class="task-item"><span class="gh-badge" style="background:#e3b341; color:#000;">CLI & PR</span><strong>Copilot in the CLI & PRs:</strong> Get help with git commands and automatically summarize PR changes.</div>
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- ─── MODULE 3 ACTIVITY ─── -->
-<section class="slide" id="slide-26b" data-module="Advanced"
-  data-trainer-say="This is the 30-minute activity for Module 3. Instruct the engineering/IT professionals to click the link for the Java file and start refactoring. Instruct the business/ops professionals to open Copilot Studio using the link and start designing their agent."
-  data-trainer-time="30 min"
-  data-trainer-watch="Make sure everyone clicks the links to open the correct tools. Walk around and help them start.">
-  <div class="app-slide">
-    <div class="app-header-row">
-      <div class="app-chip" style="background:var(--amber);color:#000;">ACTIVITY</div>
-      <h2>Module 3 Hands-on Challenge</h2>
-      <div class="timer-hint" style="margin-left:auto;margin-top:0;">⏱ 30 MIN</div>
-    </div>
-    
-    <p style="font-size:1.3rem; margin: 1.5rem 0; color:var(--text-secondary);">Choose the track that aligns with your role. You have 30 minutes to complete the objective and prepare a quick showcase.</p>
-
-    <div class="split-slide" style="margin-top:1rem;">
-      <div class="split-left">
-        <div class="opl-product-callout" style="border-color:#0ea5e9; background:rgba(14, 165, 233, 0.05);">
-          <h3 style="color:#0ea5e9; margin-top:0;">Track A: Copilot Studio (Business & Ops)</h3>
-          <p><strong>Goal:</strong> Design a Declarative Agent for VEKA's Operations.</p>
-          <a href="https://copilotstudio.microsoft.com/" target="_blank" style="display:inline-block; margin-top:0.5rem; background:rgba(14,165,233,0.15); color:#0ea5e9; border:1px solid rgba(14,165,233,0.4); padding:0.5rem 1.2rem; border-radius:6px; font-size:1.1rem; font-weight:700; text-decoration:none;">🌐 Open Copilot Studio</a>
-          <div class="exercise-list" style="margin-top:1.5rem;">
-            <div class="ex-item"><span class="ex-num" style="background:#0ea5e9;">01</span>Define instructions (persona, tone, boundaries).</div>
-            <div class="ex-item"><span class="ex-num" style="background:#0ea5e9;">02</span>Identify exactly which 3 synthetic datasets to use for grounding.</div>
-            <div class="ex-item"><span class="ex-num" style="background:#0ea5e9;">03</span>Draft logic: What happens if asked "Why did Vendor_B fail?"</div>
-            <div class="ex-item ex-item-key" style="border-color:rgba(14, 165, 233, 0.4);"><span class="ex-num" style="background:#0ea5e9;">04</span>Deliverable: A 1-page architecture sketch.</div>
-          </div>
-        </div>
-      </div>
-      
-      <div class="split-right">
-        <div class="opl-product-callout" style="border-color:var(--text-muted); background:rgba(255, 255, 255, 0.03);">
-          <h3 style="color:var(--text); margin-top:0;">Track B: GitHub Copilot (Engineering & IT)</h3>
-          <p><strong>Goal:</strong> Fix and test the broken <code>api_service.java</code>.</p>
-          <a href="../company-data/code/api_service.java" target="_blank" style="display:inline-block; margin-top:0.5rem; background:rgba(255,255,255,0.1); color:var(--text); border:1px solid rgba(255,255,255,0.2); padding:0.5rem 1.2rem; border-radius:6px; font-size:1.1rem; font-weight:700; text-decoration:none;">📂 Open api_service.java</a>
-          <div class="exercise-list" style="margin-top:1.5rem;">
-            <div class="ex-item"><span class="ex-num" style="background:var(--text-muted);color:#000;">01</span>Use Copilot Chat to explain the silent failure vulnerability.</div>
-            <div class="ex-item"><span class="ex-num" style="background:var(--text-muted);color:#000;">02</span>Use Inline Chat to add SLF4J logging and error handling.</div>
-            <div class="ex-item"><span class="ex-num" style="background:var(--text-muted);color:#000;">03</span>Use <code>/tests</code> to generate a mocked JUnit test suite.</div>
-            <div class="ex-item ex-item-key" style="border-color:var(--text-muted);"><span class="ex-num" style="background:var(--text-muted);color:#000;">04</span>Deliverable: Refactored code + tests.</div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- ─── HUMAN IN THE LOOP ─── -->
-<section class="slide" id="slide-27" data-module="Advanced"
-  data-trainer-say="This is the core philosophy. Copilot generates the first draft. Human reviews, verifies, and decides.">
-  <div class="center-slide">
-    <div class="eyebrow">THE CORE PRINCIPLE</div>
-    <h1>HUMAN<br>IN THE LOOP</h1>
-    <div class="hitl-flow">
-      <div class="hitl-step hitl-ai"><div class="hitl-icon">🤖</div><div class="hitl-label">GENERATE</div><div class="hitl-desc">Copilot produces the first pass</div></div>
-      <div class="hitl-arrow">→</div>
-      <div class="hitl-step hitl-human"><div class="hitl-icon">👁️</div><div class="hitl-label">REVIEW</div><div class="hitl-desc">Human reads the output</div></div>
-      <div class="hitl-arrow">→</div>
-      <div class="hitl-step hitl-verify"><div class="hitl-icon">✓</div><div class="hitl-label">VERIFY</div><div class="hitl-desc">Check facts and sources</div></div>
-      <div class="hitl-arrow">→</div>
-      <div class="hitl-step hitl-decide"><div class="hitl-icon">⚖️</div><div class="hitl-label">DECIDE</div><div class="hitl-desc">Human owns the decision</div></div>
-    </div>
-    <div class="hitl-opl">
-      <div class="hitl-opl-item"><strong>Production Analysis:</strong> AI summarises → Analyst verifies → Production team decides</div>
-      <div class="hitl-opl-item"><strong>Custom Agents:</strong> AI executes skill → Admin validates logs → Policy updated</div>
-      <div class="hitl-opl-item"><strong>Engineering:</strong> AI generates code → Developer reviews → Tests → Merge</div>
-    </div>
-  </div>
-</section>
-
-<!-- ═══════════════════════════════════════════════════ -->
-<!-- CAPSTONE (2:30–2:50) -->
-<!-- ═══════════════════════════════════════════════════ -->
-
-<section class="slide" id="slide-28" data-module="Capstone"
-  data-trainer-say="Capstone. A cross-app scenario using anonymized company data, from raw input to finished deliverable."
-  data-trainer-time="2:30–2:50">
-  <div class="module-title-slide">
-    <div class="mod-number">CAPSTONE</div>
-    <h1>YOUR<br><span class="grad-text">VEKA WORKFLOW</span></h1>
-    <p>A cross-app scenario using anonymized company data, from raw input to finished deliverable.</p>
-    <div class="mod-time">20 MIN</div>
-  </div>
-</section>
-
-<!-- ─── CAPSTONE OPTIONS ─── -->
-<section class="slide" id="slide-29" data-module="Capstone"
-  data-trainer-say="Give them 15 minutes to build. Then 5 minutes to showcase. Score using the rubric on the next slide."
-  data-trainer-time="15 min work + 5 min showcase">
-  <div class="full-slide">
-    <div class="eyebrow">CAPSTONE CHALLENGE</div>
-    <h2>Build a complete cross-app workflow from raw inputs</h2>
-    <div class="capstone-grid">
-      <div class="cap-option" style="width:100%; max-width:800px; margin: 0 auto;">
-        <div class="cap-track">CROSS-APP SCENARIO</div>
-        <div class="cap-inputs">
-          <strong>Anonymized Inputs:</strong>
-          <span class="cap-input-tag">API operations data</span>
-          <span class="cap-input-tag">Teams incident notes</span>
-          <span class="cap-input-tag">Production metrics</span>
-        </div>
-        <div class="cap-deliverables">
-          <strong>Deliverable Flow:</strong>
-          <div class="cap-del-item">1. 📊 Analyze raw data in Excel</div>
-          <div class="cap-del-item">2. 📄 Create Word incident brief</div>
-          <div class="cap-del-item">3. 📋 Generate PowerPoint for leadership</div>
-          <div class="cap-del-item">4. 📧 Draft Stakeholder Outlook email</div>
-        </div>
-      </div>
-    </div>
-    <div class="timer-hint">⏱ Use the timer button below → set 15 minutes</div>
-  </div>
-</section>
-
-<!-- ─── CAPSTONE RUBRIC ─── -->
-<section class="slide" id="slide-30" data-module="Capstone"
-  data-trainer-say="Score each submission. A beautiful deck without evidence MUST NOT receive a high data-grounding score."
-  data-trainer-watch="The most common mistake: high output quality + zero data grounding = not a good score.">
-  <div class="full-slide">
-    <div class="eyebrow">CAPSTONE SCORING RUBRIC</div>
-    <h2>Score out of 30</h2>
-    <div class="rubric-grid">
-      <div class="rub-item">
-        <div class="rub-score">5</div>
-        <div class="rub-name">Problem Clarity</div>
-        <div class="rub-desc">Is the business problem clearly defined?</div>
-      </div>
-      <div class="rub-item rub-key">
-        <div class="rub-score">5</div>
-        <div class="rub-name">Data Grounding</div>
-        <div class="rub-desc">Are all claims supported by actual data? No invented statistics?</div>
-      </div>
-      <div class="rub-item rub-key">
-        <div class="rub-score">5</div>
-        <div class="rub-name">Prompt Quality</div>
-        <div class="rub-desc">Did they use the TASK+CONTEXT+SOURCE+CONSTRAINT framework?</div>
-      </div>
-      <div class="rub-item">
-        <div class="rub-score">5</div>
-        <div class="rub-name">Output Quality</div>
-        <div class="rub-desc">Is the final output professional and structured?</div>
-      </div>
-      <div class="rub-item">
-        <div class="rub-score">5</div>
-        <div class="rub-name">Business Value</div>
-        <div class="rub-desc">Would this output lead to a better business decision?</div>
-      </div>
-      <div class="rub-item rub-key">
-        <div class="rub-score">5</div>
-        <div class="rub-name">Verification</div>
-        <div class="rub-desc">Did they explicitly verify the AI output before presenting?</div>
-      </div>
-    </div>
-    <div class="warning-box" style="margin-top:2rem;">⚠️ Beautiful output without evidence = low data-grounding score. The rubric rewards responsible AI use.</div>
-  </div>
-</section>
-
-<!-- ═══════════════════════════════════════════════════ -->
-<!-- SHOWCASE + Q&A (2:50–3:00) -->
-<!-- ═══════════════════════════════════════════════════ -->
-
-<section class="slide" id="slide-31" data-module="Showcase"
-  data-trainer-say="Each team gets 60–90 seconds. Ask: what was the prompt? What did you verify? What would you do differently? Q&A for 2:30-3:00.">
-  <div class="center-slide">
-    <div class="eyebrow">2:50 — 3:00</div>
-    <h1>Q&amp;A<br><span class="grad-text">&amp; SHOWCASE</span></h1>
-    <p style="margin-top:2rem;">Live questions, licensing/access clarifications, troubleshooting, and role-based next steps.</p>
-    <div class="debrief-questions">
-      <div class="dq-item">"What was your strongest prompt?"</div>
-      <div class="dq-item">"What did Copilot get wrong that you caught?"</div>
-      <div class="dq-item">"Which workflow will you use on Monday?"</div>
-    </div>
-  </div>
-</section>
-
-<!-- ─── FINAL MESSAGE ─── -->
-<section class="slide" id="slide-32" data-module="Close">
-  <div class="center-slide">
-    <div class="eyebrow">THE FINAL MESSAGE</div>
-    <h2 class="grad-text" style="font-size:5rem;font-weight:900;">"Copilot is not the destination.<br>Better work is."</h2>
-    <div class="final-flow">
-      <span class="ff-step">DATA</span>
-      <span class="ff-arrow">→</span>
-      <span class="ff-step">UNDERSTAND</span>
-      <span class="ff-arrow">→</span>
-      <span class="ff-step">CREATE</span>
-      <span class="ff-arrow">→</span>
-      <span class="ff-step ff-step-verify">VERIFY</span>
-      <span class="ff-arrow">→</span>
-      <span class="ff-step ff-step-decide">DECIDE</span>
-    </div>
-    <div class="innovation-footer">
-      <div class="if-top">INNOVATION IS GOOD</div>
-      <div class="if-bottom">RESPONSIBLE INNOVATION IS BETTER.</div>
-    </div>
-  </div>
-  <div class="slide-footer">
-    <span>VEKA India × NxtWave | Microsoft Copilot — Day 2</span>
-    <span class="badge-sim">OFFLINE TRAINING MODE</span>
-  </div>
-</section>
-
-</div><!-- /presentation-container -->
-
-<!-- ─── UI LAYER ─── -->
-<div id="ui-layer">
-  <div class="ui-left">
-    <a href="../index.html" class="ui-btn" title="Home">🏠</a>
-    <button class="ui-btn" id="btn-prev">← Prev</button>
-    <span id="slide-counter">1 / 32</span>
-  </div>
-
-  <div id="timer-container" class="timer-hidden">
-    <div class="timer-presets">
-      <button onclick="setTimer(3)">3m</button>
-      <button onclick="setTimer(5)">5m</button>
-      <button onclick="setTimer(8)">8m</button>
-      <button onclick="setTimer(10)">10m</button>
-      <button onclick="setTimer(15)">15m</button>
-    </div>
-    <div id="timer-display">00:00</div>
-    <div class="timer-controls">
-      <button onclick="toggleTimer()" id="btn-play">▶</button>
-      <button onclick="resetTimer()">⟲</button>
-      <button onclick="hideTimer()">✕</button>
-    </div>
-  </div>
-
-  <div class="ui-right">
-    <button class="ui-btn" onclick="showTimer()" title="Timer">⏱ Timer</button>
-    <button class="ui-btn ui-source" onclick="toggleSourceDrawer()" title="Source">📖 Source</button>
-    <button class="ui-btn" id="btn-next">Next →</button>
+<!-- floating timer -->
+<div id="timer">
+  <div class="tt"><span>Activity timer</span><b id="tlabel">—</b></div>
+  <div id="tdisp">00:00</div>
+  <div class="tbtns">
+    <button onclick="timer.toggle()" id="tStart">Start</button>
+    <button onclick="timer.reset()">Reset</button>
   </div>
 </div>
 
-<!-- ─── SOURCE DRAWER ─── -->
-<div id="source-drawer" class="drawer-hidden">
-  <div class="sd-header">
-    <h4>📖 Source Registry</h4>
-    <button onclick="toggleSourceDrawer()">✕</button>
+<!-- bottom nav -->
+<div id="botbar">
+  <button class="navbtn" onclick="deck.prev()" aria-label="Previous">‹</button>
+  <div id="counter">01 / 01</div>
+  <button class="navbtn" onclick="deck.next()" aria-label="Next">›</button>
+  <button class="navbtn" onclick="ui.toggleAgenda()" title="Agenda map (G)">⊞</button>
+  <button class="navbtn" onclick="ui.toggleBoard()" title="Leaderboard (L)">★</button>
+</div>
+<div class="ghost" id="hintL">← → navigate · F fullscreen</div>
+<div class="ghost" id="hintR">G map · L leaderboard · T timer</div>
+
+<!-- agenda overlay -->
+<div class="overlay" id="agendaOv">
+  <button class="close" onclick="ui.toggleAgenda()">✕</button>
+  <h3>Jump to any moment</h3>
+  <div class="kicker">8 hours · 4 phases · one Capstone</div>
+  <div class="jump" id="jumpGrid"></div>
+</div>
+
+<!-- leaderboard overlay -->
+<div class="overlay" id="boardOv">
+  <button class="close" onclick="ui.toggleBoard()">✕</button>
+  <h3>Live Leaderboard</h3>
+  <div class="kicker">Trainer-controlled · resets on reload</div>
+  <table id="lbTable"></table>
+  <div class="lbadd">
+    <input id="lbName" placeholder="Add a team or table name…" />
+    <button onclick="board.add()">Add team</button>
   </div>
-  <div class="sd-body">
-    <div class="sd-section">
-      <div class="sd-title">PUBLIC VEKA SOURCES</div>
-      <a href="https://veka.in" target="_blank" class="sd-item sd-public" style="text-decoration:none;"><span>🌐</span> VEKA India Official Website — veka.in</a>
-      <a href="https://veka.in/products" target="_blank" class="sd-item sd-public" style="text-decoration:none;"><span>🌐</span> VEKA Public Product Pages — veka.in/products</a>
-    </div>
-    <div class="sd-section">
-      <div class="sd-title">MICROSOFT SOURCES</div>
-      <a href="https://learn.microsoft.com/en-us/copilot/" target="_blank" class="sd-item sd-ms" style="text-decoration:none;"><span>🔷</span> Microsoft 365 Copilot Documentation — learn.microsoft.com</a>
-      <a href="https://docs.github.com/en/copilot" target="_blank" class="sd-item sd-ms" style="text-decoration:none;"><span>🔷</span> GitHub Copilot Documentation — docs.github.com</a>
-    </div>
-    <div class="sd-section">
-      <div class="sd-title">SYNTHETIC TRAINING DATASETS</div>
-      <a href="../datasets/VEKA_Manufacturing_CREDIT_PORTFOLIO_TRAINING.csv" target="_blank" class="sd-item sd-synth" style="text-decoration:none;"><span>🔬</span> VEKA_Manufacturing_CREDIT_PORTFOLIO_TRAINING.csv — Generated, 500 rows</a>
-      <a href="../datasets/VEKA_BANK_STATEMENT_ANALYZER_TRAINING.csv" target="_blank" class="sd-item sd-synth" style="text-decoration:none;"><span>🔬</span> VEKA_BANK_STATEMENT_ANALYZER_TRAINING.csv — Generated, 1000 rows</a>
-      <a href="../datasets/VEKA_OAM_API_OPERATIONS_TRAINING.csv" target="_blank" class="sd-item sd-synth" style="text-decoration:none;"><span>🔬</span> VEKA_OAM_API_OPERATIONS_TRAINING.csv — Generated, 500 rows</a>
-    </div>
-    <div class="sd-disclaimer">All synthetic datasets are fictional training materials. They do not represent actual VEKA customer or operational data.</div>
+  <div class="lbrules">
+    <b>Scoring:</b> Best Prompt of the Hour <b>+3</b> · Win a Prompt Battle <b>+5</b> ·
+    Complete a Stretch challenge <b>+2</b> · Help a neighbour unstick <b>+1</b> ·
+    Contribute a prompt to the VEKA Library <b>+2</b> · Capstone demo <b>+5</b> (winner <b>+10</b>).<br>
+    Tap <b>＋ / －</b> to adjust live. First to keep the room buzzing wins — the points are the excuse, the momentum is the point.
   </div>
 </div>
 
-<!-- ─── TRAINER OVERLAY ─── -->
-<div id="trainer-overlay" class="trainer-hidden">
-  <div class="trainer-header">
-    <span class="trainer-badge">⚡ TRAINER MODE</span>
-    <span id="trainer-module-tag">Module</span>
-    <button onclick="toggleTrainer()" class="trainer-close">✕</button>
-  </div>
-  <div class="trainer-body">
-    <div class="trainer-row">
-      <div class="tr-label">OBJECTIVE</div>
-      <div id="t-objective" class="tr-value">—</div>
-    </div>
-    <div class="trainer-row">
-      <div class="tr-label">SAY</div>
-      <div id="t-say" class="tr-value tr-say">—</div>
-    </div>
-    <div class="trainer-row" id="t-rescue-row" style="display:none;">
-      <div class="tr-label">⚑ WATCH / RESCUE</div>
-      <div id="t-rescue" class="tr-value tr-rescue">—</div>
-    </div>
-    <div class="trainer-row">
-      <div class="tr-label">TIMING</div>
-      <div id="t-time" class="tr-value">As needed</div>
-    </div>
-  </div>
-  <div class="trainer-footer">Shift+T to close</div>
-</div>
+<div class="toast" id="toast"></div>
 
-<script src="js/main.js"></script>
-<script src="js/timer.js"></script>
-<script src="js/trainer.js"></script>
 <script>
-// Inline JS for activities not relying on the module files
-function toggleSourceDrawer() {
-  const d = document.getElementById('source-drawer');
-  d.classList.toggle('drawer-hidden');
-  d.classList.toggle('drawer-visible');
+/* ============================================================
+   SLIDE DATA  —  every activity is VEKA-specific, three-tiered,
+   with a copyable prompt. Synthetic data only.
+   ============================================================ */
+const SLIDES = [
+
+/* ---------- FRONT MATTER ---------- */
+{type:'title'},
+
+{type:'agenda'},
+
+{type:'howto'},
+
+/* ================= HOUR 1 — IGNITE ================= */
+{type:'divider',hour:1,ph:'Phase 1 · Precision Communication',num:'01',title:'Ignite',sub:'Why this changes your Monday morning — and your first personal win.'},
+
+{type:'concept',hour:1,ey:'Hour 1 · The case',title:'AI on the VEKA floor, not in a lab',
+ lead:'This is not about robots. It is about giving every desk — extrusion, finance, sales, HR — a fast, tireless drafting partner for the writing and data work that eats your day.',
+ pts:[
+  '<b>The email you rewrite five times</b> — vendor chasers, shift handovers, delay notices — drafted in seconds, in your voice.',
+  '<b>The reconciliation you dread</b> — messy Tally/SAP exports turned into a clean, explained summary.',
+  '<b>The report nobody has time for</b> — maintenance logs and SOPs, structured and searchable.',
+  'You stay the expert. AI is the fast intern who never gets tired and never takes it personally when you say “redo it.”'],
+ aside:{h:'The one mindset shift',p:'Stop asking AI a question. Start giving it a briefing — role, context, what good looks like. Today you learn to brief like a manager, not search like a user.'}},
+
+{type:'demo',hour:1,ey:'Hour 1 · The wow',title:'Watch a robotic email become a VEKA email',
+ before:{tag:'Before — the generic AI answer',p:'“Dear Sir, I am writing to inform you that your delivery is delayed. We apologize for the inconvenience. Please be assured we value your business. Kind regards.” — polite, hollow, and clearly written by a machine.'},
+ after:{tag:'After — briefed like a manager',p:'A three-line note to a profile supplier: names the exact PO and reel batch, states the revised dispatch window, offers a partial dispatch to keep the line running, and asks for written confirmation by end of day — firm, specific, unmistakably human.'},
+ say:{cue:'Say while it runs',line:'“Same tool. Same 20 seconds. The only thing that changed is that I told it who I am, who I’m writing to, and what a good outcome looks like. That gap — that’s the whole day.”'}},
+
+{type:'concept',hour:1,ey:'Hour 1 · The frame',title:'You are the director. AI is the crew.',
+ lead:'A director never asks the crew “what should this movie be?” They describe the shot. All day we practise describing the shot.',
+ pts:[
+  '<b>Direction beats questions.</b> “Draft a firm-but-warm reminder to a late supplier” beats “write an email”.',
+  '<b>Examples beat adjectives.</b> Paste one email you liked; ask for that style.',
+  '<b>Iteration is the job.</b> First draft is clay. “Make it shorter / firmer / add the PO number” is where quality lives.'],
+ aside:{h:'Reassurance for the nervous',p:'You cannot break it. There is no wrong prompt — only a first draft you improve. If you can brief a colleague, you can brief this.'}},
+
+{type:'activity',hour:1,ey:'Hour 1 · Your turn',title:'Your first real win',min:12,
+ brief:'Pick one small writing task from YOUR actual desk this week. We are getting everyone a usable output in the first hour — proof it works for you, not for a demo.',
+ core:'Draft one real message you owe someone — a reminder, a thank-you, a short internal update. Give the AI your role, the reader, and the outcome you want.',
+ scaffold:'Use the starter below and just fill the blanks. That is a complete, professional prompt.',
+ stretch:'Generate the message in two tones (formal + friendly) in one go, then ask the AI which is better for your reader and why.',
+ prompt:'You are helping me, a [YOUR ROLE] at VEKA India, write a short [EMAIL / MESSAGE].\nReader: [WHO — e.g., a supplier, my manager, my team].\nSituation: [WHAT IS HAPPENING IN 1-2 LINES].\nI want the reader to: [THE OUTCOME — e.g., confirm a new date, approve this, feel reassured].\nTone: professional, warm, and specific. Keep it under 120 words.\nBefore writing, ask me up to 2 questions if anything is unclear.',
+ share:'Drop your favourite line in the chat. Best one wins the first +3 of the day.'},
+
+{type:'checkpoint',hour:1,task:'Show me an output you would actually send today, with zero further edits.',
+ rubric:['Specific to a real VEKA situation (names a PO, a shift, a person, a date)','Clear single outcome the reader is asked to do','Sounds like a person, not a policy document','You improved it at least once with a follow-up instruction']},
+
+/* ================= HOUR 2 — PRECISION COMMS I ================= */
+{type:'divider',hour:2,ph:'Phase 1 · Precision Communication',num:'02',title:'The anatomy of a great prompt',sub:'Four levers that turn generic mush into precision output: Context · Tone · Persona · Format.'},
+
+{type:'concept',hour:2,ey:'Hour 2 · The framework',title:'C · T · P · F — the four levers',
+ lead:'Every strong prompt pulls some combination of these. Learn them once, use them for the rest of your career.',
+ pts:[
+  '<b>Context</b> — the situation, constraints, and any real detail (PO numbers, dates, the reader’s mood).',
+  '<b>Tone</b> — firm, apologetic, celebratory, neutral-technical. Name it explicitly.',
+  '<b>Persona</b> — who the AI is being (“a senior VEKA procurement lead”) and who it writes to.',
+  '<b>Format</b> — email, bullet brief, table, 3 options, under 100 words. Say the shape you want.'],
+ aside:{h:'Memory hook',p:'“Can These Prompts Fly?” — Context, Tone, Persona, Format. If an output disappoints, one of these four is missing. Add it and re-run.'}},
+
+{type:'demo',hour:2,ey:'Hour 2 · Live reveal',title:'One request, four levers, live',
+ before:{tag:'Lever 0 — bare request',p:'“Write a message about a machine breakdown.” → vague, generic, unusable on the floor.'},
+ after:{tag:'Levers stacked one by one',p:'Add Persona (maintenance supervisor) → Context (Extruder 3, seal failure, synthetic timings) → Tone (calm, no blame) → Format (3-line WhatsApp update + 1-line action). The room watches it sharpen with every addition.'},
+ say:{cue:'Say as you add Format',line:'“Notice I never made it longer — I made it more directed. Precision isn’t more words. It’s fewer, aimed better.”'}},
+
+{type:'activity',hour:2,ey:'Hour 2 · Your turn',title:'The before/after rescue',min:10,
+ brief:'I will paste a deliberately weak prompt. Your job: rescue it using C·T·P·F and prove the output got measurably better.',
+ core:'Take the weak prompt “write something about a price increase to a customer” and rebuild it with all four levers. Run both. Keep the receipts.',
+ scaffold:'Fill the four-lever template below — one line each. Do not overthink; one good line per lever beats a paragraph.',
+ stretch:'Add a fifth constraint: “give me 3 versions on a warmth-vs-firmness scale (1 = softest, 3 = firmest)” and pick which suits a long-standing customer vs a new one.',
+ prompt:'PERSONA: You are a [ROLE] at VEKA India writing to [READER].\nCONTEXT: [THE REAL SITUATION IN 2-3 LINES, WITH ANY NUMBERS OR DATES].\nTONE: [e.g., firm but respectful; we are not apologising, we are informing].\nFORMAT: [e.g., email under 130 words, with a clear subject line and one call to action].\nWrite it. Then, in one line, tell me which word you chose most carefully and why.',
+ share:'Post your BEFORE and AFTER side by side. Biggest visible jump = Best Prompt of the Hour (+3).'},
+
+{type:'battle',hour:2,ey:'Hour 2 · Prompt battle #1',title:'Fewest words, best email',min:5,
+ rules:['One scenario: a polite-but-final payment reminder to a 45-day-overdue distributor (synthetic).','You get 90 seconds to write the prompt. Word limit on the PROMPT: 60 words.','We score the OUTPUT: clarity, correct firmness, and whether it names a concrete next step.','Room votes. Winning table +5. Ties broken by whoever used the fewest words.']},
+
+{type:'checkpoint',hour:2,task:'Name the four levers from memory, then show one prompt where you used at least three of them deliberately.',
+ rubric:['All four levers recalled (Context · Tone · Persona · Format)','At least three applied on purpose, not by accident','You can point to the exact line each lever changed','Output is tighter than your Hour 1 attempt']},
+
+{type:'break',min:10,label:'Stretch, water, breathe',sub:'Back in 10 — Phase 1 finishes with the emails that actually keep the plant running.'},
+
+/* ================= HOUR 3 — PRECISION COMMS II ================= */
+{type:'divider',hour:3,ph:'Phase 1 · Precision Communication',num:'03',title:'The high-stakes writing',sub:'Vendor negotiation · shift handovers · delay & crisis logistics. Where a bad email costs real money.'},
+
+{type:'concept',hour:3,ey:'Hour 3 · Why this matters',title:'The three emails that carry risk',
+ lead:'These are the messages where tone, precision and speed decide whether a problem stays small. We build reusable approaches for all three.',
+ pts:[
+  '<b>Vendor negotiation</b> — hold your position, protect the relationship, leave a door open.',
+  '<b>Shift handover</b> — nothing lost between shifts; the next team knows exactly what is live.',
+  '<b>Delay & crisis comms</b> — inform fast, own the facts, give the customer something to act on.'],
+ aside:{h:'Golden rule for crisis comms',p:'Lead with the fact and the fix, not the apology. “Dispatch moves to Thursday; here is the partial we can send tomorrow” beats three sorry-sentences.'}},
+
+{type:'activity',hour:3,ey:'Hour 3 · Your turn',title:'The vendor negotiation email',min:9,
+ brief:'A profile-compound supplier has quoted a 7% price rise mid-contract (synthetic). You need to push back without blowing up a relationship you depend on.',
+ core:'Draft a reply that acknowledges their costs, holds firm on the contracted price, and proposes one constructive alternative (staggered rise, longer term, volume commitment).',
+ scaffold:'Use the template below — it already contains the negotiation structure; you supply the numbers.',
+ stretch:'Ask the AI to also produce the supplier’s likely counter-reply, then draft your response to THAT. You now have the whole exchange pre-thought.',
+ prompt:'You are a procurement lead at VEKA India. Write a reply to a supplier who wants a 7% price increase mid-contract.\nGoals, in order: (1) keep the relationship warm, (2) hold the contracted price for the current term, (3) offer ONE constructive alternative.\nUse a calm, senior, non-confrontational tone. Reference the contract without threatening.\nFormat: email under 160 words + a one-line internal note to my manager summarising my position.',
+ share:'What alternative did you offer? Cleverest concession wins the hour.'},
+
+{type:'activity',hour:3,ey:'Hour 3 · Your turn',title:'The shift-handover note',min:8,
+ brief:'End of B-shift on the extrusion line. The next team must inherit reality, not guesswork. Turn rough notes into a clean, scannable handover.',
+ core:'Paste 4-5 messy bullet points (synthetic: “extruder 2 running slow, changed filter 3pm, PO#4471 profiles on hold pending QC, night order priority = white 70mm”) and get a structured handover.',
+ scaffold:'Use the template; it forces the AI into a fixed, repeatable handover shape your whole line can adopt.',
+ stretch:'Turn it into a reusable handover FORMAT with fixed headings (Status / Actions taken / Watch-outs / Priority for next shift) so every handover looks identical — the seed of an SOP.',
+ prompt:'Turn my rough end-of-shift notes into a clear handover for the incoming extrusion shift at VEKA.\nUse these fixed headings: LINE STATUS · ACTIONS TAKEN THIS SHIFT · WATCH-OUTS · PRIORITY FOR NEXT SHIFT.\nKeep each point one line, factual, no filler. Flag anything safety- or quality-related in CAPS.\nMy rough notes:\n[PASTE 4-6 MESSY BULLETS HERE]',
+ share:'Post your headings version — we vote the cleanest to become a line standard.'},
+
+{type:'activity',hour:3,ey:'Hour 3 · Your turn',title:'Delay & crisis logistics comms',min:9,
+ brief:'A transporter breakdown delays a distributor’s order by two days (synthetic). Write the customer message that keeps trust intact.',
+ core:'Fact + fix + reassurance, in that order. Give the customer a concrete option (partial dispatch, revised slot, direct contact).',
+ scaffold:'Fill the crisis template — it already sequences fact→fix→next step so you cannot bury the important part.',
+ stretch:'Generate three versions calibrated to relationship value: key account (most proactive, phone-call offer), standard, and new customer. Same facts, different care.',
+ prompt:'You are a logistics coordinator at VEKA India. A transporter breakdown delays a distributor’s order by 2 days.\nWrite a message that: (1) states the new dispatch date up front, (2) offers a partial dispatch tomorrow to keep their site moving, (3) gives my direct line for questions.\nTone: accountable and calm, NOT over-apologetic. Under 120 words. Subject line included.',
+ share:'Fact-first or sorry-first? Read two aloud. The room feels the difference instantly.'},
+
+{type:'checkpoint',hour:3,task:'Produce all three artefacts (negotiation reply, structured handover, crisis note). One must be reusable by a colleague with no editing.',
+ rubric:['Negotiation holds position AND keeps the door open','Handover uses fixed, repeatable headings','Crisis note leads with fact + fix, not apology','At least one artefact is genuinely hand-off-ready']},
+
+{type:'break',min:45,label:'Lunch',sub:'45 minutes. After lunch we stop writing and start working the data — SAP, Tally, SOPs, maintenance logs.'},
+
+/* ================= HOUR 4 — FUNCTIONAL MASTERY I ================= */
+{type:'divider',hour:4,ph:'Phase 2 · Functional Mastery',num:'04',title:'Finance & Operations',sub:'AI beside SAP and Tally — reconciliation, reporting, SOP standardisation, maintenance-log analysis.'},
+
+{type:'concept',hour:4,ey:'Hour 4 · The principle',title:'AI does not replace SAP. It sits next to it.',
+ lead:'Your systems of record stay exactly where they are. AI is the layer that reads the messy export, explains it, drafts the summary, and catches what the eye misses.',
+ pts:[
+  '<b>Export → explain.</b> Paste a raw ledger dump; get a plain-English reconciliation summary with flags.',
+  '<b>Data → decision.</b> Turn a maintenance log into “here are the 3 machines to watch and why”.',
+  '<b>Chaos → standard.</b> Turn one person’s process into an SOP the whole team can follow.',
+  '<b>Safety first:</b> use synthetic or masked data today; never paste real customer or salary data into public tools.'],
+ aside:{h:'Say this out loud',p:'“AI is not your auditor and not your source of truth. It is your fastest first-pass analyst. You still sign off.”'}},
+
+{type:'demo',hour:4,ey:'Hour 4 · Live reveal',title:'Messy reconciliation → clean summary',
+ before:{tag:'Before — a wall of rows',p:'A synthetic 30-line vendor ledger extract: mismatched invoice vs payment amounts, two duplicate entries, one currency typo. To the eye: exhausting.'},
+ after:{tag:'After — 20 seconds',p:'AI returns: total invoiced vs paid, three specific mismatches with row references, two suspected duplicates, and a one-line “what to check first”. The room audibly reacts.'},
+ say:{cue:'Say at the reveal',line:'“It didn’t do your job. It did the 40 minutes of squinting before your job. You start where the thinking actually begins.”'}},
+
+{type:'activity',hour:4,ey:'Hour 4 · Your turn',title:'Reconciliation & reporting (SAP/Tally)',min:11,
+ brief:'Work on the synthetic ledger provided in chat. Get AI to reconcile and explain — then produce a summary you could paste into a report.',
+ core:'Ask AI to compare invoiced vs paid, list mismatches with row numbers, flag duplicates, and give a 3-line summary for your manager.',
+ scaffold:'Paste the sample data under the template below; it tells the AI exactly what to check and how to answer.',
+ stretch:'Ask for the output as a clean table (columns: Row · Issue · Amount · Action) AND a short note on which check you would automate first if this ran weekly.',
+ prompt:'You are a finance analyst at VEKA India. Below is a raw vendor ledger extract (synthetic).\nDo three things: (1) reconcile invoiced vs paid and give the totals, (2) list every mismatch and suspected duplicate WITH the row number, (3) write a 3-line summary for my manager.\nIf a value looks like a typo, flag it — do not silently correct it.\nDATA:\n[PASTE THE SAMPLE LEDGER ROWS HERE]',
+ share:'Who caught the currency typo? First to flag it correctly, +2.'},
+
+{type:'activity',hour:4,ey:'Hour 4 · Your turn',title:'SOP standardisation',min:10,
+ brief:'Every plant has processes that live in one person’s head. Convert a described process into a clean, numbered SOP anyone can follow.',
+ core:'Describe a routine you own in a few messy sentences (synthetic: profile colour-changeover on the line). Get a numbered SOP with a safety note and a “done when” check.',
+ scaffold:'Use the template; it produces a consistent SOP skeleton — purpose, materials, steps, safety, sign-off.',
+ stretch:'Ask AI to also generate a 5-question competency check to confirm a new operator actually learned the SOP.',
+ prompt:'Turn my description into a standard operating procedure for VEKA.\nStructure: PURPOSE · WHO DOES THIS · MATERIALS/TOOLS · STEPS (numbered) · SAFETY & QUALITY CHECKS · DONE WHEN.\nWrite steps as short imperatives (“Do X”). Put any safety-critical step in bold.\nMy description of the process:\n[DESCRIBE THE PROCESS IN YOUR OWN MESSY WORDS]',
+ share:'Post your “DONE WHEN” line — the hardest and most useful part of any SOP.'},
+
+{type:'activity',hour:4,ey:'Hour 4 · Your turn',title:'Maintenance-log analysis',min:9,
+ brief:'A month of breakdown entries hides a pattern. Let AI surface it so planning beats firefighting.',
+ core:'Paste a synthetic month of log lines (machine, date, issue, downtime). Ask for the top recurring issues, the worst machine by downtime, and one preventive suggestion.',
+ scaffold:'Use the template; paste the sample log block from chat underneath it.',
+ stretch:'Ask for a priority ranking that weighs downtime × frequency, and a one-line business case for the single fix worth doing first.',
+ prompt:'You are a maintenance planner at VEKA India. Below is one month of breakdown log entries (synthetic).\nTell me: (1) the 3 most frequent issue types, (2) the machine with the most total downtime, (3) one recurring pattern I might be missing, (4) one preventive action worth trialling.\nBe specific and cite the numbers you used.\nLOG:\n[PASTE THE SAMPLE MAINTENANCE LOG HERE]',
+ share:'Which machine is the quiet villain? First correct answer with evidence, +2.'},
+
+{type:'checkpoint',hour:4,task:'Produce a reconciliation summary, one SOP, and one maintenance insight — each based on the synthetic data, each defensible.',
+ rubric:['Reconciliation cites specific rows, does not invent numbers','SOP is numbered, has a safety note and a “done when”','Maintenance insight is backed by the log figures','You used synthetic/masked data throughout — no real records']},
+
+/* ================= HOUR 5 — FUNCTIONAL MASTERY II ================= */
+{type:'divider',hour:5,ph:'Phase 2 · Functional Mastery',num:'05',title:'Sales & HR',sub:'Personalised PVC-profile pitching · lead generation · technical job descriptions · policy drafting.'},
+
+{type:'concept',hour:5,ey:'Hour 5 · The principle',title:'Personalisation at scale',
+ lead:'The same product, framed for the person in front of you. AI lets one salesperson or one HR lead write like they have all afternoon — for every contact.',
+ pts:[
+  '<b>Sales:</b> one profile, many buyers — an architect cares about aesthetics & thermal specs; a builder cares about lead time & price.',
+  '<b>HR:</b> accurate technical JDs without begging engineering for wording; policies in plain, consistent language.',
+  '<b>The trap:</b> generic personalisation is worse than none. We feed AI the specifics that make it land.'],
+ aside:{h:'The tell of a good sales prompt',p:'It contains the buyer’s WORLD — their project, their pressure, their objection — not just their name. Name-merge is not personalisation.'}},
+
+{type:'activity',hour:5,ey:'Hour 5 · Your turn',title:'Personalised PVC-profile pitch',min:10,
+ brief:'Same product — VEKA’s 70mm PVC window profile (synthetic framing) — pitched to two very different buyers.',
+ core:'Write one pitch to an architect (thermal performance, aesthetics, certifications) and one to a volume builder (lead time, price-per-unit, install speed).',
+ scaffold:'Use the template twice, changing only the BUYER block. Feel how the same product bends to the reader.',
+ stretch:'Add the buyer’s likely objection (“imported profiles are cheaper”) and have AI pre-empt it inside the pitch, not after.',
+ prompt:'You are a VEKA India sales specialist. Write a short pitch for our 70mm PVC window profile.\nBUYER: [ARCHITECT who cares about thermal performance & design | or | BUILDER who cares about lead time & cost].\nLead with the ONE benefit that buyer cares about most. Include one concrete proof point and one clear next step (sample, quote, site visit).\nTone: confident, consultative, not salesy. Under 130 words.',
+ share:'Read the two pitches back to back. The room hears personalisation click into place.'},
+
+{type:'activity',hour:5,ey:'Hour 5 · Your turn',title:'Lead-generation messaging',min:8,
+ brief:'A cold first-touch to a prospective fabricator or dealer (synthetic). Earn a reply, not a delete.',
+ core:'Write a 4-line outreach: relevant hook, one reason VEKA fits them specifically, a low-friction ask (15-min call / sample).',
+ scaffold:'Use the template — it keeps you short and reader-focused, the two things cold outreach usually fails at.',
+ stretch:'Generate a 3-message sequence (first touch, gentle nudge at day 4, final value-add at day 9) so no lead goes cold by accident.',
+ prompt:'Write a short cold outreach message from VEKA India to a [FABRICATOR / DEALER / BUILDER].\nOpen with something relevant to THEIR business, not about us. In one line, say why VEKA specifically fits them.\nEnd with a single low-effort ask. Max 4 short lines. No jargon, no “I hope this email finds you well.”\nTheir context: [ONE LINE ON WHO THEY ARE / WHAT THEY BUILD].',
+ share:'Post your opening line only. If it earns a reply, it earns +3.'},
+
+{type:'activity',hour:5,ey:'Hour 5 · Your turn',title:'Technical JD + policy drafting',min:9,
+ brief:'HR track: produce an accurate technical job description and a plain-language policy clause — without a three-day wait for engineering to reply.',
+ core:'Draft a JD for a “Extrusion Line Technician” with responsibilities, must-have skills, and nice-to-haves. Then draft a short, clear leave-policy clause.',
+ scaffold:'Use the JD template; it prompts you for the few specifics that keep AI from inventing fake qualifications.',
+ stretch:'Ask AI to rewrite the policy clause at a Grade-8 reading level AND flag any sentence that could be read two ways — then fix them.',
+ prompt:'You are an HR partner at VEKA India. Draft a job description for an [ROLE, e.g., Extrusion Line Technician].\nSections: ROLE PURPOSE · KEY RESPONSIBILITIES (5-7) · MUST-HAVE SKILLS · NICE-TO-HAVE · WHO YOU REPORT TO.\nBe specific to PVC profile manufacturing. Do NOT invent certifications — if unsure, write “[confirm with plant lead]”.\nKeep it inclusive and jargon-light.',
+ share:'Which JD line would actually make a good technician apply? Sharpest one, +2.'},
+
+{type:'battle',hour:5,ey:'Hour 5 · Prompt battle #2',title:'Sell it in six lines',min:5,
+ rules:['Scenario: turn a shy prospect (“just browsing profiles”) into a booked sample request.','90 seconds to write the prompt. The OUTPUT must be six lines or fewer.','Scored on: relevance to the buyer, a real reason to act now, and one clear next step.','Room vote. Winning table +5. Bonus +2 if it pre-empts an objection.']},
+
+{type:'checkpoint',hour:5,task:'Show two differentiated sales pitches for the same profile, plus either a JD or a policy clause that HR could publish with light edits.',
+ rubric:['The two pitches genuinely differ in lead-benefit, not just wording','Outreach is short and reader-first','JD/policy avoids invented facts (uses “[confirm]” where unsure)','Language is inclusive and plain']},
+
+{type:'break',min:10,label:'Reset',sub:'10 minutes. Next we stop making one-off prompts and start building assets your whole team reuses.'},
+
+/* ================= HOUR 6 — BUILD REUSABLE ASSETS ================= */
+{type:'divider',hour:6,ph:'Phase 3 · Strategic Leadership',num:'06',title:'From prompt to asset',sub:'Turn your best prompts into parameterised templates — and start the VEKA Prompt Library.'},
+
+{type:'concept',hour:6,ey:'Hour 6 · The leap',title:'A prompt is personal. A template scales.',
+ lead:'This is the HOD-level move: stop solving the same problem daily, and turn your winning prompt into a fill-in-the-blank template the whole department uses identically.',
+ pts:[
+  '<b>Find the variables.</b> Anything that changes each time becomes a [BRACKETED SLOT].',
+  '<b>Lock the structure.</b> The parts that make it good — tone, format, checks — stay fixed.',
+  '<b>Name it, describe it, share it.</b> A template nobody can find is not an asset.'],
+ aside:{h:'The consistency payoff',p:'When ten people use the same handover template, every handover looks identical — and a new joiner is productive on day one instead of week three.'}},
+
+{type:'demo',hour:6,ey:'Hour 6 · Live reveal',title:'Turn a winning prompt into a template',
+ before:{tag:'Before — a great one-off',p:'The crisis-comms prompt from Hour 3 — brilliant, but rewritten from scratch every single time by every person.'},
+ after:{tag:'After — a reusable template',p:'The same prompt with [DELAY REASON], [NEW DATE], [CUSTOMER TIER] as slots, a fixed tone, and a one-line usage note. Anyone on the team drops in three values and sends. The room realises they just built infrastructure.'},
+ say:{cue:'Say at the reveal',line:'“You just stopped being the only person who can write this email. That’s not a prompt any more — that’s a process.”'}},
+
+{type:'activity',hour:6,ey:'Hour 6 · Your turn',title:'Build your department template',min:12,
+ brief:'Take your best prompt from today and convert it into a clean, reusable template your team could adopt tomorrow.',
+ core:'Identify every variable, wrap it in [BRACKETS], write a one-line “how to use this” note, and give it a findable name.',
+ scaffold:'Use the meta-prompt below — AI will help you find the variables and format the template.',
+ stretch:'Add “failure guards”: 1-2 instructions that stop the template misfiring (e.g., “never invent a date; if missing, ask”), plus a sample filled-in example.',
+ prompt:'Here is a prompt that worked well for me:\n[PASTE YOUR BEST PROMPT FROM TODAY]\nHelp me turn it into a reusable team template. Specifically:\n1. Identify every part that would change each time and convert it to a [BRACKETED_VARIABLE].\n2. Keep the tone/format/checks fixed.\n3. Add a one-line usage note and a short name for the template.\n4. Add 1-2 guardrails so it fails safely.\nReturn the finished template ready to paste into our library.',
+ share:'Name your template. Best name + clearest use-note earns Best Prompt of the Hour.'},
+
+{type:'activity',hour:6,ey:'Hour 6 · Your turn',title:'Contribute to the VEKA Prompt Library',min:9,
+ brief:'We are seeding a real, shared library right now. Each contribution is documented so a brand-new employee could use it cold.',
+ core:'Write your template into the standard library card: Name · Department · What it does · When to use · The template · A filled example.',
+ scaffold:'Use the library card format below — fill each field. Consistency is what makes the library usable.',
+ stretch:'Rate your own template 1-5 on reuse potential and note the ONE improvement you would make with more time — future-you will thank you.',
+ prompt:'Format my template as a VEKA Prompt Library card with these exact fields:\nTEMPLATE NAME:\nDEPARTMENT: [Finance / Sales / Operations / HR]\nWHAT IT DOES: (one line)\nWHEN TO USE IT: (one line)\nTHE TEMPLATE: (the full parameterised prompt)\nFILLED EXAMPLE: (one worked example with realistic synthetic values)\nAUTHOR / DATE:',
+ share:'Submit your card. Every accepted card = +2 and a permanent place in the VEKA library.'},
+
+{type:'checkpoint',hour:6,task:'Deliver one finished library card: a parameterised template with variables, guardrails, a usage note, and a worked example.',
+ rubric:['Every changing value is a clear [BRACKETED] variable','Fixed structure preserves what made the prompt good','At least one guardrail prevents a common failure','A colleague could use it with zero explanation from you']},
+
+/* ================= HOUR 7 — CAPSTONE SPRINT ================= */
+{type:'divider',hour:7,ph:'Capstone · Build & Deploy',num:'07',title:'Solve a real bottleneck',sub:'Find one manual task that eats your week. Build the AI solution that kills it — today.'},
+
+{type:'concept',hour:7,ey:'Hour 7 · The brief',title:'Your capstone: one bottleneck, one solution',
+ lead:'No hypotheticals. Pick a genuine repetitive drain in YOUR role and build a working prompt, template, or mini prompt-set that removes it. You will demo it in Hour 8.',
+ pts:[
+  '<b>Identify</b> — the task you do weekly that is manual, dull, and rules-based.',
+  '<b>Build</b> — the prompt/template that does the heavy lifting, tested on real (synthetic) inputs.',
+  '<b>Prove</b> — show a before (time/effort) and after (the AI output). That contrast is your demo.'],
+ aside:{h:'Scope discipline',p:'One sharp solution beats three vague ones. “Auto-draft my Monday supplier chasers” will win over “transform procurement”. Small and working > big and imaginary.'}},
+
+{type:'activity',hour:7,ey:'Hour 7 · Your turn',title:'Step 1 — Pin the bottleneck',min:8,
+ brief:'Before building, name the problem precisely. A well-defined bottleneck is half-solved.',
+ core:'Write one paragraph: the task, how often, how long it takes now, and what “done well” looks like.',
+ scaffold:'Use the bottleneck canvas below — answer the four questions and you have a scoped project.',
+ stretch:'Estimate the weekly time saved if this worked, across your team — that number is your Hour-8 headline.',
+ prompt:'Help me scope a GenAI capstone project. Ask me these and then summarise my project in 4 lines:\n1. What repetitive manual task do I want to solve?\n2. How often do I do it and how long does it take now?\n3. What does a great result look like?\n4. What input data/text do I already have for it (synthetic for today)?\nThen tell me if my scope is realistic to prototype in 30 minutes; if not, help me narrow it.',
+ share:'One-line pitch: “I’m killing ___ , which currently eats ___ hours a week.”'},
+
+{type:'activity',hour:7,ey:'Hour 7 · Your turn · deep work',title:'Step 2 — Build & test your solution',min:25,
+ brief:'Head down. Build the prompt or template, run it on real (synthetic) inputs, break it, fix it, repeat. Trainers circulate.',
+ core:'Produce a working prompt/template that reliably turns your input into the output you defined. Test it at least three times.',
+ scaffold:'Reuse today’s templates as scaffolding — reconciliation, handover, pitch, JD structures are all fair starting points to adapt.',
+ stretch:'Chain it: build a 2-step flow (e.g., extract → summarise, or draft → self-critique) or add a self-check instruction where the AI rates its own output before you see it.',
+ prompt:'I am building: [YOUR ONE-LINE PROJECT].\nHere is my first attempt at the prompt/template:\n[PASTE YOUR DRAFT]\nAct as a tough reviewer. Run it in your head on this input: [PASTE SYNTHETIC INPUT].\nTell me: where it would fail, what is ambiguous, and rewrite it to be more reliable. Then give me the improved version ready to use.',
+ share:'Stuck? Raise a hand — helping a neighbour unstick earns THEM +1 and you the good karma.'},
+
+{type:'activity',hour:7,ey:'Hour 7 · Your turn',title:'Step 3 — Polish & prep your 90-second demo',min:9,
+ brief:'A great solution with a flat demo loses. Prepare the before/after moment that makes the room go “oh”.',
+ core:'Prepare: one line on the problem, the live run of your solution, and the before/after contrast (time saved or quality jump).',
+ scaffold:'Use the demo-script template — it structures your 90 seconds so you never ramble.',
+ stretch:'Prepare for one hard question: “what could go wrong / where does a human still need to check?” Confident answer = credibility.',
+ prompt:'Help me prepare a 90-second demo of my capstone.\nMy project: [ONE LINE].\nMy solution: [PASTE PROMPT/TEMPLATE].\nWrite me a tight demo script: (1) the problem in one sentence, (2) what I will show live, (3) the before/after punchline, (4) my answer to “where does a human still check this?”\nKeep it punchy and confident.',
+ share:'Rehearse your punchline once to your neighbour. If it lands on them, it lands on the room.'},
+
+{type:'checkpoint',hour:7,task:'Have a working solution + a 90-second demo ready. It must run live on a synthetic input without hand-editing the output.',
+ rubric:['Solves one clearly-scoped, real VEKA bottleneck','Runs reliably on at least 3 test inputs','Before/after contrast is obvious and quantified where possible','Demo is rehearsed and fits in 90 seconds']},
+
+/* ================= HOUR 8 — SHOWCASE & SUSTAINABILITY ================= */
+{type:'divider',hour:8,ph:'Capstone · Deploy & Sustain',num:'08',title:'Showcase & what happens Monday',sub:'Demos, judging, the leaderboard finale — then how this survives past today.'},
+
+{type:'showcase',hour:8,ey:'Hour 8 · The showcase',title:'Demo running order & judging',
+ steps:[
+  {t:'Rapid-fire demos — 90 seconds each',d:'Every participant (or one per table if the room is large) runs their capstone live. Trainer keeps time hard.'},
+  {t:'Judge against the rubric — score 1-5 each',d:'Problem clarity · Solution reliability · Before/after impact · Reusability · Demo confidence.'},
+  {t:'Room reaction bonus',d:'The three demos that got the loudest “oh” get an audience-choice +3 on top of judge scores.'},
+  {t:'Announce winners & update the board',d:'Top capstone +10, all who demoed +5. Celebrate loudly — this is the moment people remember.'},
+  {t:'Harvest for the library',d:'Every winning solution goes straight into the VEKA Prompt Library as a documented card.'}]},
+
+{type:'concept',hour:8,ey:'Hour 8 · Sustainability · A',title:'The VEKA Prompt Library lives on',
+ lead:'The best templates from today are curated into one central, department-tagged library — so quality does not walk out the door with the people who built it.',
+ pts:[
+  '<b>Curated, not dumped.</b> Only tested, documented cards make it in.',
+  '<b>Tagged by department</b> — Finance, Sales, Operations, HR — so people find what they need fast.',
+  '<b>Onboarding gold.</b> A new joiner inherits the whole department’s best thinking on day one.'],
+ aside:{h:'Owner',p:'Assign one library steward per department to accept cards and keep them current. A library with no gardener becomes a junk drawer.'}},
+
+{type:'concept',hour:8,ey:'Hour 8 · Sustainability · B & C',title:'HOD review & the learning loop',
+ lead:'Training becomes business value only when leadership picks it up and the learning keeps going.',
+ pts:[
+  '<b>HOD Deployment Review:</b> department heads pick the top capstone solutions for immediate integration into daily workflows (e.g., automating SAP data cleaning).',
+  '<b>From exercise to efficiency:</b> the goal is a live workflow, not a certificate in a drawer.',
+  '<b>Continuous learning loop:</b> a follow-up session maps the next advanced needs, keeping VEKA ahead as the technology evolves beyond 2026.'],
+ aside:{h:'The 30-day rule',p:'A skill unused for 30 days evaporates. The action plan on the next slide is how today survives contact with a busy Monday.'}},
+
+{type:'activity',hour:8,ey:'Hour 8 · Your turn · last one',title:'Your 30-day action plan',min:8,
+ brief:'Leave with a commitment, not just inspiration. Pick what you will actually do — small, specific, this month.',
+ core:'Name ONE task you will do with AI every week starting Monday, ONE template you will share with your team, and ONE colleague you will teach.',
+ scaffold:'Fill the plan below. Specific beats ambitious — “Monday supplier chasers” beats “use AI more”.',
+ stretch:'Add a 30-day measure: what number proves it worked (hours saved, faster turnaround, fewer errors)? Put a date to review it.',
+ prompt:'Help me write a realistic 30-day GenAI action plan for my VEKA role.\nBased on what I built today ([YOUR CAPSTONE]), give me:\n1. ONE weekly habit to start Monday.\n2. ONE template to share with my team and who to share it with.\n3. ONE person I will teach.\n4. ONE number I will track to prove it is working, with a review date.\nKeep it to a single page I could stick on my desk.',
+ share:'Say one commitment out loud to the room. Spoken commitments get kept.'},
+
+{type:'closing'},
+
+];
+
+/* ============================================================
+   RENDERERS
+   ============================================================ */
+const chamberSVG = `<svg viewBox="0 0 200 150" class="chamber" width="100%" style="max-width:360px"><g>
+  <rect class="fill" x="6" y="6" width="188" height="138" rx="4"/>
+  <rect x="22" y="22" width="70" height="46"/>
+  <rect x="108" y="22" width="70" height="46"/>
+  <rect x="22" y="84" width="156" height="44"/>
+  <line x1="100" y1="6" x2="100" y2="144" stroke="rgba(228,0,43,.35)" stroke-width="1" stroke-dasharray="4 4"/>
+</g></svg>`;
+
+function esc(s){return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+
+function promptBlock(p){
+  return `<div class="promptbox">
+    <div class="pb-top"><span>Copy-ready prompt</span>
+      <button class="copybtn" onclick="copyText(this)">Copy</button></div>
+    <pre>${esc(p)}</pre></div>`;
 }
+
+function renderSlide(s){
+  switch(s.type){
+
+  case 'title': return `<div class="wrap"><div class="title-grid">
+    <div>
+      <div class="eyebrow">NxtWave · Enterprise GenAI</div>
+      <h1 class="big">GenAI<br>Excellence</h1>
+      <div class="lead">A hands-on 8-hour webinar for VEKA India — precision communication, functional mastery, and a build-and-deploy capstone. 80% doing, 20% watching.</div>
+      <div class="metarow">
+        <div><span class="n">8 hrs</span><span class="l">Live · one day</span></div>
+        <div><span class="n">80%</span><span class="l">Hands-on</span></div>
+        <div><span class="n">3+1</span><span class="l">Phases + Capstone</span></div>
+        <div><span class="n">All</span><span class="l">Skill levels welcome</span></div>
+      </div>
+    </div>
+    <div class="art">${chamberSVG}<div class="kicker" style="margin-top:16px;text-align:center">The VEKA profile — precision, chamber by chamber</div></div>
+  </div></div>`;
+
+  case 'agenda':{
+    const rows = HOURS.map(h=>`<div class="agrow">
+      <div class="h">H${h.n}</div>
+      <div class="t">${h.title}<small>${h.sub}</small></div>
+      <div class="ph">${h.ph}</div></div>`).join('');
+    return `<div class="wrap">
+      <div class="eyebrow">The day at a glance</div>
+      <h2 class="head">Eight hours, one arc: write → work → build → deploy</h2>
+      <div class="agenda">${rows}</div></div>`;
+  }
+
+  case 'howto': return `<div class="wrap">
+    <div class="eyebrow">How today works</div>
+    <h2 class="head">Three tiers, one room, zero passengers</h2>
+    <div class="tiers" style="margin-top:30px">
+      <div class="tier core"><div class="lbl">● Core</div><p>Everyone does this. If you do only the Core task each hour, you leave fully equipped. No exceptions, no getting lost.</p></div>
+      <div class="tier scaffold"><div class="lbl">● Scaffold</div><p>Nervous or non-technical? Use the fill-in-the-blank starter. It <i>is</i> a complete, professional prompt — just add your details.</p></div>
+      <div class="tier stretch"><div class="lbl">● Stretch</div><p>Technical or fast? Push into chaining, structured output, and self-evaluating prompts. Earn Stretch points.</p></div>
+    </div>
+    <ul class="pts" style="margin-top:26px">
+      <li><b>Every hour ends with a checkpoint</b> — a quick “show me” so you know the skill actually stuck.</li>
+      <li><b>Points &amp; leaderboard run all day</b> (press <b>L</b>). Best prompt, prompt battles, helping a neighbour, capstone — it all scores.</li>
+      <li><b>Navigation:</b> arrow keys move slides · <b>F</b> fullscreen · <b>G</b> jump map · <b>T</b> starts the activity timer.</li>
+    </ul></div>`;
+
+  case 'divider': return `<div class="wrap divider">
+    <div class="num">${s.num}</div>
+    <div class="ph">${s.ph}</div>
+    <h2 class="head" style="font-size:clamp(34px,6vw,72px)">${s.title}</h2>
+    <div class="lead">${s.sub}</div></div>`;
+
+  case 'concept':{
+    const pts = s.pts.map(p=>`<li>${p}</li>`).join('');
+    const aside = s.aside?`<div class="aside"><h4>${s.aside.h}</h4><p>${s.aside.p}</p></div>`:'';
+    return `<div class="wrap">
+      <div class="eyebrow">${s.ey}</div>
+      <h2 class="head">${s.title}</h2>
+      <div class="lead">${s.lead}</div>
+      <div class="cols">
+        <ul class="pts">${pts}</ul>
+        ${aside}
+      </div></div>`;
+  }
+
+  case 'demo': return `<div class="wrap">
+    <div class="eyebrow">${s.ey}</div>
+    <h2 class="head">${s.title}</h2>
+    <div class="demo-grid">
+      <div class="card before"><div class="tag">${s.before.tag}</div><p>${s.before.p}</p></div>
+      <div class="card after"><div class="tag">${s.after.tag}</div><p>${s.after.p}</p></div>
+    </div>
+    <div class="demoscript"><div class="mic">◉</div><div class="say"><b>${s.say.cue}</b>${s.say.line}</div></div>
+  </div>`;
+
+  case 'activity': return `<div class="wrap">
+    <div class="eyebrow">${s.ey}</div>
+    <div class="yt-head"><span class="yt-badge">Your turn</span>
+      <h2 class="head" style="font-size:clamp(24px,3.4vw,46px)">${s.title}</h2>
+      <span class="yt-min">◷ ${s.min} min · press T</span></div>
+    <div class="brief">${s.brief}</div>
+    <div class="tiers">
+      <div class="tier core"><div class="lbl">● Core</div><p>${s.core}</p></div>
+      <div class="tier scaffold"><div class="lbl">● Scaffold</div><p>${s.scaffold}</p></div>
+      <div class="tier stretch"><div class="lbl">● Stretch</div><p>${s.stretch}</p></div>
+    </div>
+    ${promptBlock(s.prompt)}
+    <div class="share"><b>Share</b> ${s.share}</div>
+  </div>`;
+
+  case 'checkpoint':{
+    const r = s.rubric.map(x=>`<div class="r"><span>✓</span><div>${x}</div></div>`).join('');
+    return `<div class="wrap">
+      <div class="eyebrow">Hour ${s.hour} · Checkpoint</div>
+      <h2 class="head">Prove it before we move on</h2>
+      <div class="chk"><div class="task">${s.task}</div><div class="rubric">${r}</div></div></div>`;
+  }
+
+  case 'battle':{
+    const r = s.rules.map(x=>`<div><b>»</b>${x}</div>`).join('');
+    return `<div class="wrap battle">
+      <div class="eyebrow" style="justify-content:center">${s.ey}</div>
+      <div class="vs">${s.title}</div>
+      <div class="yt-min" style="margin-top:6px">◷ ${s.min} min round · press T</div>
+      <div class="rules">${r}</div></div>`;
+  }
+
+  case 'break': return `<div class="wrap brk">
+    <div class="eyebrow" style="justify-content:center">Break · ${s.min} minutes</div>
+    <div class="clock">${s.label}</div>
+    <div class="sub">${s.sub}</div></div>`;
+
+  case 'showcase':{
+    const st = s.steps.map(x=>`<div class="s"><div><div class="t">${x.t}</div><div class="d">${x.d}</div></div></div>`).join('');
+    return `<div class="wrap">
+      <div class="eyebrow">${s.ey}</div>
+      <h2 class="head">${s.title}</h2>
+      <div class="steps">${st}</div></div>`;
+  }
+
+  case 'closing': return `<div class="wrap">
+    <div class="eyebrow">That's a wrap</div>
+    <h1 class="big" style="font-size:clamp(34px,5.6vw,76px)">You didn't learn about AI today.<br>You <span style="color:var(--red)">used</span> it.</h1>
+    <div class="lead">You leave with real drafts, reusable templates in the VEKA library, a working capstone, and a 30-day plan. The floor, the finance desk, and HR all just got faster.</div>
+    <div class="metarow" style="margin-top:36px">
+      <div><span class="n" style="color:var(--red)">Monday</span><span class="l">Your habit starts</span></div>
+      <div><span class="n" style="color:var(--red)">Your team</span><span class="l">Gets your template</span></div>
+      <div><span class="n" style="color:var(--red)">Beyond 2026</span><span class="l">The loop continues</span></div>
+    </div>
+    <div class="kicker" style="margin-top:34px">NxtWave · GenAI Excellence — VEKA India · Thank you</div></div>`;
+
+  default: return `<div class="wrap"><h2 class="head">${s.type}</h2></div>`;
+  }
+}
+
+/* hour metadata for agenda + jump map + progress */
+const HOURS = [
+ {n:1,title:'Ignite',sub:'The wow opener + your first real win',ph:'Phase 1'},
+ {n:2,title:'Anatomy of a prompt',sub:'Context · Tone · Persona · Format',ph:'Phase 1'},
+ {n:3,title:'High-stakes writing',sub:'Vendor · handover · crisis comms',ph:'Phase 1'},
+ {n:4,title:'Finance & Operations',sub:'SAP/Tally · SOPs · maintenance logs',ph:'Phase 2'},
+ {n:5,title:'Sales & HR',sub:'Pitching · leads · JDs · policy',ph:'Phase 2'},
+ {n:6,title:'From prompt to asset',sub:'Templates + the VEKA Prompt Library',ph:'Phase 3'},
+ {n:7,title:'Capstone sprint',sub:'Find a bottleneck · build the fix',ph:'Capstone'},
+ {n:8,title:'Showcase & sustain',sub:'Demos · judging · 30-day plan',ph:'Capstone'},
+];
+
+/* ============================================================
+   DECK ENGINE
+   ============================================================ */
+const stage = document.getElementById('stage');
+SLIDES.forEach((s,i)=>{
+  const el=document.createElement('section');
+  el.className='slide';
+  el.dataset.hour = s.hour||'';
+  if(s.min && (s.type==='activity'||s.type==='battle')) el.dataset.min=s.min;
+  if(s.type==='break') el.dataset.min=s.min;
+  el.innerHTML=renderSlide(s);
+  stage.appendChild(el);
+});
+const slideEls=[...document.querySelectorAll('.slide')];
+
+const deck={
+  i:0,
+  show(n){
+    this.i=Math.max(0,Math.min(slideEls.length-1,n));
+    slideEls.forEach((el,idx)=>el.classList.toggle('active',idx===this.i));
+    this.chrome();
+    timer.attach(slideEls[this.i]);
+  },
+  next(){this.show(this.i+1)},
+  prev(){this.show(this.i-1)},
+  chrome(){
+    const cur=slideEls[this.i];
+    document.getElementById('counter').textContent=
+      String(this.i+1).padStart(2,'0')+' / '+String(slideEls.length).padStart(2,'0');
+    document.getElementById('progress').style.width=((this.i)/(slideEls.length-1)*100)+'%';
+    const h=cur.dataset.hour;
+    const tag=document.getElementById('hourtag');
+    tag.innerHTML = h ? `Hour <b>${h}</b> / 8` : 'Welcome';
+  }
+};
+
+/* ---------- timer ---------- */
+const timer={
+  total:0,left:0,run:false,iv:null,
+  attach(el){
+    const m=el.dataset.min;
+    const box=document.getElementById('timer');
+    if(m){box.classList.add('show');this.set(+m);document.getElementById('tlabel').textContent=m+' min';}
+    else{box.classList.remove('show');this.stop();}
+  },
+  set(min){this.total=min*60;this.left=this.total;this.run=false;this.paint();
+    document.getElementById('timer').classList.remove('done');
+    document.getElementById('tStart').textContent='Start';},
+  paint(){
+    const m=Math.floor(this.left/60),s=this.left%60;
+    document.getElementById('tdisp').textContent=
+      String(m).padStart(2,'0')+':'+String(s).padStart(2,'0');
+  },
+  toggle(){
+    if(this.left<=0)this.set(this.total/60);
+    this.run=!this.run;
+    document.getElementById('tStart').textContent=this.run?'Pause':'Start';
+    if(this.run){this.iv=setInterval(()=>{
+      if(this.left>0){this.left--;this.paint();}
+      else{this.done();}
+    },1000);}
+    else this.stop();
+  },
+  stop(){this.run=false;clearInterval(this.iv);},
+  reset(){this.stop();this.set(this.total/60);},
+  done(){this.stop();document.getElementById('timer').classList.add('done');
+    document.getElementById('tStart').textContent='Start';toast('Time! Hands up when you have something to share.');}
+};
+
+/* ---------- leaderboard ---------- */
+const board={
+  teams:[{n:'Extrusion',s:0},{n:'Finance',s:0},{n:'Sales',s:0},{n:'HR & Ops',s:0}],
+  render(){
+    const t=document.getElementById('lbTable');
+    const sorted=[...this.teams].sort((a,b)=>b.s-a.s);
+    t.innerHTML='<tr><th>#</th><th>Team</th><th>Points</th><th>Adjust</th></tr>'+
+      sorted.map(tm=>{
+        const idx=this.teams.indexOf(tm);
+        return `<tr>
+          <td class="rank">${sorted.indexOf(tm)+1}</td>
+          <td>${tm.n}</td>
+          <td class="score">${tm.s}</td>
+          <td>
+            <button onclick="board.bump(${idx},1)">＋</button>
+            <button onclick="board.bump(${idx},-1)">－</button>
+          </td></tr>`;
+      }).join('');
+  },
+  bump(i,d){this.teams[i].s=Math.max(0,this.teams[i].s+d);this.render();},
+  add(){const v=document.getElementById('lbName').value.trim();
+    if(v){this.teams.push({n:v,s:0});document.getElementById('lbName').value='';this.render();}}
+};
+board.render();
+
+/* ---------- jump map ---------- */
+(function(){
+  const grid=document.getElementById('jumpGrid');
+  slideEls.forEach((el,idx)=>{
+    const s=SLIDES[idx];
+    let label=s.type;
+    if(s.type==='divider')label='Hour '+s.hour;
+    else if(s.type==='activity'||s.type==='concept'||s.type==='demo'||s.type==='showcase')label=s.title;
+    else if(s.type==='checkpoint')label='Checkpoint';
+    else if(s.type==='battle')label='Prompt battle';
+    else if(s.type==='break')label='Break';
+    else if(s.type==='title')label='Title';
+    else if(s.type==='agenda')label='Agenda';
+    else if(s.type==='howto')label='How it works';
+    else if(s.type==='closing')label='Close';
+    const b=document.createElement('button');
+    b.innerHTML=`<div class="jh">${String(idx+1).padStart(2,'0')}${s.hour?' · H'+s.hour:''}</div><div class="jt">${label}</div>`;
+    b.onclick=()=>{deck.show(idx);ui.toggleAgenda();};
+    grid.appendChild(b);
+  });
+})();
+
+/* ---------- ui overlays ---------- */
+const ui={
+  toggleAgenda(){document.getElementById('agendaOv').classList.toggle('show');document.getElementById('boardOv').classList.remove('show');},
+  toggleBoard(){document.getElementById('boardOv').classList.toggle('show');document.getElementById('agendaOv').classList.remove('show');}
+};
+
+/* ---------- helpers ---------- */
+function copyText(btn){
+  const pre=btn.closest('.promptbox').querySelector('pre');
+  navigator.clipboard.writeText(pre.textContent).then(()=>{
+    btn.textContent='Copied ✓';setTimeout(()=>btn.textContent='Copy',1400);
+  }).catch(()=>{btn.textContent='Select & copy';});
+}
+let toastIv;
+function toast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');
+  clearTimeout(toastIv);toastIv=setTimeout(()=>t.classList.remove('show'),2600);}
+
+/* ---------- keyboard ---------- */
+document.addEventListener('keydown',e=>{
+  if(e.target.tagName==='INPUT')return;
+  switch(e.key){
+    case 'ArrowRight':case ' ':case 'PageDown':deck.next();e.preventDefault();break;
+    case 'ArrowLeft':case 'PageUp':deck.prev();break;
+    case 'f':case 'F':toggleFull();break;
+    case 'g':case 'G':ui.toggleAgenda();break;
+    case 'l':case 'L':ui.toggleBoard();break;
+    case 't':case 'T':timer.toggle();break;
+    case 'Home':deck.show(0);break;
+    case 'End':deck.show(slideEls.length-1);break;
+    case 'Escape':document.getElementById('agendaOv').classList.remove('show');
+                  document.getElementById('boardOv').classList.remove('show');break;
+  }
+});
+function toggleFull(){if(!document.fullscreenElement)document.documentElement.requestFullscreen&&document.documentElement.requestFullscreen();else document.exitFullscreen&&document.exitFullscreen();}
+
+/* swipe for touch */
+let sx=0;
+document.addEventListener('touchstart',e=>sx=e.touches[0].clientX,{passive:true});
+document.addEventListener('touchend',e=>{const dx=e.changedTouches[0].clientX-sx;
+  if(Math.abs(dx)>60){dx<0?deck.next():deck.prev();}},{passive:true});
+
+deck.show(0);
 </script>
 </body>
 </html>
