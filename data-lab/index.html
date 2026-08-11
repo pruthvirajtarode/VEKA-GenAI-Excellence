@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>VEKA Data Lab</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #09090b; --surface: #18181b; --text: #f4f4f5; --muted: #a1a1aa;
+      --border: #3f3f46; --red: #E4002B;
+    }
+    body { background: var(--bg); color: var(--text); font-family: 'Inter', sans-serif; margin: 0; display: flex; flex-direction: column; height: 100vh; }
+    header { padding: 20px 40px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; background: rgba(24,24,27,0.8); backdrop-filter: blur(10px); }
+    header h1 { font-size: 20px; font-weight: 700; margin: 0; display: flex; align-items: center; gap: 8px; }
+    header h1::before { content:''; width:12px; height:12px; background:var(--red); display:block; border-radius:2px; }
+    
+    .layout { display: flex; flex: 1; overflow: hidden; }
+    .sidebar { width: 280px; background: var(--surface); border-right: 1px solid var(--border); padding: 20px 0; }
+    .nav-item { padding: 12px 24px; cursor: pointer; border-left: 3px solid transparent; transition: 0.2s; font-size: 14px; font-weight: 500; display: flex; align-items: center; gap: 10px; }
+    .nav-item:hover { background: rgba(255,255,255,0.05); }
+    .nav-item.active { border-left-color: var(--red); background: rgba(228,0,43,0.1); color: #fff; }
+    
+    .main { flex: 1; padding: 40px; overflow-y: auto; }
+    h2 { margin-top: 0; font-size: 24px; font-weight: 600; }
+    p.desc { color: var(--muted); margin-bottom: 24px; }
+    
+    .table-wrap { overflow-x: auto; background: var(--surface); border: 1px solid var(--border); border-radius: 12px; }
+    table { width: 100%; border-collapse: collapse; text-align: left; }
+    th { padding: 16px; background: rgba(255,255,255,0.02); font-family: 'JetBrains Mono', monospace; font-size: 12px; font-weight: 500; color: var(--muted); border-bottom: 1px solid var(--border); text-transform: uppercase; white-space: nowrap; }
+    td { padding: 16px; border-bottom: 1px solid var(--border); font-size: 14px; color: #d4d4d8; white-space: nowrap; }
+    tr:last-child td { border-bottom: none; }
+    tr:hover td { background: rgba(255,255,255,0.02); }
+    
+    .loading { text-align: center; color: var(--muted); padding: 40px; font-family: 'JetBrains Mono'; }
+  </style>
+</head>
+<body>
+
+  <header>
+    <h1>VEKA Data Lab</h1>
+    <span style="font-size:12px; color:var(--muted); font-family:'JetBrains Mono';">SYNTHETIC_DATA_ENVIRONMENT</span>
+  </header>
+
+  <div class="layout">
+    <div class="sidebar">
+      <div class="nav-item active" onclick="loadCSV('VEKA_PRODUCTION_MAINTENANCE_TRAINING.csv', this)">⚙️ Production & Maintenance</div>
+      <div class="nav-item" onclick="loadCSV('VEKA_SALES_DISTRIBUTION_TRAINING.csv', this)">📦 Sales & Distribution</div>
+      <div class="nav-item" onclick="loadCSV('VEKA_FINANCE_OPERATIONS_TRAINING.csv', this)">💰 Finance Operations</div>
+    </div>
+    
+    <div class="main">
+      <h2 id="viewTitle">Production & Maintenance Data</h2>
+      <p class="desc">Synthetic dataset for AI analysis training. 500+ records.</p>
+      
+      <div class="table-wrap">
+        <table id="dataTable">
+          <thead><tr id="thead"></tr></thead>
+          <tbody id="tbody"><tr><td class="loading">Loading dataset...</td></tr></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    async function loadCSV(filename, el) {
+      document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+      el.classList.add('active');
+      document.getElementById('viewTitle').innerText = el.innerText.substring(3) + ' Data';
+      
+      document.getElementById('tbody').innerHTML = '<tr><td class="loading">Parsing dataset...</td></tr>';
+      document.getElementById('thead').innerHTML = '';
+
+      try {
+        const res = await fetch(`../data/synthetic/${filename}`);
+        if (!res.ok) throw new Error("Dataset not found.");
+        const text = await res.text();
+        
+        // Simple CSV parser
+        const rows = text.trim().split('\n').map(row => {
+          let cols = [];
+          let cur = '';
+          let inQuotes = false;
+          for (let i = 0; i < row.length; i++) {
+            if (row[i] === '"') inQuotes = !inQuotes;
+            else if (row[i] === ',' && !inQuotes) { cols.push(cur); cur = ''; }
+            else cur += row[i];
+          }
+          cols.push(cur);
+          return cols;
+        });
+
+        if (rows.length === 0) return;
+
+        const headers = rows.shift();
+        document.getElementById('thead').innerHTML = headers.map(h => `<th>${h}</th>`).join('');
+        
+        let bodyHtml = '';
+        // Only show first 50 rows to keep DOM fast
+        const limit = Math.min(rows.length, 50);
+        for (let i = 0; i < limit; i++) {
+          bodyHtml += '<tr>' + rows[i].map(c => `<td>${c}</td>`).join('') + '</tr>';
+        }
+        document.getElementById('tbody').innerHTML = bodyHtml;
+      } catch (err) {
+        document.getElementById('tbody').innerHTML = `<tr><td class="loading" style="color:var(--red);">Error loading ${filename}</td></tr>`;
+      }
+    }
+
+    // Load first by default
+    window.onload = () => loadCSV('VEKA_PRODUCTION_MAINTENANCE_TRAINING.csv', document.querySelector('.nav-item'));
+  </script>
+</body>
+</html>
