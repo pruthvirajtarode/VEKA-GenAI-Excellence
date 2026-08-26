@@ -130,6 +130,99 @@ class App {
         modalContainer.classList.remove('hidden');
     }
 
+    generateSyntheticData() {
+        const btn = document.getElementById('synth-btn');
+        const preview = document.getElementById('synth-preview');
+        const func = document.getElementById('synth-func').value;
+        const rows = document.getElementById('synth-rows').value;
+        const anomalies = document.getElementById('synth-anomalies').value.includes('Yes');
+
+        if (!btn || !preview) return;
+
+        btn.textContent = 'Generating...';
+        btn.disabled = true;
+        this.showToast('Generating synthetic dataset...', 'success');
+
+        preview.innerHTML = `
+            <div class="flex flex-col items-center justify-center h-full">
+                <div class="loader mb-4"></div>
+                <p>Synthesizing ${rows} records for ${func}...</p>
+            </div>
+        `;
+        preview.style.border = "1px solid var(--border-color)";
+        preview.style.background = "var(--bg-card)";
+
+        setTimeout(() => {
+            let headers = [];
+            let data = [];
+            
+            if (func === 'Finance' || func === 'Accounts') {
+                headers = ['Invoice ID', 'Vendor', 'Amount', 'Date', 'Status'];
+                for (let i = 0; i < 5; i++) {
+                    let amount = (Math.random() * 10000).toFixed(2);
+                    let status = Math.random() > 0.8 ? 'Pending' : 'Paid';
+                    if (anomalies && i === 2) {
+                        amount = "999999.99"; // Anomaly
+                        status = "REJECTED";
+                    }
+                    data.push([`INV-${1000 + i}`, `Vendor ${String.fromCharCode(65+i)}`, `$${amount}`, `2024-0${Math.floor(Math.random()*9)+1}-15`, status]);
+                }
+            } else if (func === 'Production' || func === 'Operations') {
+                headers = ['Batch ID', 'Machine', 'Yield (%)', 'Defect Rate', 'QA Status'];
+                for (let i = 0; i < 5; i++) {
+                    let y = (80 + Math.random() * 19).toFixed(1);
+                    let d = (Math.random() * 5).toFixed(2);
+                    let qa = y > 85 ? 'Passed' : 'Review';
+                    if (anomalies && i === 1) {
+                        y = "15.0"; // Anomaly
+                        d = "85.00";
+                        qa = "FAILED";
+                    }
+                    data.push([`BCH-${8000 + i}`, `Extruder ${i+1}`, `${y}%`, `${d}%`, qa]);
+                }
+            } else {
+                headers = ['Record ID', 'Category', 'Value 1', 'Value 2', 'Status'];
+                for (let i = 0; i < 5; i++) {
+                    data.push([`REC-${i}`, `Cat-${i}`, Math.floor(Math.random()*100), Math.floor(Math.random()*100), 'Active']);
+                }
+            }
+
+            let tableRows = data.map(row => `<tr>${row.map(cell => `<td class="p-3 border-b border-border">${cell}</td>`).join('')}</tr>`).join('');
+            let tableHTML = `
+                <div class="w-full h-full flex flex-col p-4">
+                    <div class="flex justify-between items-center mb-4">
+                        <h3 class="text-lg text-accent">${func} Training Dataset</h3>
+                        <div class="flex gap-2">
+                            <span class="btn btn-secondary text-xs py-1" style="pointer-events:none;">${rows} Rows</span>
+                            <span class="btn btn-secondary text-xs py-1" style="pointer-events:none;">${anomalies ? 'Anomalies: Yes' : 'Clean Data'}</span>
+                        </div>
+                    </div>
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left" style="border-collapse: collapse;">
+                            <thead>
+                                <tr style="background: var(--primary-light);">
+                                    ${headers.map(h => `<th class="p-3 border-b border-border font-semibold">${h}</th>`).join('')}
+                                </tr>
+                            </thead>
+                            <tbody>
+                                ${tableRows}
+                            </tbody>
+                        </table>
+                        <p class="text-center text-muted text-sm mt-4 italic">Showing preview of 5 records.</p>
+                    </div>
+                    <div class="mt-auto pt-6 flex justify-end">
+                        <button class="btn btn-primary" onclick="window.app.showToast('Dataset downloaded as CSV', 'success')">Download CSV</button>
+                    </div>
+                </div>
+            `;
+            
+            preview.innerHTML = tableHTML;
+            btn.textContent = 'Generate Dataset';
+            btn.disabled = false;
+        }, 1500);
+    }
+
+
     initSidebar() {
         const toggleBtn = document.getElementById('toggle-sidebar');
         const mobileToggleBtn = document.getElementById('mobile-menu-btn');
