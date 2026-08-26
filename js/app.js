@@ -124,6 +124,80 @@ class App {
         }, duration);
     }
 
+    caseStudies = {
+        'vendor': {
+            title: 'Vendor Negotiation',
+            description: 'Using AI to analyze supplier delays and draft a firm negotiation strategy.',
+            context: 'A key raw material supplier (PVC resins) has been consistently missing delivery deadlines by 3-5 days over the last month, causing cascading delays in our production schedule. They blame logistical issues but have not offered a discount or concrete solution.',
+            prompt: `You are a strict but professional procurement manager at VEKA.\nContext: Our main PVC supplier has been 3-5 days late on 4 consecutive deliveries this month, causing production delays.\nTask: Write a firm email to their account manager. State the impact of their delays, demand a formal corrective action plan within 48 hours, and request a 5% discount on the next invoice as compensation for the disruption.\nTone: Firm, assertive, professional.\nFormat: Short email with clear bullet points for demands.`,
+            before: `Hi Supplier,\nYour last few deliveries have been late. This is causing problems for our production team. Please let us know when this will be fixed. We really need the materials on time.\nThanks.`,
+            after: `Subject: Urgent: Unacceptable Delivery Delays & Required Corrective Action\n\nDear [Supplier Name],\n\nI am writing to address a critical issue regarding your recent performance. Over the past month, your last four deliveries of PVC resins have been delayed by 3 to 5 days. These consistent failures are causing significant disruptions to our production schedule and impacting our commitments to our own customers.\n\nWe value our partnership, but this level of unreliability is unacceptable. Therefore, we require the following actions immediately:\n\n*   **Corrective Action Plan:** Please provide a formal, detailed plan within 48 hours explaining how you will resolve these logistical issues and guarantee on-time deliveries moving forward.\n*   **Compensation:** Due to the financial impact these delays have had on our operations, we request a 5% discount on our upcoming invoice.\n\nWe need to see immediate improvement to continue this relationship. I look forward to your prompt response and action plan by [Date/Time].\n\nSincerely,\n[Your Name]\nProcurement Manager, VEKA`
+        },
+        'shift': {
+            title: 'Shift Handover',
+            description: 'Converting messy end-of-shift notes into a structured, actionable SOP.',
+            context: 'The night shift maintenance technician leaves a rushed, unformatted log of what happened during their shift, making it difficult for the morning shift to understand priority tasks.',
+            prompt: `You are an operations manager.\nContext: The night shift technician left the following raw notes: "ext-3 started making grinding noise around 3am. i greased the main bearing. it helped a bit but still loud. temp on zone 2 on ext-1 drifting by 5 degrees, tweaked pid but needs watching. someone left the forklift uncharged again."\nTask: Convert these raw notes into a clean, prioritized shift handover report.\nFormat: Use headers for 'Critical Issues', 'To Monitor', and 'General Notes'.`,
+            before: `ext-3 started making grinding noise around 3am. i greased the main bearing. it helped a bit but still loud. temp on zone 2 on ext-1 drifting by 5 degrees, tweaked pid but needs watching. someone left the forklift uncharged again.`,
+            after: `### Shift Handover Report (Night Shift -> Morning Shift)\n\n#### 🔴 Critical Issues (Action Required)\n*   **Machine EXT-3:** Grinding noise reported from the main bearing at 3:00 AM.\n    *   *Action Taken:* Greased the bearing, which provided temporary relief.\n    *   *Next Steps:* Immediate inspection required by the morning maintenance team; noise persists.\n\n#### 🟡 To Monitor\n*   **Machine EXT-1 (Zone 2):** Temperature is drifting by approximately 5 degrees.\n    *   *Action Taken:* PID settings were adjusted.\n    *   *Next Steps:* Monitor temperature stability closely throughout the morning shift.\n\n#### ⚪ General Notes\n*   **Equipment:** The forklift was left uncharged at the end of the shift. Please ensure operators are reminded of charging protocols.`
+        },
+        'sales': {
+            title: 'Sales Personalization',
+            description: 'Drafting a quotation cover note tailored to a specific buyer persona.',
+            context: 'A sales rep needs to send a quotation for a large window profile order to a procurement director who is known to be highly focused on long-term ROI and energy efficiency, rather than just the lowest upfront cost.',
+            prompt: `You are a senior VEKA sales director.\nContext: We are sending a quotation to Sarah, a Procurement Director for a major developer. Sarah is highly focused on long-term ROI, energy efficiency, and sustainability. Our quote is slightly more expensive upfront than competitors.\nTask: Write a personalized cover email for the attached quotation. Emphasize how our profiles offer superior thermal insulation (saving energy costs) and durability (reducing replacement costs), making them the smartest long-term financial choice.\nTone: Confident, consultative, value-driven.\nFormat: 3 short paragraphs.`,
+            before: `Hi Sarah,\nPlease find attached our quotation for the window profiles. Let us know if you have any questions or want to proceed.\nThanks,\nSales Team`,
+            after: `Subject: VEKA Quotation: Maximizing Long-Term ROI for [Project Name]\n\nDear Sarah,\n\nPlease find attached our detailed quotation for your upcoming development project. While reviewing the numbers, I want to highlight that our proposal is designed specifically with your focus on long-term financial performance and sustainability in mind.\n\nAlthough our initial investment may differ slightly from standard alternatives, VEKA profiles deliver superior thermal insulation. This industry-leading energy efficiency translates directly into significantly lower operational heating and cooling costs for the building's lifespan, rapidly offsetting the initial purchase price.\n\nFurthermore, our profiles are engineered for exceptional durability, drastically reducing future maintenance and replacement expenses. I would welcome the opportunity to walk you through the ROI calculations next week to demonstrate why this is the most cost-effective choice for your portfolio over the long term.\n\nBest regards,\n\n[Your Name]\nSenior Sales Director, VEKA`
+        }
+    };
+
+    showCaseStudy(id) {
+        const modalContainer = document.getElementById('modal-container');
+        if (!modalContainer) return;
+        
+        const study = this.caseStudies[id];
+        if (!study) return;
+
+        modalContainer.innerHTML = `
+            <div class="modal-overlay" style="position: fixed; inset: 0; background: rgba(0,0,0,0.8); display: flex; align-items: center; justify-content: center; z-index: 1000;" onclick="if(event.target === this) document.getElementById('modal-container').classList.add('hidden')">
+                <div class="card" style="width: 95%; max-width: 1200px; max-height: 90vh; display: flex; flex-direction: column; background: var(--bg-main);">
+                    <div class="flex justify-between items-center mb-4 pb-4 border-b border-border">
+                        <div>
+                            <h2 class="text-2xl mb-1">${study.title}</h2>
+                            <p class="text-muted">${study.description}</p>
+                        </div>
+                        <button class="icon-btn" onclick="document.getElementById('modal-container').classList.add('hidden')">✕</button>
+                    </div>
+                    
+                    <div class="flex-grow" style="overflow-y: auto;">
+                        <div class="mb-6">
+                            <h3 class="text-lg mb-2 text-accent">Scenario Context</h3>
+                            <p style="background: var(--primary-light); padding: 1rem; border-radius: var(--radius-sm); border-left: 3px solid var(--accent);">${study.context}</p>
+                        </div>
+                        
+                        <div class="mb-6">
+                            <h3 class="text-lg mb-2 text-accent">The AI Prompt (C·T·P·F Framework)</h3>
+                            <pre style="background: rgba(59, 130, 246, 0.1); padding: 1rem; border-radius: var(--radius-sm); border: 1px solid rgba(59, 130, 246, 0.3); white-space: pre-wrap; font-family: var(--font-body); color: var(--text-secondary);">${study.prompt}</pre>
+                        </div>
+
+                        <div class="dashboard-grid" style="grid-template-columns: 1fr 1fr; gap: 2rem;">
+                            <div>
+                                <h3 class="text-lg mb-2 text-muted">❌ Before AI (The Draft)</h3>
+                                <pre style="background: var(--bg-card); padding: 1.5rem; border-radius: var(--radius-md); border: 1px solid var(--border-color); white-space: pre-wrap; font-family: var(--font-body); color: var(--text-muted); min-height: 250px;">${study.before}</pre>
+                            </div>
+                            <div>
+                                <h3 class="text-lg mb-2 text-success">✅ After AI (The Result)</h3>
+                                <pre style="background: rgba(16, 185, 129, 0.05); padding: 1.5rem; border-radius: var(--radius-md); border: 1px solid rgba(16, 185, 129, 0.2); white-space: pre-wrap; font-family: var(--font-body); color: var(--text-main); min-height: 250px;">${study.after}</pre>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `;
+        
+        modalContainer.classList.remove('hidden');
+    }
+
     async showDatasetPreview(id) {
         const modalContainer = document.getElementById('modal-container');
         if (!modalContainer) return;
@@ -868,17 +942,17 @@ class App {
                     <div class="card">
                         <h3 class="mb-2">Vendor Negotiation</h3>
                         <p class="text-muted text-sm mb-4">Using AI to analyze supplier delays and draft a firm negotiation strategy.</p>
-                        <button class="btn btn-secondary w-full" onclick="window.app.showToast('Opening case study...', 'info')">View Study</button>
+                        <button class="btn btn-secondary w-full" onclick="window.app.showCaseStudy('vendor')">View Study</button>
                     </div>
                     <div class="card">
                         <h3 class="mb-2">Shift Handover</h3>
                         <p class="text-muted text-sm mb-4">Converting messy end-of-shift notes into a structured, actionable SOP.</p>
-                        <button class="btn btn-secondary w-full" onclick="window.app.showToast('Opening case study...', 'info')">View Study</button>
+                        <button class="btn btn-secondary w-full" onclick="window.app.showCaseStudy('shift')">View Study</button>
                     </div>
                     <div class="card">
                         <h3 class="mb-2">Sales Personalization</h3>
                         <p class="text-muted text-sm mb-4">Drafting a quotation cover note tailored to a specific buyer persona.</p>
-                        <button class="btn btn-secondary w-full" onclick="window.app.showToast('Opening case study...', 'info')">View Study</button>
+                        <button class="btn btn-secondary w-full" onclick="window.app.showCaseStudy('sales')">View Study</button>
                     </div>
                 </div>
             `;
