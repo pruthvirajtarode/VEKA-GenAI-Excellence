@@ -143,7 +143,11 @@ class App {
 
         if (mobileToggleBtn && sidebar) {
             mobileToggleBtn.addEventListener('click', () => {
-                sidebar.classList.toggle('open');
+                if (window.innerWidth <= 768) {
+                    sidebar.classList.toggle('open');
+                } else {
+                    sidebar.classList.toggle('collapsed');
+                }
             });
         }
     }
