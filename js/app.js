@@ -840,6 +840,12 @@ style.textContent = `
 document.head.appendChild(style);
 
 // Init on DOM Load
-document.addEventListener('DOMContentLoaded', () => {
-    window.app = new App();
-});
+const initApp = () => {
+    if (!window.app) window.app = new App();
+};
+
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initApp);
+} else {
+    initApp();
+}
