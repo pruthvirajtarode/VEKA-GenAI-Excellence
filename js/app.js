@@ -187,6 +187,8 @@ class App {
                 }
             }
 
+            this.lastSyntheticData = { headers, data, func };
+            
             let tableRows = data.map(row => `<tr>${row.map(cell => `<td class="p-3 border-b border-border">${cell}</td>`).join('')}</tr>`).join('');
             let tableHTML = `
                 <div class="w-full h-full flex flex-col p-4">
@@ -211,7 +213,7 @@ class App {
                         <p class="text-center text-muted text-sm mt-4 italic">Showing preview of 5 records.</p>
                     </div>
                     <div class="mt-auto pt-6 flex justify-end">
-                        <button class="btn btn-primary" onclick="window.app.showToast('Dataset downloaded as CSV', 'success')">Download CSV</button>
+                        <button class="btn btn-primary" onclick="window.app.downloadSyntheticCSV()">Download CSV</button>
                     </div>
                 </div>
             `;
@@ -220,6 +222,40 @@ class App {
             btn.textContent = 'Generate Dataset';
             btn.disabled = false;
         }, 1500);
+    }
+
+    downloadSyntheticCSV() {
+        if (!this.lastSyntheticData) {
+            this.showToast('No data available to download.', 'error');
+            return;
+        }
+        
+        const { headers, data, func } = this.lastSyntheticData;
+        let csvContent = "data:text/csv;charset=utf-8,";
+        
+        // Add headers
+        csvContent += headers.join(",") + "\n";
+        
+        // Add data
+        data.forEach(row => {
+            // Basic escaping for CSV
+            const escapedRow = row.map(cell => {
+                const cellStr = String(cell);
+                return cellStr.includes(',') ? `"${cellStr}"` : cellStr;
+            });
+            csvContent += escapedRow.join(",") + "\n";
+        });
+        
+        const encodedUri = encodeURI(csvContent);
+        const link = document.createElement("a");
+        link.setAttribute("href", encodedUri);
+        link.setAttribute("download", `VEKA_${func}_Synthetic_Dataset.csv`);
+        document.body.appendChild(link);
+        
+        link.click();
+        
+        document.body.removeChild(link);
+        this.showToast('Dataset downloaded as CSV', 'success');
     }
 
 
