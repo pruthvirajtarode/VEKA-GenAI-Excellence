@@ -58,14 +58,10 @@ class StateManager {
 
     loadState() {
         try {
-            const saved = localStorage.getItem(STORAGE_KEY);
-            if (saved) {
-                // Merge saved state with default state to handle schema changes gracefully
-                const parsed = JSON.parse(saved);
-                return this.deepMerge({}, defaultState, parsed);
-            }
+            // User requested that refresh always starts from zero.
+            localStorage.removeItem(STORAGE_KEY);
         } catch (e) {
-            console.error('Error loading state from localStorage:', e);
+            console.error('Error clearing state from localStorage:', e);
         }
         return JSON.parse(JSON.stringify(defaultState));
     }

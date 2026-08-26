@@ -943,6 +943,9 @@ class App {
                         
                         <div class="mt-8 pt-6" style="border-top: 1px solid var(--border-color);">
                             <h4 class="mb-4 text-sm uppercase text-muted font-bold" style="letter-spacing: 0.05em;">Module Breakdown</h4>
+                            <div style="position: relative; height:200px; width:100%; margin-bottom: 2rem;">
+                                <canvas id="moduleProgressChart"></canvas>
+                            </div>
                             ${renderModuleProgress('module1', state.progress.module1, 'Session 1: Prompting')}
                             ${renderModuleProgress('module2', state.progress.module2, 'Session 2: Data & Ops')}
                             ${renderModuleProgress('module3', state.progress.module3, 'Session 3: Safe AI')}
@@ -973,14 +976,69 @@ class App {
                     </div>
                 </div>
             `;
+
+            setTimeout(() => {
+                if (!window.Chart) return;
+                const ctx = document.getElementById('moduleProgressChart');
+                if (ctx && !window.moduleChartInstance) {
+                    const style = getComputedStyle(document.body);
+                    const textColor = style.getPropertyValue('--text-main').trim() || '#FFFFFF';
+                    const accentColor = style.getPropertyValue('--accent').trim() || '#E4002B';
+                    
+                    Chart.defaults.color = textColor;
+                    window.moduleChartInstance = new Chart(ctx, {
+                        type: 'doughnut',
+                        data: {
+                            labels: ['Session 1', 'Session 2', 'Session 3', 'Session 4'],
+                            datasets: [{
+                                data: [
+                                    state.progress.module1 || 0,
+                                    state.progress.module2 || 0,
+                                    state.progress.module3 || 0,
+                                    state.progress.module4 || 0
+                                ],
+                                backgroundColor: [
+                                    accentColor,
+                                    '#3b82f6',
+                                    '#10b981',
+                                    '#f5a623'
+                                ],
+                                borderWidth: 0,
+                                hoverOffset: 4
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            plugins: {
+                                legend: {
+                                    position: 'right',
+                                    labels: { color: textColor }
+                                }
+                            },
+                            cutout: '70%'
+                        }
+                    });
+                } else if (window.moduleChartInstance) {
+                    window.moduleChartInstance.data.datasets[0].data = [
+                        state.progress.module1 || 0,
+                        state.progress.module2 || 0,
+                        state.progress.module3 || 0,
+                        state.progress.module4 || 0
+                    ];
+                    window.moduleChartInstance.update();
+                }
+            }, 100);
         },
 
         renderModule1: (container) => {
             const state = window.stateManager.state;
             container.innerHTML = `
-                <div class="mb-6">
-                    <h2 class="page-title">Session 1 — Prompting & Communication</h2>
-                    <p class="text-muted mt-2">Stop asking the AI a question. Start giving it a briefing.</p>
+                <div class="mb-6 relative overflow-hidden rounded-lg" style="min-height: 200px; display: flex; align-items: flex-end; padding: 2rem; background: linear-gradient(to right, rgba(0,0,0,0.9), rgba(0,0,0,0.4)), url('https://images.unsplash.com/photo-1620712943543-bcc4688e7485?q=80&w=1200&auto=format&fit=crop') center/cover;">
+                    <div style="position: relative; z-index: 1;">
+                        <h2 class="page-title text-3xl mb-2" style="text-shadow: 0 2px 4px rgba(0,0,0,0.5);">Session 1 — Prompting & Communication</h2>
+                        <p class="text-white opacity-90 mt-2 text-lg">Stop asking the AI a question. Start giving it a briefing.</p>
+                    </div>
                 </div>
 
                 <div class="dashboard-grid">
@@ -1051,9 +1109,11 @@ class App {
         renderModule2: (container) => {
             const state = window.stateManager.state;
             container.innerHTML = `
-                <div class="mb-6">
-                    <h2 class="page-title">Session 2 — AI for Finance & Operations</h2>
-                    <p class="text-muted mt-2">Data analysis, pattern spotting, and workflow automation.</p>
+                <div class="mb-6 relative overflow-hidden rounded-lg" style="min-height: 200px; display: flex; align-items: flex-end; padding: 2rem; background: linear-gradient(to right, rgba(0,0,0,0.9), rgba(0,0,0,0.4)), url('https://images.unsplash.com/photo-1551288049-bebda4e38f71?q=80&w=1200&auto=format&fit=crop') center/cover;">
+                    <div style="position: relative; z-index: 1;">
+                        <h2 class="page-title text-3xl mb-2" style="text-shadow: 0 2px 4px rgba(0,0,0,0.5);">Session 2 — AI for Finance & Operations</h2>
+                        <p class="text-white opacity-90 mt-2 text-lg">Data analysis, pattern spotting, and workflow automation.</p>
+                    </div>
                 </div>
 
                 <div class="dashboard-grid">
@@ -1120,9 +1180,11 @@ class App {
         renderModule3: (container) => {
             const state = window.stateManager.state;
             container.innerHTML = `
-                <div class="mb-6">
-                    <h2 class="page-title">Session 3 — Sales, HR & Safe AI</h2>
-                    <p class="text-muted mt-2">High-stakes writing and enterprise safety principles.</p>
+                <div class="mb-6 relative overflow-hidden rounded-lg" style="min-height: 200px; display: flex; align-items: flex-end; padding: 2rem; background: linear-gradient(to right, rgba(0,0,0,0.9), rgba(0,0,0,0.4)), url('https://images.unsplash.com/photo-1550751827-4bd374c3f58b?q=80&w=1200&auto=format&fit=crop') center/cover;">
+                    <div style="position: relative; z-index: 1;">
+                        <h2 class="page-title text-3xl mb-2" style="text-shadow: 0 2px 4px rgba(0,0,0,0.5);">Session 3 — Sales, HR & Safe AI</h2>
+                        <p class="text-white opacity-90 mt-2 text-lg">High-stakes writing and enterprise safety principles.</p>
+                    </div>
                 </div>
 
                 <div class="dashboard-grid">
@@ -1185,9 +1247,11 @@ class App {
         renderModule4: (container) => {
             const state = window.stateManager.state;
             container.innerHTML = `
-                <div class="mb-6">
-                    <h2 class="page-title">Session 4 — From Prompt to Asset</h2>
-                    <p class="text-muted mt-2">Build your Capstone AI Workflow Blueprint.</p>
+                <div class="mb-6 relative overflow-hidden rounded-lg" style="min-height: 200px; display: flex; align-items: flex-end; padding: 2rem; background: linear-gradient(to right, rgba(0,0,0,0.9), rgba(0,0,0,0.4)), url('https://images.unsplash.com/photo-1451187580459-43490279c0fa?q=80&w=1200&auto=format&fit=crop') center/cover;">
+                    <div style="position: relative; z-index: 1;">
+                        <h2 class="page-title text-3xl mb-2" style="text-shadow: 0 2px 4px rgba(0,0,0,0.5);">Session 4 — From Prompt to Asset</h2>
+                        <p class="text-white opacity-90 mt-2 text-lg">Build your Capstone AI Workflow Blueprint.</p>
+                    </div>
                 </div>
 
                 <div class="card mb-6" style="border-color: var(--accent);">
@@ -1570,6 +1634,13 @@ class App {
                             </div>
                             <button class="btn btn-primary w-full mt-2" onclick="if(window.app) window.app.logProductivity()">Log Savings</button>
                         </div>
+                        
+                        <div class="mt-8 pt-6 border-t border-border">
+                            <h4 class="mb-4 text-sm uppercase text-muted font-bold tracking-wider">Before vs After AI</h4>
+                            <div style="position: relative; height: 200px; width: 100%;">
+                                <canvas id="prodBarChart"></canvas>
+                            </div>
+                        </div>
                     </div>
                     
                     <div class="card flex flex-col items-center justify-center relative overflow-hidden">
@@ -1584,6 +1655,61 @@ class App {
                     </div>
                 </div>
             `;
+            
+            setTimeout(() => {
+                if (!window.Chart || !data.entries || data.entries.length === 0) return;
+                const ctx = document.getElementById('prodBarChart');
+                if (ctx && !window.prodBarChartInstance) {
+                    const style = getComputedStyle(document.body);
+                    const textColor = style.getPropertyValue('--text-main').trim() || '#FFFFFF';
+                    const accentColor = style.getPropertyValue('--accent').trim() || '#E4002B';
+                    const gridColor = style.getPropertyValue('--border-color').trim() || 'rgba(255,255,255,0.1)';
+                    
+                    Chart.defaults.color = textColor;
+                    const recentEntries = data.entries.slice(-5);
+                    
+                    window.prodBarChartInstance = new Chart(ctx, {
+                        type: 'bar',
+                        data: {
+                            labels: recentEntries.map(e => e.name.length > 10 ? e.name.substring(0, 10) + '...' : e.name),
+                            datasets: [
+                                {
+                                    label: 'Before AI',
+                                    data: recentEntries.map(e => e.before),
+                                    backgroundColor: 'rgba(161, 161, 170, 0.5)',
+                                    borderRadius: 4
+                                },
+                                {
+                                    label: 'After AI',
+                                    data: recentEntries.map(e => e.after),
+                                    backgroundColor: accentColor,
+                                    borderRadius: 4
+                                }
+                            ]
+                        },
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            scales: {
+                                y: { grid: { color: gridColor }, beginAtZero: true },
+                                x: { grid: { display: false } }
+                            },
+                            plugins: {
+                                legend: {
+                                    position: 'top',
+                                    labels: { color: textColor, boxWidth: 12 }
+                                }
+                            }
+                        }
+                    });
+                } else if (window.prodBarChartInstance) {
+                    const recentEntries = data.entries.slice(-5);
+                    window.prodBarChartInstance.data.labels = recentEntries.map(e => e.name.length > 10 ? e.name.substring(0, 10) + '...' : e.name);
+                    window.prodBarChartInstance.data.datasets[0].data = recentEntries.map(e => e.before);
+                    window.prodBarChartInstance.data.datasets[1].data = recentEntries.map(e => e.after);
+                    window.prodBarChartInstance.update();
+                }
+            }, 100);
         },
 
         renderCaseStudies: (container) => {
