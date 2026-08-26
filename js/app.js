@@ -1318,7 +1318,7 @@ class App {
                         <div class="text-muted">↓</div>
                         <div class="p-4 border rounded w-full max-w-sm">OUTPUT</div>
                     </div>
-                    <button class="btn btn-primary mt-8">Create New Workflow</button>
+                    <button class="btn btn-primary mt-8" onclick="if(window.app) window.app.showToast('Workflow creation is coming in the next update!', 'info')">Create New Workflow</button>
                 </div>
             `;
         },
