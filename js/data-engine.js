@@ -20,19 +20,66 @@ class DataEngine {
         };
     }
 
-    async loadAllDatasets() {
-        if (this.loaded) return true;
+    async loadDataset(id) {
+        if (this.datasets[id]) return this.datasets[id];
         
+        const metadata = this.registry[id];
+        if (!metadata) throw new Error(`Dataset ${id} not found in registry`);
+
         try {
-            // Placeholder: In a real environment, we'd fetch these using fetch()
-            // Since this is offline first, we might need a way to parse them if they are static files
-            // For now, we will mark as loaded.
-            this.loaded = true;
-            return true;
+            const response = await fetch(metadata.url);
+            if (!response.ok) throw new Error(`Failed to fetch ${metadata.url}`);
+            
+            const text = await response.text();
+            let parsedData = null;
+
+            if (metadata.type === 'csv') {
+                parsedData = this.parseCSV(text);
+            } else if (metadata.type === 'json') {
+                parsedData = JSON.parse(text);
+            } else {
+                parsedData = text; // text or unknown types
+            }
+
+            this.datasets[id] = {
+                metadata,
+                data: parsedData,
+                raw: text
+            };
+
+            return this.datasets[id];
         } catch (e) {
-            console.error("Failed to load datasets", e);
-            return false;
+            console.error(`Failed to load dataset ${id}`, e);
+            throw e;
         }
+    }
+
+    parseCSV(csvText) {
+        // Basic CSV parser
+        let lines = csvText.trim().split('\n');
+        
+        // Skip warning banners at the top of the CSV file
+        while (lines.length > 0 && (!lines[0].includes(',') || lines[0].includes('SYNTHETIC TRAINING DATA'))) {
+            lines.shift();
+        }
+        
+        if (lines.length === 0) return [];
+        
+        const headers = lines[0].split(',').map(h => h.trim());
+        const rows = [];
+        
+        for (let i = 1; i < lines.length; i++) {
+            if (!lines[i].trim()) continue;
+            // Simple split by comma (doesn't handle quotes properly, but sufficient for basic data)
+            const values = lines[i].split(',');
+            const row = {};
+            headers.forEach((header, index) => {
+                row[header] = values[index] ? values[index].trim() : '';
+            });
+            rows.push(row);
+        }
+        
+        return { headers, rows };
     }
 
     getDataset(id) {
