@@ -1573,7 +1573,7 @@ class App {
                     </div>
                     
                     <div class="card flex flex-col items-center justify-center relative overflow-hidden">
-                        <div class="absolute" style="top: -20px; right: -20px; font-size: 10rem; opacity: 0.03; pointer-events: none;">⏱️</div>
+                        <div class="absolute" style="top: -10px; right: 10px; font-size: 8rem; opacity: 0.15; pointer-events: none;">⏱️</div>
                         <div class="text-muted text-sm uppercase tracking-wider mb-4 font-bold border-b border-border pb-2 w-full text-center">Total Estimated Time Saved</div>
                         <div class="text-accent flex items-baseline gap-2 mt-4">
                             <span style="font-size: 5rem; font-weight: 800; line-height: 1;">${total}</span>
