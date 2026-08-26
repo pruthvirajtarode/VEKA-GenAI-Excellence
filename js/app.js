@@ -532,6 +532,110 @@ class App {
         modalContainer.classList.remove('hidden');
     }
 
+    showWorkflowModal() {
+        const modalContainer = document.getElementById('modal-container');
+        if (!modalContainer) return;
+
+        modalContainer.innerHTML = `
+            <div class="modal-overlay" style="position: fixed; inset: 0; background: rgba(0,0,0,0.8); display: flex; align-items: center; justify-content: center; z-index: 1000;" onclick="if(event.target === this) document.getElementById('modal-container').classList.add('hidden')">
+                <div class="card flex flex-col" style="background: var(--bg-main); max-width: 600px; width: 90%; max-height: 90vh; border-radius: 12px; position: relative; overflow-y: auto;">
+                    <div class="flex justify-between items-center mb-6 pb-4 border-b border-border">
+                        <h2 class="text-xl">Create New Workflow</h2>
+                        <button class="icon-btn text-xl" onclick="document.getElementById('modal-container').classList.add('hidden')">✕</button>
+                    </div>
+                    
+                    <form id="workflow-form" onsubmit="event.preventDefault(); window.app.saveWorkflow();">
+                        <div class="mb-4">
+                            <label class="block text-sm text-muted mb-1">Workflow Name</label>
+                            <input type="text" id="wf-name" class="btn btn-secondary w-full text-left bg-surface" placeholder="e.g. Vendor Delay Analysis" required style="text-align: left; background: var(--bg-card); color: var(--text-main);">
+                        </div>
+                        
+                        <div class="mb-4 p-4 border border-border rounded bg-[rgba(255,255,255,0.02)]">
+                            <label class="block text-sm font-bold text-muted mb-2 uppercase tracking-wider">1. Input</label>
+                            <p class="text-xs text-muted mb-2">What data triggers this workflow?</p>
+                            <textarea id="wf-input" class="w-full bg-surface border border-border rounded p-2 text-sm" rows="2" placeholder="e.g. An email from a supplier announcing a delay" required></textarea>
+                        </div>
+                        
+                        <div class="mb-4 p-4 border border-accent rounded bg-[rgba(59,130,246,0.05)]">
+                            <label class="block text-sm font-bold text-accent mb-2 uppercase tracking-wider">2. AI Analysis</label>
+                            <p class="text-xs text-muted mb-2">What should the AI do with the input?</p>
+                            <textarea id="wf-analysis" class="w-full bg-surface border border-border rounded p-2 text-sm" rows="3" placeholder="e.g. Extract the revised delivery date, check against contract penalties, and draft a response." required></textarea>
+                        </div>
+                        
+                        <div class="mb-4 p-4 border border-border rounded bg-[rgba(255,255,255,0.02)]">
+                            <label class="block text-sm font-bold text-muted mb-2 uppercase tracking-wider">3. Human Review</label>
+                            <p class="text-xs text-muted mb-2">What must a human verify before output?</p>
+                            <textarea id="wf-review" class="w-full bg-surface border border-border rounded p-2 text-sm" rows="2" placeholder="e.g. Verify the tone is professional and no threats were hallucinated." required></textarea>
+                        </div>
+                        
+                        <div class="mb-6 p-4 border border-success rounded bg-[rgba(16,185,129,0.05)]">
+                            <label class="block text-sm font-bold text-success mb-2 uppercase tracking-wider">4. Output</label>
+                            <p class="text-xs text-muted mb-2">What is the final result?</p>
+                            <textarea id="wf-output" class="w-full bg-surface border border-border rounded p-2 text-sm" rows="2" placeholder="e.g. A drafted email ready to send." required></textarea>
+                        </div>
+                        
+                        <div class="flex justify-end gap-3 pt-4 border-t border-border">
+                            <button type="button" class="btn btn-secondary" onclick="document.getElementById('modal-container').classList.add('hidden')">Cancel</button>
+                            <button type="submit" class="btn btn-primary">Save Workflow</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        `;
+        modalContainer.classList.remove('hidden');
+    }
+
+    saveWorkflow() {
+        const name = document.getElementById('wf-name').value;
+        const input = document.getElementById('wf-input').value;
+        const analysis = document.getElementById('wf-analysis').value;
+        const review = document.getElementById('wf-review').value;
+        const output = document.getElementById('wf-output').value;
+
+        if (!name || !input || !analysis || !review || !output) {
+            this.showToast('Please fill out all workflow fields.', 'danger');
+            return;
+        }
+
+        const newWorkflow = {
+            id: 'wf-' + Date.now(),
+            name, input, analysis, review, output,
+            createdAt: new Date().toISOString()
+        };
+
+        const state = window.stateManager.state;
+        if (!state.workflows) state.workflows = { savedWorkflows: [] };
+        if (!state.workflows.savedWorkflows) state.workflows.savedWorkflows = [];
+        
+        state.workflows.savedWorkflows.push(newWorkflow);
+        window.stateManager.saveState();
+
+        document.getElementById('modal-container').classList.add('hidden');
+        this.showToast('Workflow saved successfully!', 'success');
+        
+        // Re-render if currently on workflow lab
+        if (window.router.currentRoute === '/workflow-lab') {
+            window.router.handleRoute();
+        }
+    }
+
+    deleteWorkflow(id) {
+        if (!confirm('Are you sure you want to delete this workflow?')) return;
+        
+        const state = window.stateManager.state;
+        if (state.workflows && state.workflows.savedWorkflows) {
+            state.workflows.savedWorkflows = state.workflows.savedWorkflows.filter(wf => wf.id !== id);
+            window.stateManager.saveState();
+            
+            this.showToast('Workflow deleted.', 'info');
+            
+            // Re-render if currently on workflow lab
+            if (window.router.currentRoute === '/workflow-lab') {
+                window.router.handleRoute();
+            }
+        }
+    }
+
     bindCommonComponents() {
         // Re-bind interactions for standard UI components that might exist in the newly rendered view
     }
@@ -1302,24 +1406,76 @@ class App {
         },
 
         renderWorkflowLab: (container) => {
+            const state = window.stateManager.state;
+            const workflows = (state.workflows && state.workflows.savedWorkflows) ? state.workflows.savedWorkflows : [];
+
+            let contentHTML = '';
+
+            if (workflows.length === 0) {
+                contentHTML = `
+                    <div class="card text-center" style="padding: 4rem 2rem;">
+                        <div class="flex flex-col items-center gap-4 opacity-50 mb-8 pointer-events-none">
+                            <div class="p-3 border rounded w-full max-w-xs text-sm">INPUT</div>
+                            <div class="text-muted">↓</div>
+                            <div class="p-3 border rounded w-full max-w-xs text-sm" style="border-color: var(--accent);">AI ANALYSIS</div>
+                            <div class="text-muted">↓</div>
+                            <div class="p-3 border rounded w-full max-w-xs text-sm">HUMAN REVIEW</div>
+                            <div class="text-muted">↓</div>
+                            <div class="p-3 border rounded w-full max-w-xs text-sm">OUTPUT</div>
+                        </div>
+                        <h3 class="mb-2">No Workflows Yet</h3>
+                        <p class="text-muted mb-6">Design your first multi-step AI automation process.</p>
+                        <button class="btn btn-primary" onclick="if(window.app) window.app.showWorkflowModal()">Create New Workflow</button>
+                    </div>
+                `;
+            } else {
+                contentHTML = `
+                    <div class="flex justify-between items-center mb-6">
+                        <p class="text-muted">You have ${workflows.length} saved workflow${workflows.length === 1 ? '' : 's'}.</p>
+                        <button class="btn btn-primary" onclick="if(window.app) window.app.showWorkflowModal()">+ New Workflow</button>
+                    </div>
+                    <div class="dashboard-grid">
+                        ${workflows.map(wf => `
+                            <div class="card relative flex flex-col h-full">
+                                <button class="icon-btn text-danger absolute" style="top: 15px; right: 15px; background: rgba(228,0,43,0.1); border-radius: 4px; padding: 4px;" onclick="if(window.app) window.app.deleteWorkflow('${wf.id}')" title="Delete Workflow">🗑️</button>
+                                <h3 class="mb-4 text-lg border-b border-border pb-3 pr-6">${wf.name}</h3>
+                                
+                                <div class="flex-grow flex flex-col gap-2 text-sm mt-2">
+                                    <div class="p-3 border border-border rounded bg-surface transition-colors" title="${wf.input}">
+                                        <span class="text-xs text-muted uppercase block mb-1 font-bold">1. Input</span>
+                                        <div style="display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;">${wf.input}</div>
+                                    </div>
+                                    <div class="text-center text-muted leading-none">↓</div>
+                                    
+                                    <div class="p-3 border border-accent rounded transition-colors" style="background: rgba(59,130,246,0.05);" title="${wf.analysis}">
+                                        <span class="text-xs text-accent uppercase block mb-1 font-bold">2. AI Analysis</span>
+                                        <div style="display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;">${wf.analysis}</div>
+                                    </div>
+                                    <div class="text-center text-muted leading-none">↓</div>
+                                    
+                                    <div class="p-3 border border-border rounded bg-surface transition-colors" title="${wf.review}">
+                                        <span class="text-xs text-muted uppercase block mb-1 font-bold">3. Human Review</span>
+                                        <div style="display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;">${wf.review}</div>
+                                    </div>
+                                    <div class="text-center text-muted leading-none">↓</div>
+                                    
+                                    <div class="p-3 border border-success rounded transition-colors" style="background: rgba(16,185,129,0.05);" title="${wf.output}">
+                                        <span class="text-xs text-success uppercase block mb-1 font-bold">4. Output</span>
+                                        <div style="display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;">${wf.output}</div>
+                                    </div>
+                                </div>
+                            </div>
+                        `).join('')}
+                    </div>
+                `;
+            }
+
             container.innerHTML = `
                 <div class="mb-6">
                     <h2 class="page-title">AI Workflow Lab</h2>
                     <p class="text-muted mt-2">Design multi-step AI automation processes.</p>
                 </div>
-                
-                <div class="card text-center" style="padding: 4rem 2rem;">
-                    <div class="flex flex-col items-center gap-4">
-                        <div class="p-4 border rounded w-full max-w-sm">INPUT</div>
-                        <div class="text-muted">↓</div>
-                        <div class="p-4 border rounded w-full max-w-sm" style="border-color: var(--accent);">AI ANALYSIS</div>
-                        <div class="text-muted">↓</div>
-                        <div class="p-4 border rounded w-full max-w-sm">HUMAN REVIEW</div>
-                        <div class="text-muted">↓</div>
-                        <div class="p-4 border rounded w-full max-w-sm">OUTPUT</div>
-                    </div>
-                    <button class="btn btn-primary mt-8" onclick="if(window.app) window.app.showToast('Workflow creation is coming in the next update!', 'info')">Create New Workflow</button>
-                </div>
+                ${contentHTML}
             `;
         },
 
