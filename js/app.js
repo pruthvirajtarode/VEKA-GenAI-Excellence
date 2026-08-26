@@ -741,10 +741,86 @@ class App {
         },
 
         renderProgress: (container) => {
+            const state = window.stateManager.state;
+            
+            const renderModuleProgress = (moduleName, progress, title) => `
+                <div class="mb-4">
+                    <div class="flex justify-between items-center mb-2">
+                        <span class="font-semibold">${title}</span>
+                        <span class="text-sm font-bold ${progress === 100 ? 'text-success' : 'text-accent'}">${progress}%</span>
+                    </div>
+                    <div class="progress-bar-bg w-full" style="height: 8px;">
+                        <div class="progress-bar-fill" style="width: ${progress}%; height: 100%; ${progress === 100 ? 'background: #10B981;' : ''}"></div>
+                    </div>
+                </div>
+            `;
+            
+            const renderBadges = () => {
+                if (!state.badges || state.badges.length === 0) {
+                    return `<p class="text-muted text-sm italic">No badges earned yet. Complete modules to earn badges!</p>`;
+                }
+                return `
+                    <div class="flex flex-wrap gap-4 mt-4">
+                        ${state.badges.map(b => `
+                            <div class="flex flex-col items-center justify-center p-4 bg-surface rounded-lg w-28 text-center" style="border: 1px solid var(--border-color);">
+                                <span class="text-3xl mb-2">🏅</span>
+                                <span class="text-xs font-semibold leading-tight">${b.name}</span>
+                            </div>
+                        `).join('')}
+                    </div>
+                `;
+            };
+
             container.innerHTML = `
-                <div class="card text-center" style="padding: 4rem 2rem;">
-                    <h2>My Progress</h2>
-                    <p class="text-muted mt-4">Module under construction.</p>
+                <div class="mb-6">
+                    <h2 class="page-title">My Progress</h2>
+                    <p class="text-muted mt-2">Track your learning journey and achievements.</p>
+                </div>
+                
+                <div class="dashboard-grid">
+                    <div class="card">
+                        <h3 class="mb-6 pb-3" style="border-bottom: 1px solid var(--border-color);">Course Completion</h3>
+                        
+                        <div class="mb-8">
+                            <div class="flex justify-between items-center mb-2">
+                                <span class="text-lg font-bold">Overall Progress</span>
+                                <span class="text-xl font-bold text-accent">${state.progress.overall}%</span>
+                            </div>
+                            <div class="progress-bar-bg w-full" style="height: 12px;">
+                                <div class="progress-bar-fill" style="width: ${state.progress.overall}%; height: 100%;"></div>
+                            </div>
+                        </div>
+                        
+                        <div class="mt-8 pt-6" style="border-top: 1px solid var(--border-color);">
+                            <h4 class="mb-4 text-sm uppercase text-muted font-bold" style="letter-spacing: 0.05em;">Module Breakdown</h4>
+                            ${renderModuleProgress('module1', state.progress.module1, 'Session 1: Prompting')}
+                            ${renderModuleProgress('module2', state.progress.module2, 'Session 2: Data & Ops')}
+                            ${renderModuleProgress('module3', state.progress.module3, 'Session 3: Safe AI')}
+                            ${renderModuleProgress('module4', state.progress.module4, 'Session 4: Capstone')}
+                        </div>
+                    </div>
+                    
+                    <div class="card">
+                        <h3 class="mb-6 pb-3 flex items-center justify-between" style="border-bottom: 1px solid var(--border-color);">
+                            <span>My Badges</span>
+                            <span class="badge" style="background: rgba(245, 166, 35, 0.1); color: #F5A623; font-size: 0.75rem; padding: 2px 8px; border-radius: 12px;">${state.badges.length} Earned</span>
+                        </h3>
+                        ${renderBadges()}
+                        
+                        <div class="mt-8 pt-6" style="border-top: 1px solid var(--border-color);">
+                            <h4 class="mb-4 text-sm uppercase text-muted font-bold" style="letter-spacing: 0.05em;">Recent Activity</h4>
+                            <ul class="text-sm space-y-3" style="list-style: none; padding: 0;">
+                                ${state.progress.completedExercises.length === 0 ? 
+                                    '<li class="text-muted italic">No activity yet.</li>' : 
+                                    state.progress.completedExercises.slice(-5).reverse().map(ex => `
+                                        <li class="flex items-center gap-3">
+                                            <span style="color: #10B981;">✓</span>
+                                            <span>Completed Checkpoint: <span style="font-family: monospace; color: var(--accent-color); padding: 2px 6px; background: rgba(255,255,255,0.05); border-radius: 4px;">${ex}</span></span>
+                                        </li>
+                                    `).join('')}
+                            </ul>
+                        </div>
+                    </div>
                 </div>
             `;
         },
