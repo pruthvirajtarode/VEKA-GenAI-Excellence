@@ -154,30 +154,30 @@ class App {
                         <table style="width: 100%; border-collapse: collapse; text-align: left; font-size: 0.9rem;">
                             <thead style="position: sticky; top: 0; background: var(--bg-main); z-index: 10;">
                                 <tr>
-                                    ${headers.map(h => \`<th style="padding: 0.75rem; border-bottom: 2px solid var(--border-color);">\${h}</th>\`).join('')}
+                                    ${headers.map(h => `<th style="padding: 0.75rem; border-bottom: 2px solid var(--border-color);">${h}</th>`).join('')}
                                 </tr>
                             </thead>
                             <tbody>
                                 ${rows.slice(0, 100).map(row => `
                                     <tr style="border-bottom: 1px solid var(--border-color); hover:background: var(--primary-light);">
-                                        ${headers.map(h => \`<td style="padding: 0.5rem 0.75rem;">\${row[h] || ''}</td>\`).join('')}
+                                        ${headers.map(h => `<td style="padding: 0.5rem 0.75rem;">${row[h] || ''}</td>`).join('')}
                                     </tr>
-                                \`).join('')}
+                                `).join('')}
                             </tbody>
                         </table>
-                        ${rows.length > 100 ? \`<div class="p-2 text-center text-muted text-sm border-t border-border">Showing first 100 rows of \${rows.length} total.</div>\` : ''}
+                        ${rows.length > 100 ? `<div class="p-2 text-center text-muted text-sm border-t border-border">Showing first 100 rows of ${rows.length} total.</div>` : ''}
                     </div>
                 `;
             } else if (dataset.metadata.type === 'json') {
                 contentHTML = `
                     <div style="max-height: 60vh; overflow-y: auto; background: var(--primary-light); padding: 1rem; border-radius: var(--radius-sm);">
-                        <pre style="white-space: pre-wrap; font-size: 0.85rem; color: var(--text-secondary);">\${JSON.stringify(dataset.data, null, 2)}</pre>
+                        <pre style="white-space: pre-wrap; font-size: 0.85rem; color: var(--text-secondary);">${JSON.stringify(dataset.data, null, 2)}</pre>
                     </div>
                 `;
             } else {
                 contentHTML = `
                     <div style="max-height: 60vh; overflow-y: auto; background: var(--primary-light); padding: 1rem; border-radius: var(--radius-sm);">
-                        <pre style="white-space: pre-wrap; font-size: 0.85rem; color: var(--text-secondary);">\${dataset.raw}</pre>
+                        <pre style="white-space: pre-wrap; font-size: 0.85rem; color: var(--text-secondary);">${dataset.raw}</pre>
                     </div>
                 `;
             }
@@ -186,11 +186,11 @@ class App {
                 <div class="modal-overlay" style="position: fixed; inset: 0; background: rgba(0,0,0,0.8); display: flex; align-items: center; justify-content: center; z-index: 1000;" onclick="if(event.target === this) document.getElementById('modal-container').classList.add('hidden')">
                     <div class="card" style="width: 90%; max-width: 1000px; display: flex; flex-direction: column; background: var(--bg-main);">
                         <div class="flex justify-between items-center mb-4 pb-4 border-b border-border">
-                            <h2 class="text-xl" style="text-transform: capitalize;">\${id.replace(/-/g, ' ')} <span class="text-sm text-muted">(\${dataset.metadata.type.toUpperCase()})</span></h2>
+                            <h2 class="text-xl" style="text-transform: capitalize;">${id.replace(/-/g, ' ')} <span class="text-sm text-muted">(${dataset.metadata.type.toUpperCase()})</span></h2>
                             <button class="icon-btn" onclick="document.getElementById('modal-container').classList.add('hidden')">✕</button>
                         </div>
                         <div class="flex-grow">
-                            \${contentHTML}
+                            ${contentHTML}
                         </div>
                     </div>
                 </div>
@@ -201,7 +201,7 @@ class App {
                     <div class="card p-6 flex flex-col items-center">
                         <div style="color: var(--danger); font-size: 2rem; margin-bottom: 1rem;">❌</div>
                         <h3 class="mb-2">Failed to load dataset</h3>
-                        <p class="text-muted mb-4">\${e.message}</p>
+                        <p class="text-muted mb-4">${e.message}</p>
                         <button class="btn btn-secondary" onclick="document.getElementById('modal-container').classList.add('hidden')">Close</button>
                     </div>
                 </div>
