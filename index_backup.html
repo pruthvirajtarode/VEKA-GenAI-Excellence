@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>VEKA India · GenAI Excellence | NxtWave</title>
+  <meta name="description" content="VEKA India GenAI Excellence Training — From Data to Decision. 2 Days, 8 Hours, 3 Core Data Labs, 1 Capstone.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-deep: #0a0a0a;
+      --bg-surface: #141414;
+      --bg-card: #1f1f1f;
+      --veka-red: #E4002B;
+      --veka-red-dim: rgba(228,0,43,0.12);
+      --text: #F8FAFC;
+      --text-muted: #94A3B8;
+      --text-secondary: #CBD5E1;
+      --success: #10b981;
+      --border: rgba(255,255,255,0.08);
+      --font: 'Inter', sans-serif;
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: var(--font);
+      background: var(--bg-deep);
+      color: var(--text);
+      min-height: 100vh;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* HERO SECTION */
+    .hero {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 4rem 2rem;
+      position: relative;
+      overflow: hidden;
+    }
+    .hero::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background:
+        radial-gradient(ellipse 80% 50% at 50% 0%, rgba(228,0,43,0.15) 0%, transparent 60%),
+        radial-gradient(ellipse 50% 30% at 80% 80%, rgba(228,0,43,0.05) 0%, transparent 60%);
+    }
+
+    .hero-content { position: relative; z-index: 1; max-width: 900px; }
+    .partner-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 1rem;
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.1);
+      padding: 0.6rem 1.5rem;
+      border-radius: 100px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      letter-spacing: 0.15em;
+      color: var(--text-secondary);
+      text-transform: uppercase;
+      margin-bottom: 2.5rem;
+    }
+    .partner-badge span { color: var(--veka-red); }
+
+    h1 {
+      font-size: clamp(3.5rem, 9vw, 6.5rem);
+      font-weight: 900;
+      line-height: 1;
+      letter-spacing: -0.03em;
+      margin-bottom: 0.5rem;
+    }
+    .grad { background: linear-gradient(135deg, #ff4560 0%, var(--veka-red) 50%, #8a001a 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+    .sub {
+      font-size: clamp(1rem, 2.5vw, 1.5rem);
+      color: var(--text-secondary);
+      font-weight: 300;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      margin-bottom: 3rem;
+    }
+
+    /* STATS ROW */
+    .stats {
+      display: flex;
+      justify-content: center;
+      gap: 2rem;
+      flex-wrap: wrap;
+      margin-bottom: 4rem;
+    }
+    .stat {
+      text-align: center;
+      padding: 1.2rem 2rem;
+      background: rgba(255,255,255,0.03);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      min-width: 120px;
+    }
+    .stat-val { font-size: 2.2rem; font-weight: 900; color: var(--veka-red); }
+    .stat-lbl { font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.1em; margin-top: 0.3rem; }
+
+    /* NAVIGATION GRID */
+    .nav-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1.2rem;
+      max-width: 900px;
+      width: 100%;
+      margin: 0 auto;
+    }
+    @media (max-width: 700px) { .nav-grid { grid-template-columns: 1fr; } }
+
+    .nav-card {
+      display: block;
+      background: var(--bg-surface);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 2rem;
+      text-decoration: none;
+      color: var(--text);
+      text-align: left;
+      transition: border-color 0.2s, transform 0.2s, background 0.2s;
+      position: relative;
+      overflow: hidden;
+    }
+    .nav-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 3px;
+      background: var(--veka-red);
+      opacity: 0;
+      transition: opacity 0.2s;
+    }
+    .nav-card:hover { border-color: rgba(228,0,43,0.4); transform: translateY(-3px); background: rgba(30,30,30,0.9); }
+    .nav-card:hover::before { opacity: 1; }
+
+    .nav-card.primary { border-color: rgba(228,0,43,0.4); background: rgba(228,0,43,0.06); }
+    .nav-card.primary::before { opacity: 1; }
+    .nav-card.primary .nc-icon { color: var(--veka-red); }
+
+    .nc-icon { font-size: 2rem; margin-bottom: 1rem; display: block; }
+    .nc-title { font-size: 1.05rem; font-weight: 700; letter-spacing: 0.05em; text-transform: uppercase; margin-bottom: 0.5rem; }
+    .nc-desc { font-size: 0.85rem; color: var(--text-muted); line-height: 1.5; }
+
+    /* FOOTER */
+    footer {
+      text-align: center;
+      padding: 2rem;
+      border-top: 1px solid var(--border);
+      color: var(--text-muted);
+      font-size: 0.75rem;
+      line-height: 1.8;
+    }
+    footer strong { color: var(--text-secondary); }
+
+    /* DATA CLASSIFICATION INFO */
+    .classify-strip {
+      max-width: 900px;
+      margin: 0 auto 3rem;
+      display: flex;
+      gap: 1rem;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+    .cs-item {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.5rem 1rem;
+      border-radius: 100px;
+      font-size: 0.78rem;
+      font-weight: 600;
+      letter-spacing: 0.05em;
+    }
+    .cs-public { background: rgba(16,185,129,0.1); color: #6EE7B7; border: 1px solid rgba(16,185,129,0.2); }
+    .cs-synth { background: rgba(228,0,43,0.1); color: #ff6b81; border: 1px solid rgba(228,0,43,0.3); }
+    .cs-conf { background: rgba(239,68,68,0.08); color: #FCA5A5; border: 1px solid rgba(239,68,68,0.2); }
+  </style>
+</head>
+<body>
+  <section class="hero">
+    <div class="hero-content">
+      <div class="partner-badge">VEKA India <span>·</span> NxtWave</div>
+      <h1>GENAI<br><span class="grad">EXCELLENCE</span></h1>
+      <p class="sub">2 Days — From Data to Decision</p>
+
+      <div class="stats">
+        <div class="stat"><div class="stat-val">8</div><div class="stat-lbl">Hours</div></div>
+        <div class="stat"><div class="stat-val">2</div><div class="stat-lbl">Days</div></div>
+        <div class="stat"><div class="stat-val">3</div><div class="stat-lbl">Data Labs</div></div>
+        <div class="stat"><div class="stat-val">80%</div><div class="stat-lbl">Hands-On</div></div>
+        <div class="stat"><div class="stat-val">1</div><div class="stat-lbl">Capstone</div></div>
+      </div>
+
+      <div class="classify-strip">
+        <div class="cs-item cs-public">🌐 PUBLIC VEKA DATA</div>
+        <div class="cs-item cs-synth">🔬 SYNTHETIC VEKA-ALIGNED DATA</div>
+        <div class="cs-item cs-conf">🔒 CONFIDENTIAL: DO NOT FABRICATE</div>
+      </div>
+
+      <div class="nav-grid">
+        <a href="deck/index.html" class="nav-card primary">
+          <span class="nc-icon">🚀</span>
+          <div class="nc-title">Start Training</div>
+          <div class="nc-desc">Launch the full interactive 8-hour presentation deck</div>
+        </a>
+        <a href="deck/index.html?trainer=true" class="nav-card">
+          <span class="nc-icon">🎓</span>
+          <div class="nc-title">Trainer Mode</div>
+          <div class="nc-desc">Deck + facilitator notes overlay (Shift+T to toggle)</div>
+        </a>
+        <a href="workbook/index.html" class="nav-card" target="_blank">
+          <span class="nc-icon">📓</span>
+          <div class="nc-title">Workbook</div>
+          <div class="nc-desc">Participant workbook — all exercises and outputs</div>
+        </a>
+        <a href="prompt-library/index.html" class="nav-card" target="_blank">
+          <span class="nc-icon">⚡</span>
+          <div class="nc-title">Prompt Library</div>
+          <div class="nc-desc">50 pre-tested enterprise templates for VEKA</div>
+        </a>
+        <a href="data-lab/index.html" class="nav-card" target="_blank">
+          <span class="nc-icon">📊</span>
+          <div class="nc-title">Data Lab</div>
+          <div class="nc-desc">Visualise the synthetic training datasets</div>
+        </a>
+        <a href="trainer/index.html" class="nav-card" target="_blank">
+          <span class="nc-icon">🔍</span>
+          <div class="nc-title">Trainer Guide</div>
+          <div class="nc-desc">Printable reference for facilitators</div>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    <strong>VEKA India · NxtWave</strong> — GenAI Excellence — Corporate Training<br>
+    Feature availability may vary by AI tool licence and tenant configuration.<br>
+    All training datasets are synthetic. They do not represent actual VEKA customer or operational data.<br>
+    Public facts sourced from: <strong>veka.in</strong>
+  </footer>
+</body>
+</html>
