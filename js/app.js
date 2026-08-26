@@ -829,6 +829,22 @@ class App {
                     </a>
                 </div>
             `;
+        },
+
+        renderTrainer: (container) => {
+            container.innerHTML = '<div class="mb-6"><h2 class="page-title">Trainer Dashboard</h2></div><div class="card"><p>Module under construction.</p></div>';
+        },
+
+        renderTimer: (container) => {
+            container.innerHTML = '<div class="mb-6"><h2 class="page-title">Workshop Timer</h2></div><div class="card"><p>Module under construction.</p></div>';
+        },
+
+        renderLeaderboard: (container) => {
+            container.innerHTML = '<div class="mb-6"><h2 class="page-title">Leaderboard</h2></div><div class="card"><p>Module under construction.</p></div>';
+        },
+
+        renderDemo: (container) => {
+            container.innerHTML = '<div class="mb-6"><h2 class="page-title">Executive Demo</h2></div><div class="card"><p>Module under construction.</p></div>';
         }
     }
 }
