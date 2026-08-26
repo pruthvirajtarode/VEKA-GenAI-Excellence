@@ -1027,7 +1027,7 @@ class App {
                         <div class="flex flex-col gap-4">
                             <div>
                                 <label class="text-muted text-sm mb-1 block">Training Function</label>
-                                <select class="btn btn-secondary w-full" style="text-align: left; background: var(--primary-light);">
+                                <select id="synth-func" class="btn btn-secondary w-full" style="text-align: left; background: var(--primary-light);">
                                     <option>Finance</option>
                                     <option>Accounts</option>
                                     <option>Procurement</option>
@@ -1040,20 +1040,20 @@ class App {
                             </div>
                             <div>
                                 <label class="text-muted text-sm mb-1 block">Number of Rows</label>
-                                <input type="number" class="btn btn-secondary w-full" style="text-align: left; background: var(--primary-light);" value="100">
+                                <input id="synth-rows" type="number" class="btn btn-secondary w-full" style="text-align: left; background: var(--primary-light);" value="100">
                             </div>
                             <div>
                                 <label class="text-muted text-sm mb-1 block">Include Anomalies</label>
-                                <select class="btn btn-secondary w-full" style="text-align: left; background: var(--primary-light);">
+                                <select id="synth-anomalies" class="btn btn-secondary w-full" style="text-align: left; background: var(--primary-light);">
                                     <option>Yes (For Analysis Training)</option>
                                     <option>No (Clean Data)</option>
                                 </select>
                             </div>
-                            <button class="btn btn-primary w-full mt-4" onclick="window.app.showToast('Generating synthetic dataset...', 'success')">Generate Dataset</button>
+                            <button id="synth-btn" class="btn btn-primary w-full mt-4" onclick="window.app.generateSyntheticData()">Generate Dataset</button>
                         </div>
                     </div>
                     
-                    <div class="card flex flex-col items-center justify-center" style="border: 2px dashed var(--border-color); background: rgba(0,0,0,0.2);">
+                    <div id="synth-preview" class="card flex flex-col items-center justify-center" style="border: 2px dashed var(--border-color); background: rgba(0,0,0,0.2);">
                         <div style="font-size: 3rem; margin-bottom: 1rem;">🔬</div>
                         <h3 class="text-muted">No Data Generated Yet</h3>
                         <p class="text-muted mt-2 text-center max-w-md">Select your parameters and click generate to create a safe, synthetic training dataset.</p>
