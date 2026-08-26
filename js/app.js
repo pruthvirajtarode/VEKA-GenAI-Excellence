@@ -513,6 +513,25 @@ class App {
         }
     }
 
+    showQRModal() {
+        const modalContainer = document.getElementById('modal-container');
+        if (!modalContainer) return;
+        
+        modalContainer.innerHTML = `
+            <div class="modal-overlay" style="position: fixed; inset: 0; background: rgba(0,0,0,0.9); display: flex; align-items: center; justify-content: center; z-index: 1000;" onclick="if(event.target === this) document.getElementById('modal-container').classList.add('hidden')">
+                <div class="card flex flex-col items-center justify-center p-8" style="background: var(--bg-main); max-width: 400px; width: 90%; border-radius: 12px; position: relative;">
+                    <button class="icon-btn" style="position: absolute; top: 15px; right: 15px; font-size: 1.5rem;" onclick="document.getElementById('modal-container').classList.add('hidden')">✕</button>
+                    <h2 class="text-xl mb-4 text-center" style="color: var(--text-main);">Scan to Open on Device</h2>
+                    <div style="background: white; padding: 1rem; border-radius: 12px;">
+                        <img src="https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=https://veka-gen-ai-excellence.vercel.app/" alt="QR Code" style="width: 100%; height: auto; max-width: 300px;">
+                    </div>
+                    <p class="mt-4 text-muted text-center" style="font-size: 0.9rem;">veka-gen-ai-excellence.vercel.app</p>
+                </div>
+            </div>
+        `;
+        modalContainer.classList.remove('hidden');
+    }
+
     bindCommonComponents() {
         // Re-bind interactions for standard UI components that might exist in the newly rendered view
     }
@@ -553,15 +572,30 @@ class App {
             container.innerHTML = `
                 <div class="card mb-6" style="background: linear-gradient(135deg, rgba(0,0,0,0.6) 0%, rgba(31,31,31,0.9) 100%), url('assets/images/hero_banner.png'); background-size: cover; background-position: center; position: relative; overflow: hidden; border: 1px solid var(--border-color);">
                     <div style="position: absolute; right: -50px; top: -50px; opacity: 0.05; font-size: 20rem; pointer-events: none; color: white;">V</div>
-                    <div style="position: relative; z-index: 1;">
-                        <h1 style="font-size: 2.5rem; letter-spacing: -0.02em; color: white; text-shadow: 0 2px 4px rgba(0,0,0,0.5);">VEKA GenAI Excellence</h1>
-                        <p class="mb-6" style="color: #cbd5e1; font-size: 1.1rem; letter-spacing: 0.1em; text-transform: uppercase; text-shadow: 0 1px 2px rgba(0,0,0,0.8);">Learn AI. Apply AI. Build better workflows.</p>
-                        
-                        <div class="flex items-center gap-4 mb-4" style="max-width: 400px;">
-                            <div class="progress-bar-bg" style="flex-grow: 1; height: 10px;">
-                                <div class="progress-bar-fill" style="width: ${state.progress.overall}%;"></div>
+                    <div style="position: relative; z-index: 1; display: flex; justify-content: space-between; align-items: flex-end; flex-wrap: wrap; gap: 1rem;">
+                        <div>
+                            <h1 style="font-size: 2.5rem; letter-spacing: -0.02em; color: white; text-shadow: 0 2px 4px rgba(0,0,0,0.5);">VEKA GenAI Excellence</h1>
+                            <p class="mb-6" style="color: #cbd5e1; font-size: 1.1rem; letter-spacing: 0.1em; text-transform: uppercase; text-shadow: 0 1px 2px rgba(0,0,0,0.8);">Learn AI. Apply AI. Build better workflows.</p>
+                            
+                            <div class="flex items-center gap-4 mb-4" style="max-width: 400px;">
+                                <div class="progress-bar-bg" style="flex-grow: 1; height: 10px;">
+                                    <div class="progress-bar-fill" style="width: ${state.progress.overall}%;"></div>
+                                </div>
+                                <span style="font-weight: 700; font-size: 1.2rem;">${state.progress.overall}%</span>
                             </div>
-                            <span style="font-weight: 700; font-size: 1.2rem;">${state.progress.overall}%</span>
+                        </div>
+                        
+                        <!-- QR Code Section -->
+                        <div class="text-center" style="display: flex; flex-direction: column; align-items: center; margin-right: 1rem; margin-bottom: 1rem;">
+                            <p style="color: white; font-size: 0.75rem; margin-bottom: 0.5rem; text-transform: uppercase; letter-spacing: 0.05em; font-weight: 600;">Scan to open on phone</p>
+                            <img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=https://veka-gen-ai-excellence.vercel.app/" 
+                                 alt="QR Code" 
+                                 style="width: 80px; height: 80px; border-radius: 8px; border: 2px solid white; cursor: pointer; transition: transform 0.2s;"
+                                 onclick="if(window.app) window.app.showQRModal()"
+                                 onmouseover="this.style.transform='scale(1.05)'"
+                                 onmouseout="this.style.transform='scale(1)'"
+                                 title="Click to zoom"
+                            >
                         </div>
                     </div>
                 </div>
