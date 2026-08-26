@@ -26,16 +26,20 @@ class App {
         // Start Router
         window.router.init();
         
-        // Remove loading overlay
-        setTimeout(() => {
-            const overlay = document.getElementById('loading-overlay');
-            const appEl = document.getElementById('app');
-            if (overlay && appEl) {
-                overlay.style.opacity = '0';
-                appEl.style.display = 'flex';
-                setTimeout(() => overlay.remove(), 500);
-            }
-        }, 800);
+        // Remove loading overlay immediately
+        this.hideLoadingOverlay();
+    }
+    
+    hideLoadingOverlay() {
+        const overlay = document.getElementById('loading-overlay');
+        const appEl = document.getElementById('app');
+        if (overlay && appEl) {
+            overlay.style.opacity = '0';
+            appEl.style.display = 'flex';
+            setTimeout(() => {
+                if (overlay.parentNode) overlay.remove();
+            }, 500);
+        }
     }
 
     initSidebar() {
@@ -841,7 +845,19 @@ document.head.appendChild(style);
 
 // Init on DOM Load
 const initApp = () => {
-    if (!window.app) window.app = new App();
+    try {
+        if (!window.app) window.app = new App();
+    } catch (e) {
+        console.error("Initialization error:", e);
+        // Force hide overlay on error so user isn't stuck
+        const overlay = document.getElementById('loading-overlay');
+        const appEl = document.getElementById('app');
+        if (overlay) overlay.style.display = 'none';
+        if (appEl) {
+            appEl.style.display = 'flex';
+            appEl.innerHTML = `<div style="padding: 2rem; color: red;"><h3>Application Error</h3><p>${e.message}</p></div>`;
+        }
+    }
 };
 
 if (document.readyState === 'loading') {
@@ -849,3 +865,7 @@ if (document.readyState === 'loading') {
 } else {
     initApp();
 }
+
+window.addEventListener('error', (e) => {
+    console.error("Global error:", e.message);
+});
