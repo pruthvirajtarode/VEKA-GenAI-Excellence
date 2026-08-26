@@ -636,6 +636,52 @@ class App {
         }
     }
 
+    logProductivity() {
+        const nameEl = document.getElementById('prod-task-name');
+        const beforeEl = document.getElementById('prod-time-before');
+        const afterEl = document.getElementById('prod-time-after');
+        
+        if (!nameEl || !beforeEl || !afterEl) return;
+        
+        const name = nameEl.value.trim();
+        const before = parseInt(beforeEl.value, 10);
+        const after = parseInt(afterEl.value, 10);
+        
+        if (!name || isNaN(before) || isNaN(after)) {
+            this.showToast('Please enter a task name and valid numbers for time.', 'danger');
+            return;
+        }
+        
+        if (before <= after) {
+            this.showToast('Time before should be greater than time after!', 'danger');
+            return;
+        }
+        
+        const timeSaved = before - after;
+        
+        const state = window.stateManager.state;
+        if (!state.productivityData) state.productivityData = { entries: [], totalTimeSaved: 0 };
+        if (!state.productivityData.entries) state.productivityData.entries = [];
+        
+        state.productivityData.entries.push({
+            name,
+            before,
+            after,
+            saved: timeSaved,
+            date: new Date().toISOString()
+        });
+        
+        state.productivityData.totalTimeSaved += timeSaved;
+        window.stateManager.saveState();
+        
+        this.showToast(`Saved ${timeSaved} minutes!`, 'success');
+        
+        // Re-render
+        if (window.router.currentRoute === '/productivity') {
+            window.router.handleRoute();
+        }
+    }
+
     bindCommonComponents() {
         // Re-bind interactions for standard UI components that might exist in the newly rendered view
     }
@@ -1480,6 +1526,27 @@ class App {
         },
 
         renderProductivity: (container) => {
+            const state = window.stateManager.state;
+            const data = state.productivityData || { entries: [], totalTimeSaved: 0 };
+            const total = data.totalTimeSaved || 0;
+            
+            let recentEntriesHTML = '';
+            if (data.entries && data.entries.length > 0) {
+                recentEntriesHTML = `
+                    <div class="mt-8 pt-6 border-t border-border w-full">
+                        <h4 class="mb-4 text-sm uppercase text-muted font-bold tracking-wider">Recent Logs</h4>
+                        <div class="flex flex-col gap-2">
+                            ${data.entries.slice(-3).reverse().map(entry => `
+                                <div class="flex justify-between items-center p-3 bg-surface border border-border rounded">
+                                    <span class="font-medium">${entry.name}</span>
+                                    <span class="text-success font-bold">+${entry.saved} min</span>
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+                `;
+            }
+
             container.innerHTML = `
                 <div class="mb-6">
                     <h2 class="page-title">AI Productivity Tracker</h2>
@@ -1488,27 +1555,32 @@ class App {
                 
                 <div class="dashboard-grid">
                     <div class="card">
-                        <h3 class="mb-4">Log a Task</h3>
+                        <h3 class="mb-4 border-b border-border pb-2">Log a Task</h3>
                         <div class="flex flex-col gap-4">
-                            <input type="text" class="btn btn-secondary w-full" style="text-align: left; background: var(--primary-light);" placeholder="Task Name (e.g. Weekly Report)">
+                            <input type="text" id="prod-task-name" class="btn btn-secondary w-full text-left bg-surface border-border text-main" placeholder="Task Name (e.g. Weekly Report)">
                             <div class="flex gap-4">
                                 <div class="w-full">
                                     <label class="text-muted text-sm mb-1 block">Time Before (mins)</label>
-                                    <input type="number" class="btn btn-secondary w-full" style="text-align: left; background: var(--primary-light);" placeholder="60">
+                                    <input type="number" id="prod-time-before" class="btn btn-secondary w-full text-left bg-surface border-border text-main" placeholder="60">
                                 </div>
                                 <div class="w-full">
                                     <label class="text-muted text-sm mb-1 block">Time After (mins)</label>
-                                    <input type="number" class="btn btn-secondary w-full" style="text-align: left; background: var(--primary-light);" placeholder="15">
+                                    <input type="number" id="prod-time-after" class="btn btn-secondary w-full text-left bg-surface border-border text-main" placeholder="15">
                                 </div>
                             </div>
-                            <button class="btn btn-primary w-full" onclick="window.app.showToast('Productivity logged!', 'success')">Log Savings</button>
+                            <button class="btn btn-primary w-full mt-2" onclick="if(window.app) window.app.logProductivity()">Log Savings</button>
                         </div>
                     </div>
                     
-                    <div class="card flex flex-col items-center justify-center">
-                        <div class="text-muted text-sm uppercase tracking-wider mb-2">Total Estimated Time Saved</div>
-                        <div class="text-accent" style="font-size: 4rem; font-weight: 800; line-height: 1;">0</div>
-                        <div class="text-muted mt-2">Minutes this month</div>
+                    <div class="card flex flex-col items-center justify-center relative overflow-hidden">
+                        <div class="absolute" style="top: -20px; right: -20px; font-size: 10rem; opacity: 0.03; pointer-events: none;">⏱️</div>
+                        <div class="text-muted text-sm uppercase tracking-wider mb-4 font-bold border-b border-border pb-2 w-full text-center">Total Estimated Time Saved</div>
+                        <div class="text-accent flex items-baseline gap-2 mt-4">
+                            <span style="font-size: 5rem; font-weight: 800; line-height: 1;">${total}</span>
+                        </div>
+                        <div class="text-muted mt-2 font-medium">Minutes this month</div>
+                        
+                        ${recentEntriesHTML}
                     </div>
                 </div>
             `;
