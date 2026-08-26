@@ -10,6 +10,7 @@ class App {
     init() {
         // Initialize Sidebar
         this.initSidebar();
+        this.initTopbar();
         
         // Subscribe to state changes to update UI
         window.stateManager.subscribe(this.updateUIFromState.bind(this));
@@ -39,6 +40,23 @@ class App {
             setTimeout(() => {
                 if (overlay.parentNode) overlay.remove();
             }, 500);
+        }
+    }
+
+    initTopbar() {
+        const searchBtn = document.getElementById('global-search-btn');
+        const settingsBtn = document.getElementById('settings-btn');
+
+        if (searchBtn) {
+            searchBtn.addEventListener('click', () => {
+                this.showToast('Global Search coming soon!', 'info');
+            });
+        }
+        
+        if (settingsBtn) {
+            settingsBtn.addEventListener('click', () => {
+                this.showToast('Settings coming soon!', 'info');
+            });
         }
     }
 
