@@ -49,15 +49,85 @@ class App {
 
         if (searchBtn) {
             searchBtn.addEventListener('click', () => {
-                this.showToast('Global Search coming soon!', 'info');
+                this.showSearchModal();
             });
         }
         
         if (settingsBtn) {
             settingsBtn.addEventListener('click', () => {
-                this.showToast('Settings coming soon!', 'info');
+                this.showSettingsModal();
             });
         }
+    }
+
+    showSearchModal() {
+        const modalContainer = document.getElementById('modal-container');
+        if (!modalContainer) return;
+
+        modalContainer.innerHTML = `
+            <div class="modal-overlay" style="position: fixed; inset: 0; background: rgba(0,0,0,0.8); display: flex; align-items: flex-start; justify-content: center; z-index: 1000; padding-top: 10vh;" onclick="if(event.target === this) document.getElementById('modal-container').classList.add('hidden')">
+                <div class="card" style="width: 90%; max-width: 600px; background: var(--bg-main); border: 1px solid var(--accent); box-shadow: var(--shadow-glow-accent);">
+                    <div class="flex items-center gap-4">
+                        <span style="font-size: 1.5rem;">🔍</span>
+                        <input type="text" class="w-full" style="background: transparent; border: none; color: var(--text-main); font-size: 1.25rem; outline: none; padding: 0.5rem 0;" placeholder="Search prompts, modules, case studies..." autofocus>
+                        <button class="icon-btn" onclick="document.getElementById('modal-container').classList.add('hidden')">✕</button>
+                    </div>
+                    <div class="mt-4 border-t border-border pt-4 text-muted text-sm">
+                        Start typing to search across the VEKA GenAI Excellence platform.
+                    </div>
+                </div>
+            </div>
+        `;
+        modalContainer.classList.remove('hidden');
+        
+        // Focus the input
+        setTimeout(() => {
+            const input = modalContainer.querySelector('input');
+            if (input) input.focus();
+        }, 100);
+    }
+
+    showSettingsModal() {
+        const modalContainer = document.getElementById('modal-container');
+        if (!modalContainer) return;
+
+        modalContainer.innerHTML = `
+            <div class="modal-overlay" style="position: fixed; inset: 0; background: rgba(0,0,0,0.8); display: flex; align-items: center; justify-content: center; z-index: 1000;" onclick="if(event.target === this) document.getElementById('modal-container').classList.add('hidden')">
+                <div class="card" style="width: 90%; max-width: 500px; background: var(--bg-main);">
+                    <div class="flex justify-between items-center mb-6 pb-4 border-b border-border">
+                        <h2 class="text-xl">Settings</h2>
+                        <button class="icon-btn" onclick="document.getElementById('modal-container').classList.add('hidden')">✕</button>
+                    </div>
+                    
+                    <div class="flex flex-col gap-6">
+                        <div class="flex justify-between items-center">
+                            <div>
+                                <h3 class="mb-1">Trainer Mode</h3>
+                                <p class="text-muted text-sm">Enable advanced facilitator controls</p>
+                            </div>
+                            <button class="btn btn-secondary" onclick="window.stateManager.toggleTrainerMode(); document.getElementById('modal-container').classList.add('hidden');">Toggle</button>
+                        </div>
+                        
+                        <div class="flex justify-between items-center">
+                            <div>
+                                <h3 class="mb-1">Theme</h3>
+                                <p class="text-muted text-sm">Switch between light and dark mode</p>
+                            </div>
+                            <button class="btn btn-secondary" onclick="window.app.showToast('Theme switching coming in v2', 'info')">Dark Mode</button>
+                        </div>
+
+                        <div class="flex justify-between items-center">
+                            <div>
+                                <h3 class="mb-1">Account</h3>
+                                <p class="text-muted text-sm">Manage your profile and data</p>
+                            </div>
+                            <button class="btn btn-secondary" onclick="window.app.showToast('Account management coming soon', 'info')">Manage</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `;
+        modalContainer.classList.remove('hidden');
     }
 
     initSidebar() {

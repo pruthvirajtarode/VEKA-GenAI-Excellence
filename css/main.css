@@ -283,6 +283,11 @@ a:hover {
 /* Layout Utilities */
 .hidden { display: none !important; }
 .mobile-only { display: none; }
+
+/* Show hamburger menu on desktop when sidebar is collapsed */
+.sidebar.collapsed + .main-content #mobile-menu-btn {
+    display: block;
+}
 .flex { display: flex; }
 .flex-wrap { flex-wrap: wrap; }
 .flex-col { display: flex; flex-direction: column; }
