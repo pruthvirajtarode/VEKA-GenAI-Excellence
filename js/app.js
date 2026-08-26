@@ -862,7 +862,7 @@ document.head.appendChild(style);
 // Init on DOM Load
 const initApp = () => {
     try {
-        if (!window.app) window.app = new App();
+        if (!(window.app instanceof App)) window.app = new App();
     } catch (e) {
         console.error("Initialization error:", e);
         // Force hide overlay on error so user isn't stuck
