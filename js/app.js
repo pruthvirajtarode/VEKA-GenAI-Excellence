@@ -113,7 +113,7 @@ class App {
                                 <h3 class="mb-1">Theme</h3>
                                 <p class="text-muted text-sm">Switch between light and dark mode</p>
                             </div>
-                            <button class="btn btn-secondary" onclick="window.app.showToast('Theme switching coming in v2', 'info')">Dark Mode</button>
+                            <button class="btn btn-secondary" id="theme-toggle-btn" onclick="const newTheme = window.stateManager.toggleTheme(); window.app.updateUIFromState(window.stateManager.state); this.textContent = newTheme === 'light' ? 'Dark Mode' : 'Light Mode';">Toggle Theme</button>
                         </div>
 
                         <div class="flex justify-between items-center">
@@ -172,6 +172,15 @@ class App {
         } else {
             trainerElements.forEach(el => el.classList.add('hidden'));
             if (trainerBadge) trainerBadge.classList.add('hidden');
+        }
+        
+        // Apply Theme
+        if (state.settings && state.settings.theme) {
+            document.documentElement.setAttribute('data-theme', state.settings.theme);
+            const themeBtn = document.getElementById('theme-toggle-btn');
+            if (themeBtn) {
+                themeBtn.textContent = state.settings.theme === 'light' ? 'Dark Mode' : 'Light Mode';
+            }
         }
     }
 
@@ -278,7 +287,7 @@ class App {
                                 <pre style="background: var(--bg-card); padding: 1.5rem; border-radius: var(--radius-md); border: 1px solid var(--border-color); white-space: pre-wrap; font-family: var(--font-body); color: var(--text-muted); min-height: 250px;">${study.before}</pre>
                             </div>
                             <div>
-                                <h3 class="text-lg mb-2 text-success">✅ After AI (The Result)</h3>
+                                <h3 class="text-lg mb-2 text-success flex items-center gap-2"><img src="assets/images/ai_avatar.png" alt="AI Avatar" style="width: 24px; height: 24px; border-radius: 50%;"> After AI (The Result)</h3>
                                 <pre style="background: rgba(16, 185, 129, 0.05); padding: 1.5rem; border-radius: var(--radius-md); border: 1px solid rgba(16, 185, 129, 0.2); white-space: pre-wrap; font-family: var(--font-body); color: var(--text-main); min-height: 250px;">${study.after}</pre>
                             </div>
                         </div>
@@ -413,11 +422,11 @@ class App {
             const state = window.stateManager.state;
             
             container.innerHTML = `
-                <div class="card mb-6" style="background: linear-gradient(135deg, rgba(228,0,43,0.1) 0%, rgba(31,31,31,0.8) 100%); position: relative; overflow: hidden;">
-                    <div style="position: absolute; right: -50px; top: -50px; opacity: 0.05; font-size: 20rem; pointer-events: none;">V</div>
+                <div class="card mb-6" style="background: linear-gradient(135deg, rgba(0,0,0,0.6) 0%, rgba(31,31,31,0.9) 100%), url('assets/images/hero_banner.png'); background-size: cover; background-position: center; position: relative; overflow: hidden; border: 1px solid var(--border-color);">
+                    <div style="position: absolute; right: -50px; top: -50px; opacity: 0.05; font-size: 20rem; pointer-events: none; color: white;">V</div>
                     <div style="position: relative; z-index: 1;">
-                        <h1 style="font-size: 2.5rem; letter-spacing: -0.02em;">VEKA GenAI Excellence</h1>
-                        <p class="text-secondary mb-6" style="font-size: 1.1rem; letter-spacing: 0.1em; text-transform: uppercase;">Learn AI. Apply AI. Build better workflows.</p>
+                        <h1 style="font-size: 2.5rem; letter-spacing: -0.02em; color: white; text-shadow: 0 2px 4px rgba(0,0,0,0.5);">VEKA GenAI Excellence</h1>
+                        <p class="mb-6" style="color: #cbd5e1; font-size: 1.1rem; letter-spacing: 0.1em; text-transform: uppercase; text-shadow: 0 1px 2px rgba(0,0,0,0.8);">Learn AI. Apply AI. Build better workflows.</p>
                         
                         <div class="flex items-center gap-4 mb-4" style="max-width: 400px;">
                             <div class="progress-bar-bg" style="flex-grow: 1; height: 10px;">
@@ -475,7 +484,97 @@ class App {
                         </div>
                     </div>
                 </div>
+
+                <!-- Analytics Section -->
+                <div class="dashboard-grid mt-6">
+                    <div class="card">
+                        <h3 class="mb-4">Estimated Productivity Gain</h3>
+                        <div style="position: relative; height:250px; width:100%">
+                            <canvas id="productivityChart"></canvas>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <h3 class="mb-4">Skill Progression</h3>
+                        <div style="position: relative; height:250px; width:100%">
+                            <canvas id="skillsChart"></canvas>
+                        </div>
+                    </div>
+                </div>
             `;
+
+            // Initialize Charts after DOM update
+            setTimeout(() => {
+                if (!window.Chart) return;
+                
+                const style = getComputedStyle(document.body);
+                const textColor = style.getPropertyValue('--text-main').trim() || '#FFFFFF';
+                const accentColor = style.getPropertyValue('--accent').trim() || '#E4002B';
+                const gridColor = style.getPropertyValue('--border-color').trim() || 'rgba(255,255,255,0.1)';
+                
+                Chart.defaults.color = textColor;
+                Chart.defaults.font.family = "'Inter', sans-serif";
+
+                const ctxProd = document.getElementById('productivityChart');
+                if (ctxProd && !window.prodChartInstance) {
+                    window.prodChartInstance = new Chart(ctxProd, {
+                        type: 'line',
+                        data: {
+                            labels: ['Module 1', 'Module 2', 'Module 3', 'Module 4'],
+                            datasets: [{
+                                label: 'Hours Saved / Week',
+                                data: [1.5, 3.2, 5.8, 10.5],
+                                borderColor: accentColor,
+                                backgroundColor: 'rgba(228, 0, 43, 0.2)',
+                                fill: true,
+                                tension: 0.4
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            scales: {
+                                y: { grid: { color: gridColor }, beginAtZero: true },
+                                x: { grid: { color: gridColor } }
+                            },
+                            plugins: {
+                                legend: { display: false }
+                            }
+                        }
+                    });
+                }
+
+                const ctxSkills = document.getElementById('skillsChart');
+                if (ctxSkills && !window.skillsChartInstance) {
+                    window.skillsChartInstance = new Chart(ctxSkills, {
+                        type: 'radar',
+                        data: {
+                            labels: ['Prompting', 'Data Analytics', 'Safe AI', 'Workflows', 'Strategy'],
+                            datasets: [{
+                                label: 'Current Level',
+                                data: [80, 65, 90, 75, 85],
+                                backgroundColor: 'rgba(16, 185, 129, 0.2)',
+                                borderColor: '#10B981',
+                                pointBackgroundColor: '#10B981',
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            scales: {
+                                r: {
+                                    angleLines: { color: gridColor },
+                                    grid: { color: gridColor },
+                                    pointLabels: { color: textColor },
+                                    ticks: { display: false, max: 100, min: 0 }
+                                }
+                            },
+                            plugins: {
+                                legend: { display: false }
+                            }
+                        }
+                    });
+                }
+            }, 100);
         },
 
         renderProgress: (container) => {

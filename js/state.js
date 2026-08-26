@@ -45,7 +45,8 @@ const defaultState = {
         recentActivity: []
     },
     settings: {
-        reducedMotion: false
+        reducedMotion: false,
+        theme: 'dark'
     }
 };
 
@@ -129,6 +130,13 @@ class StateManager {
             current = current[keys[i]];
         }
         return current;
+    }
+
+    toggleTheme() {
+        if (!this.state.settings) this.state.settings = {};
+        this.state.settings.theme = this.state.settings.theme === 'light' ? 'dark' : 'light';
+        this.saveState();
+        return this.state.settings.theme;
     }
 
     recalculateOverallProgress() {
