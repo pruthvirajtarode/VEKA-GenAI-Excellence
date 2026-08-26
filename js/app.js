@@ -805,9 +805,6 @@ class App {
                 <div class="mb-6">
                     <h2 class="page-title">VEKA Data Lab</h2>
                     <p class="text-muted mt-2">Visualize and analyze synthetic training datasets.</p>
-                    <div class="mt-4 inline-block p-2 text-sm text-warning" style="background: var(--warning-bg); border-radius: var(--radius-sm); border: 1px solid var(--warning);">
-                        ⚠️ SYNTHETIC TRAINING DATA — NOT REAL VEKA RECORDS
-                    </div>
                 </div>
                 
                 <div class="dashboard-grid">
