@@ -475,6 +475,12 @@ th {
     to { transform: translateX(0); opacity: 1; }
 }
 
+/* Forms */
+select option {
+    background-color: var(--bg-card);
+    color: var(--text-main);
+}
+
 /* Utilities */
 .text-muted { color: var(--text-muted); }
 .text-accent { color: var(--accent); }
