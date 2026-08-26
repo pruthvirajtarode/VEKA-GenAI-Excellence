@@ -574,7 +574,7 @@ class App {
                     <div style="position: absolute; right: -50px; top: -50px; opacity: 0.05; font-size: 20rem; pointer-events: none; color: white;">V</div>
                     <div style="position: relative; z-index: 1; display: flex; justify-content: space-between; align-items: flex-end; flex-wrap: wrap; gap: 1rem;">
                         <div>
-                            <h1 style="font-size: 2.5rem; letter-spacing: -0.02em; color: white; text-shadow: 0 2px 4px rgba(0,0,0,0.5);">VEKA GenAI Excellence</h1>
+                            <h1 class="hero-title" style="font-size: 2.5rem; letter-spacing: -0.02em; color: white; text-shadow: 0 2px 4px rgba(0,0,0,0.5);">VEKA GenAI Excellence</h1>
                             <p class="mb-6" style="color: #cbd5e1; font-size: 1.1rem; letter-spacing: 0.1em; text-transform: uppercase; text-shadow: 0 1px 2px rgba(0,0,0,0.8);">Learn AI. Apply AI. Build better workflows.</p>
                             
                             <div class="flex items-center gap-4 mb-4" style="max-width: 400px;">
@@ -586,7 +586,7 @@ class App {
                         </div>
                         
                         <!-- QR Code Section -->
-                        <div class="text-center" style="display: flex; flex-direction: column; align-items: center; margin-right: 1rem; margin-bottom: 1rem;">
+                        <div class="text-center hide-on-mobile" style="display: flex; flex-direction: column; align-items: center; margin-right: 1rem; margin-bottom: 1rem;">
                             <p style="color: white; font-size: 0.75rem; margin-bottom: 0.5rem; text-transform: uppercase; letter-spacing: 0.05em; font-weight: 600;">Scan to open on phone</p>
                             <img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=https://veka-gen-ai-excellence.vercel.app/" 
                                  alt="QR Code" 
