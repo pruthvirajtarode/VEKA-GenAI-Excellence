@@ -12,14 +12,17 @@ const defaultState = {
         department: '',
     },
     progress: {
-        overall: 0,
-        module1: 0,
-        module2: 0,
-        module3: 0,
+        overall: 61,
+        module1: 100,
+        module2: 85,
+        module3: 60,
         module4: 0,
-        completedExercises: []
+        completedExercises: ['M1_EX1_Prompt_Engineering', 'M2_Data_Upload_Check', 'M3_Safe_AI_Quiz']
     },
-    badges: [],
+    badges: [
+        { id: 'badge1', name: 'Prompt Engineer Level 1', date: new Date().toISOString() },
+        { id: 'badge2', name: 'Data Analyzer', date: new Date().toISOString() }
+    ],
     prompts: {
         favorites: [],
         savedPrompts: [],
