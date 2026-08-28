@@ -829,6 +829,11 @@ class App {
 
                 const ctxProd = document.getElementById('productivityChart');
                 if (ctxProd && !window.prodChartInstance) {
+                    // Create a beautiful gradient for the line chart fill
+                    const gradient = ctxProd.getContext('2d').createLinearGradient(0, 0, 0, 250);
+                    gradient.addColorStop(0, 'rgba(228, 0, 43, 0.5)'); // VEKA red transparent
+                    gradient.addColorStop(1, 'rgba(228, 0, 43, 0.0)');
+
                     window.prodChartInstance = new Chart(ctxProd, {
                         type: 'line',
                         data: {
@@ -837,7 +842,16 @@ class App {
                                 label: 'Hours Saved / Week',
                                 data: [1.5, 3.2, 5.8, 10.5],
                                 borderColor: accentColor,
-                                backgroundColor: 'rgba(228, 0, 43, 0.2)',
+                                backgroundColor: gradient,
+                                borderWidth: 4,
+                                pointBackgroundColor: accentColor,
+                                pointBorderColor: '#ffffff',
+                                pointBorderWidth: 2,
+                                pointRadius: 6,
+                                pointHoverRadius: 8,
+                                pointHoverBackgroundColor: '#ffffff',
+                                pointHoverBorderColor: accentColor,
+                                pointHoverBorderWidth: 3,
                                 fill: true,
                                 tension: 0.4
                             }]
@@ -845,12 +859,33 @@ class App {
                         options: {
                             responsive: true,
                             maintainAspectRatio: false,
-                            scales: {
-                                y: { grid: { color: gridColor }, beginAtZero: true },
-                                x: { grid: { color: gridColor } }
+                            interaction: {
+                                mode: 'index',
+                                intersect: false,
                             },
                             plugins: {
-                                legend: { display: false }
+                                legend: { display: false },
+                                tooltip: {
+                                    backgroundColor: 'rgba(10, 10, 10, 0.9)',
+                                    titleColor: '#fff',
+                                    bodyColor: '#fff',
+                                    borderColor: 'rgba(255,255,255,0.1)',
+                                    borderWidth: 1,
+                                    padding: 12,
+                                    boxPadding: 6,
+                                    usePointStyle: true,
+                                }
+                            },
+                            scales: {
+                                y: { 
+                                    grid: { color: 'rgba(255,255,255,0.05)', drawBorder: false }, 
+                                    beginAtZero: true,
+                                    ticks: { color: 'rgba(255,255,255,0.6)', padding: 10 }
+                                },
+                                x: { 
+                                    grid: { display: false, drawBorder: false },
+                                    ticks: { color: 'rgba(255,255,255,0.6)', padding: 10 }
+                                }
                             }
                         }
                     });
@@ -865,24 +900,44 @@ class App {
                             datasets: [{
                                 label: 'Current Level',
                                 data: [80, 65, 90, 75, 85],
-                                backgroundColor: 'rgba(16, 185, 129, 0.2)',
+                                backgroundColor: 'rgba(16, 185, 129, 0.35)',
                                 borderColor: '#10B981',
+                                borderWidth: 3,
                                 pointBackgroundColor: '#10B981',
+                                pointBorderColor: '#ffffff',
+                                pointBorderWidth: 2,
+                                pointRadius: 5,
+                                pointHoverRadius: 7,
+                                pointHoverBackgroundColor: '#ffffff',
+                                pointHoverBorderColor: '#10B981',
+                                pointHoverBorderWidth: 3
                             }]
                         },
                         options: {
                             responsive: true,
                             maintainAspectRatio: false,
-                            scales: {
-                                r: {
-                                    angleLines: { color: gridColor },
-                                    grid: { color: gridColor },
-                                    pointLabels: { color: textColor },
-                                    ticks: { display: false, max: 100, min: 0 }
+                            plugins: {
+                                legend: { display: false },
+                                tooltip: {
+                                    backgroundColor: 'rgba(10, 10, 10, 0.9)',
+                                    titleColor: '#fff',
+                                    bodyColor: '#fff',
+                                    borderColor: 'rgba(16,185,129,0.3)',
+                                    borderWidth: 1,
+                                    padding: 12,
+                                    displayColors: false
                                 }
                             },
-                            plugins: {
-                                legend: { display: false }
+                            scales: {
+                                r: {
+                                    angleLines: { color: 'rgba(255,255,255,0.1)' },
+                                    grid: { color: 'rgba(255,255,255,0.05)' },
+                                    pointLabels: { 
+                                        color: 'rgba(255,255,255,0.8)', 
+                                        font: { size: 12, weight: '600' }
+                                    },
+                                    ticks: { display: false, max: 100, min: 0 }
+                                }
                             }
                         }
                     });
