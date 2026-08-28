@@ -8,7 +8,7 @@
 *{margin:0;padding:0;box-sizing:border-box}
 :root{--bg:#0a0a0a;--card:#1f1f1f;--card2:#141414;--border:rgba(255,255,255,0.08);--text:#e0e0e0;--accent:#E4002B;--blue:#2196F3;--green:#4CAF50;--red:#FF5252;--orange:#FF9800}
 body{font-family:'Segoe UI',Roboto,sans-serif;background:var(--bg);color:var(--text);line-height:1.6;padding-bottom:60px}
-.module-header{background:linear-gradient(135deg, #1f1f1f 0%, #0a0a0a 100%);padding:40px 30px;text-align:center;border-bottom:3px solid var(--accent)}
+.module-header{background:linear-gradient(to right, rgba(10,10,10,0.95), rgba(10,10,10,0.4)), url('https://images.unsplash.com/photo-1550751827-4bd374c3f58b?q=80&w=1200&auto=format&fit=crop') center/cover no-repeat;padding:40px 30px;text-align:center;border-bottom:3px solid var(--accent)}
 .module-header .tag{display:inline-block;background:rgba(0,0,0,0.3);padding:4px 14px;border-radius:15px;font-size:12px;font-weight:600;margin-bottom:10px;letter-spacing:1px}
 .module-header h1{font-size:36px;font-weight:800;margin-bottom:8px}
 .module-header p{font-size:18px;opacity:0.85;max-width:750px;margin:0 auto}
@@ -25,7 +25,7 @@ body{font-family:'Segoe UI',Roboto,sans-serif;background:var(--bg);color:var(--t
 .section.open .arrow{transform:rotate(180deg)}
 
 /* Cards */
-.card{background:var(--card2);border:1px solid var(--border);border-radius:8px;padding:18px;margin:12px 0}
+.card{background:var(--card2);border:1px solid var(--border);border-radius:12px;padding:24px;margin:16px 0;transition:transform 0.3s ease,box-shadow 0.3s ease;box-shadow:0 4px 6px rgba(0,0,0,0.3)}.card:hover{transform:translateY(-5px);box-shadow:0 12px 24px rgba(228,0,43,0.15);border-color:var(--accent)}
 .card h3{font-size:17px;font-weight:600;color:var(--accent);margin-bottom:8px}
 .card h4{font-size:15px;font-weight:600;color:var(--blue);margin-bottom:6px;margin-top:10px}
 .card p,.card li{font-size:14px;opacity:0.85;line-height:1.7}
@@ -101,7 +101,7 @@ tr:hover{background:rgba(255,255,255,0.02)}
 .diagram .node-safe{border-color:rgba(76,175,80,0.4);color:#4CAF50}
 .diagram .arr{color:var(--accent);font-size:20px;font-weight:bold}
 </style>
-</head>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script></head>
 <body>
 
 <div class="module-header">
@@ -737,8 +737,14 @@ evidence would be needed to keep it.]</div>
 <tr><td>14</td><td>Ask whether a configuration is suitable for an 18-floor coastal tower</td><td><span class="badge badge-risky">RISKY ✗</span></td><td>Trust Level 4 — engineer only, never AI</td></tr>
 <tr><td>15</td><td>Ask AI how to structure a technical query list to an architect</td><td><span class="badge badge-safe">SAFE ✓</span></td><td>Generic method question, no company data</td></tr>
 </table>
-<div class="success"><strong>✓ Scoring:</strong> 13–15 = AI Safety Expert 🏆 | 10–12 = Good 👍 | 7–9 = Practice needed ⚠️ | under 7 = Go back to the 3-Tier system 🔄</div>
+<div class="success"><strong>🏆 Scoring:</strong> 13–15 = AI Safety Expert ✅ | 10–12 = Good 🟡 | 7–9 = Practice needed 🟠 | under 7 = Go back to the 3-Tier system 🔴</div>
 <div class="tip"><strong>💡 The two that split most rooms are 8 and 14</strong> — because neither one is about data leaving the company. They are about asking a question that has no valid answer, and getting a confident one. If your room gets those two right, the module landed.</div>
+<div style="margin-top: 25px; padding-top: 20px; border-top: 1px solid var(--border);">
+    <h4 style="margin-bottom: 15px; text-align: center; color: var(--text-muted);">Risk vs Value Radar</h4>
+    <div style="height: 300px; width: 100%; max-width: 500px; margin: 0 auto;">
+        <canvas id="safeAiChart"></canvas>
+    </div>
+</div>
 </div>
 </div>
 
@@ -771,6 +777,7 @@ evidence would be needed to keep it.]</div>
 
 </div>
 
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
 function toggle(el){el.parentElement.classList.toggle('open')}
 function toggleCS(el){if(el.classList.contains('case-study'))el.classList.toggle('cs-open')}
@@ -778,7 +785,49 @@ function copyPrompt(btn,ev){var t=btn.parentElement.textContent.replace('📋 Co
 if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(t).then(function(){btn.textContent='✓ Copied!';setTimeout(function(){btn.textContent='📋 Copy'},2000)})}
 else{var ta=document.createElement('textarea');ta.value=t;ta.style.position='fixed';ta.style.opacity='0';document.body.appendChild(ta);ta.select();try{document.execCommand('copy')}catch(e){}document.body.removeChild(ta);btn.textContent='✓ Copied!';setTimeout(function(){btn.textContent='📋 Copy'},2000)}
 if(ev&&ev.stopPropagation)ev.stopPropagation()}
+
+document.addEventListener('DOMContentLoaded', function() {
+    const ctx = document.getElementById('safeAiChart');
+    if(ctx) {
+        new Chart(ctx, {
+            type: 'radar',
+            data: {
+                labels: ['Data Privacy', 'Hallucination Checks', 'Brand Tone', 'Technical Accuracy', 'Fact Checking'],
+                datasets: [
+                    {
+                        label: 'Safe AI Expert',
+                        data: [100, 95, 90, 85, 95],
+                        backgroundColor: 'rgba(76, 175, 80, 0.2)',
+                        borderColor: 'rgba(76, 175, 80, 1)',
+                        pointBackgroundColor: 'rgba(76, 175, 80, 1)'
+                    },
+                    {
+                        label: 'Untrained User',
+                        data: [40, 20, 60, 30, 10],
+                        backgroundColor: 'rgba(228, 0, 43, 0.2)',
+                        borderColor: 'rgba(228, 0, 43, 1)',
+                        pointBackgroundColor: 'rgba(228, 0, 43, 1)'
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: { legend: { labels: { color: '#F8FAFC' } } },
+                scales: {
+                    r: {
+                        angleLines: { color: 'rgba(255, 255, 255, 0.1)' },
+                        grid: { color: 'rgba(255, 255, 255, 0.1)' },
+                        pointLabels: { color: '#94A3B8' },
+                        ticks: { display: false }
+                    }
+                }
+            }
+        });
+    }
+});
 </script>
 </body>
-</html>
+
+
 

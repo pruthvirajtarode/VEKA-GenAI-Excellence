@@ -8,7 +8,7 @@
 *{margin:0;padding:0;box-sizing:border-box}
 :root{--bg:#0a0a0a;--card:#1f1f1f;--card2:#141414;--border:rgba(255,255,255,0.08);--text:#e0e0e0;--accent:#E4002B;--blue:#2196F3;--green:#4CAF50;--red:#FF5252;--orange:#FF9800}
 body{font-family:'Segoe UI',Roboto,sans-serif;background:var(--bg);color:var(--text);line-height:1.6;padding-bottom:60px}
-.module-header{background:linear-gradient(135deg, #1f1f1f 0%, #0a0a0a 100%);padding:40px 30px;text-align:center;border-bottom:3px solid var(--accent)}
+.module-header{background:linear-gradient(to right, rgba(10,10,10,0.95), rgba(10,10,10,0.4)), url('https://images.unsplash.com/photo-1551288049-bebda4e38f71?q=80&w=1200&auto=format&fit=crop') center/cover no-repeat;padding:40px 30px;text-align:center;border-bottom:3px solid var(--accent)}
 .module-header .tag{display:inline-block;background:rgba(0,0,0,0.3);padding:4px 14px;border-radius:15px;font-size:12px;font-weight:600;margin-bottom:10px;letter-spacing:1px}
 .module-header h1{font-size:36px;font-weight:800;margin-bottom:8px}
 .module-header p{font-size:18px;opacity:0.85;max-width:750px;margin:0 auto}
@@ -21,7 +21,7 @@ body{font-family:'Segoe UI',Roboto,sans-serif;background:var(--bg);color:var(--t
 .section-body{padding:0 24px 24px;display:none}
 .section.open .section-body{display:block}
 .section.open .arrow{transform:rotate(180deg)}
-.card{background:var(--card2);border:1px solid var(--border);border-radius:8px;padding:18px;margin:12px 0}
+.card{background:var(--card2);border:1px solid var(--border);border-radius:12px;padding:24px;margin:16px 0;transition:transform 0.3s ease,box-shadow 0.3s ease;box-shadow:0 4px 6px rgba(0,0,0,0.3)}.card:hover{transform:translateY(-5px);box-shadow:0 12px 24px rgba(228,0,43,0.15);border-color:var(--accent)}
 .card h3{font-size:17px;font-weight:600;color:var(--accent);margin-bottom:8px}
 .card h4{font-size:15px;font-weight:600;color:var(--blue);margin-bottom:6px;margin-top:10px}
 .card p,.card li{font-size:14px;opacity:0.85;line-height:1.7}
@@ -74,7 +74,7 @@ tr:hover{background:rgba(255,255,255,0.02)}
 .cb{background:rgba(0,0,0,0.2);border-radius:6px;padding:14px;margin:10px 0;font-size:14px}
 .cb h4{font-size:14px;margin-bottom:6px}
 </style>
-</head>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script></head>
 <body>
 
 <div class="module-header">
@@ -275,6 +275,12 @@ tr:hover{background:rgba(255,255,255,0.02)}
 <tr><td>Dealer-months with audit score &lt; 70</td><td style="text-align:right;color:#FF5252">24</td></tr>
 <tr><td>Risk level spread</td><td style="text-align:right">162 Low / 48 Med / 24 High / 6 Critical</td></tr>
 </table>
+<div style="margin-top: 25px; padding-top: 20px; border-top: 1px solid var(--border);">
+    <h4 style="margin-bottom: 15px; text-align: center; color: var(--text-muted);">Premium Mix Erosion: North vs West</h4>
+    <div style="height: 200px; width: 100%;">
+        <canvas id="mixErosionChart"></canvas>
+    </div>
+</div>
 </div>
 <div class="card">
 <h3>🚩 Red Flags (Don't Reveal Before the Demo!)</h3>
@@ -317,6 +323,12 @@ tr:hover{background:rgba(255,255,255,0.02)}
 <tr><td style="color:#4CAF50;font-weight:700">Dealer A</td><td>West</td><td>Metro</td><td>95.5%</td><td>−8.4%</td><td style="color:#4CAF50">95.2</td><td>0</td><td>17</td><td>🟢 Best</td></tr>
 <tr><td style="color:#4CAF50;font-weight:700">Dealer L</td><td>South</td><td>Metro</td><td>95.8%</td><td>−9.6%</td><td style="color:#4CAF50">94.7</td><td>0</td><td>26</td><td>🟢 Best</td></tr>
 </table>
+<div style="margin-top: 25px; padding-top: 20px; border-top: 1px solid var(--border);">
+    <h4 style="margin-bottom: 15px; text-align: center; color: var(--text-muted);">Top Risky Dealers: Audit vs Complaints</h4>
+    <div style="height: 250px; width: 100%;">
+        <canvas id="dealerRiskChart"></canvas>
+    </div>
+</div>
 <div class="warning"><strong>⚠️ Look at the "3-mo trend" column before the demo, facilitators.</strong> Almost every dealer is slightly negative, because months 10–12 are a seasonal low. Three dealers are catastrophically negative. That contrast is the single best teaching moment in this module — and it is also where AI most reliably gets it wrong. See Case Study 5.</div>
 </div>
 </div>
@@ -1098,7 +1110,87 @@ function cp(btn,ev){var t=btn.parentElement.textContent.replace('📋 Copy','').
 if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(t).then(function(){btn.textContent='✓ Copied!';setTimeout(function(){btn.textContent='📋 Copy'},2000)})}
 else{var ta=document.createElement('textarea');ta.value=t;ta.style.position='fixed';ta.style.opacity='0';document.body.appendChild(ta);ta.select();try{document.execCommand('copy')}catch(e){}document.body.removeChild(ta);btn.textContent='✓ Copied!';setTimeout(function(){btn.textContent='📋 Copy'},2000)}
 if(ev&&ev.stopPropagation)ev.stopPropagation()}
+
+document.addEventListener('DOMContentLoaded', function() {
+    const riskCtx = document.getElementById('dealerRiskChart');
+    if(riskCtx) {
+        new Chart(riskCtx, {
+            type: 'bar',
+            data: {
+                labels: ['Dealer Q', 'Dealer B', 'Dealer T', 'Dealer J', 'Dealer A'],
+                datasets: [
+                    {
+                        label: 'Audit Score',
+                        data: [62.3, 63.3, 84.3, 82.2, 95.2],
+                        backgroundColor: 'rgba(255, 255, 255, 0.2)',
+                        borderColor: 'rgba(255, 255, 255, 0.5)',
+                        borderWidth: 1
+                    },
+                    {
+                        label: 'Complaints',
+                        data: [35, 26, 22, 20, 17],
+                        backgroundColor: 'rgba(228, 0, 43, 0.8)',
+                        borderColor: 'rgba(228, 0, 43, 1)',
+                        borderWidth: 1
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { labels: { color: '#F8FAFC' } }
+                },
+                scales: {
+                    y: { beginAtZero: true, grid: { color: 'rgba(255, 255, 255, 0.1)' }, ticks: { color: '#94A3B8' } },
+                    x: { grid: { display: false }, ticks: { color: '#94A3B8' } }
+                }
+            }
+        });
+    }
+
+    const mixCtx = document.getElementById('mixErosionChart');
+    if(mixCtx) {
+        new Chart(mixCtx, {
+            type: 'line',
+            data: {
+                labels: ['Month 1', 'Month 3', 'Month 6', 'Month 9', 'Month 12'],
+                datasets: [
+                    {
+                        label: 'West (Stable)',
+                        data: [34.5, 34.2, 34.8, 34.5, 34.5],
+                        borderColor: 'rgba(76, 175, 80, 1)',
+                        backgroundColor: 'rgba(76, 175, 80, 0.2)',
+                        tension: 0.4,
+                        fill: true
+                    },
+                    {
+                        label: 'North (Eroding)',
+                        data: [30.8, 28.5, 24.1, 20.3, 17.1],
+                        borderColor: 'rgba(228, 0, 43, 1)',
+                        backgroundColor: 'rgba(228, 0, 43, 0.2)',
+                        tension: 0.4,
+                        fill: true
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { labels: { color: '#F8FAFC' } }
+                },
+                scales: {
+                    y: { beginAtZero: false, min: 10, max: 40, grid: { color: 'rgba(255, 255, 255, 0.1)' }, ticks: { color: '#94A3B8' } },
+                    x: { grid: { display: false }, ticks: { color: '#94A3B8' } }
+                }
+            }
+        });
+    }
+});
 </script>
 </body>
 </html>
+
+
 

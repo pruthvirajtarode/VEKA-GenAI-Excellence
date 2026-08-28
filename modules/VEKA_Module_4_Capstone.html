@@ -8,7 +8,7 @@
 *{margin:0;padding:0;box-sizing:border-box}
 :root{--bg:#0a0a0a;--card:#1f1f1f;--card2:#141414;--border:rgba(255,255,255,0.08);--text:#e0e0e0;--accent:#E4002B;--blue:#2196F3;--green:#4CAF50;--red:#FF5252;--orange:#FF9800;--purple:#9C27B0;--tool:#3FA9C9}
 body{font-family:'Segoe UI',Roboto,sans-serif;background:var(--bg);color:var(--text);line-height:1.6;padding-bottom:60px}
-.module-header{background:linear-gradient(135deg, #1f1f1f 0%, #0a0a0a 100%);padding:40px 30px;text-align:center;border-bottom:3px solid var(--accent)}
+.module-header{background:linear-gradient(to right, rgba(10,10,10,0.95), rgba(10,10,10,0.4)), url('https://images.unsplash.com/photo-1451187580459-43490279c0fa?q=80&w=1200&auto=format&fit=crop') center/cover no-repeat;padding:40px 30px;text-align:center;border-bottom:3px solid var(--accent)}
 .module-header .tag{display:inline-block;background:rgba(0,0,0,0.3);padding:4px 14px;border-radius:15px;font-size:12px;font-weight:600;margin-bottom:10px;letter-spacing:1px}
 .module-header h1{font-size:36px;font-weight:800;margin-bottom:8px}
 .module-header p{font-size:18px;opacity:0.85;max-width:750px;margin:0 auto}
@@ -21,7 +21,7 @@ body{font-family:'Segoe UI',Roboto,sans-serif;background:var(--bg);color:var(--t
 .section-body{padding:0 24px 24px;display:none}
 .section.open .section-body{display:block}
 .section.open .arrow{transform:rotate(180deg)}
-.card{background:var(--card2);border:1px solid var(--border);border-radius:8px;padding:18px;margin:12px 0}
+.card{background:var(--card2);border:1px solid var(--border);border-radius:12px;padding:24px;margin:16px 0;transition:transform 0.3s ease,box-shadow 0.3s ease;box-shadow:0 4px 6px rgba(0,0,0,0.3)}.card:hover{transform:translateY(-5px);box-shadow:0 12px 24px rgba(228,0,43,0.15);border-color:var(--accent)}
 .card h3{font-size:17px;font-weight:600;color:var(--accent);margin-bottom:8px}
 .card h4{font-size:15px;font-weight:600;color:var(--tool);margin-bottom:6px;margin-top:10px}
 .card p,.card li{font-size:14px;opacity:0.85;line-height:1.7}
@@ -74,7 +74,7 @@ tr:hover{background:rgba(255,255,255,0.02)}
 .cst-live{background:rgba(76,175,80,0.15);color:#4CAF50}
 .cst-team{background:rgba(156,39,176,0.15);color:#CE93D8}
 </style>
-</head>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script></head>
 <body>
 
 <div class="module-header">
@@ -690,6 +690,12 @@ FORMATTING:
 <tr><td style="color:var(--tool);font-weight:600">M4: Agents</td><td style="color:var(--tool)">Build custom assistants your department uses in Teams</td><td style="color:var(--tool)">Your best prompt stops living only in your head</td></tr>
 </table>
 <div class="tip"><strong>💡 The honest summary:</strong> Modules 1–2 made you faster. Module 3 made you safe. Module 4 makes it survive you being on leave.</div>
+<div style="margin-top: 25px; padding-top: 20px; border-top: 1px solid var(--border);">
+    <h4 style="margin-bottom: 15px; text-align: center; color: var(--text-muted);">Agent ROI: Time vs Build Effort</h4>
+    <div style="height: 250px; width: 100%; max-width: 400px; margin: 0 auto;">
+        <canvas id="roiChart"></canvas>
+    </div>
+</div>
 </div>
 
 <div class="card">
@@ -760,7 +766,38 @@ function cp(btn,ev){var t=btn.parentElement.textContent.replace('📋 Copy','').
 if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(t).then(function(){btn.textContent='✓ Copied!';setTimeout(function(){btn.textContent='📋 Copy'},2000)})}
 else{var ta=document.createElement('textarea');ta.value=t;ta.style.position='fixed';ta.style.opacity='0';document.body.appendChild(ta);ta.select();try{document.execCommand('copy')}catch(e){}document.body.removeChild(ta);btn.textContent='✓ Copied!';setTimeout(function(){btn.textContent='📋 Copy'},2000)}
 if(ev&&ev.stopPropagation)ev.stopPropagation()}
+
+document.addEventListener('DOMContentLoaded', function() {
+    const ctx = document.getElementById('roiChart');
+    if(ctx) {
+        new Chart(ctx, {
+            type: 'doughnut',
+            data: {
+                labels: ['Time Building Agent (1x)', 'Time Maintained (Low)', 'Time Saved Annually (High)'],
+                datasets: [{
+                    data: [15, 10, 75],
+                    backgroundColor: [
+                        'rgba(255, 152, 0, 0.8)',
+                        'rgba(255, 255, 255, 0.4)',
+                        'rgba(76, 175, 80, 0.8)'
+                    ],
+                    borderColor: 'rgba(0, 0, 0, 0.5)',
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { position: 'bottom', labels: { color: '#F8FAFC' } }
+                }
+            }
+        });
+    }
+});
 </script>
 </body>
 </html>
+
+
 

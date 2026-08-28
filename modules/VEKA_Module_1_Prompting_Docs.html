@@ -8,7 +8,7 @@
 *{margin:0;padding:0;box-sizing:border-box}
 :root{--bg:#0a0a0a;--card:#1f1f1f;--card2:#141414;--border:rgba(255,255,255,0.08);--text:#e0e0e0;--accent:#E4002B;--blue:#2196F3;--green:#4CAF50;--red:#FF5252;--orange:#FF9800;--purple:#9C27B0}
 body{font-family:'Segoe UI',Roboto,sans-serif;background:var(--bg);color:var(--text);line-height:1.6;padding-bottom:60px}
-.module-header{background:linear-gradient(135deg, #1f1f1f 0%, #0a0a0a 100%);padding:40px 30px;text-align:center;border-bottom:3px solid var(--accent)}
+.module-header{background:linear-gradient(to right, rgba(10,10,10,0.95), rgba(10,10,10,0.4)), url('https://images.unsplash.com/photo-1620712943543-bcc4688e7485?q=80&w=1200&auto=format&fit=crop') center/cover no-repeat;padding:40px 30px;text-align:center;border-bottom:3px solid var(--accent)}
 .module-header .tag{display:inline-block;background:rgba(0,0,0,0.3);padding:4px 14px;border-radius:15px;font-size:12px;font-weight:600;margin-bottom:10px;letter-spacing:1px}
 .module-header h1{font-size:36px;font-weight:800;margin-bottom:8px}
 .module-header p{font-size:18px;opacity:0.85;max-width:750px;margin:0 auto}
@@ -25,7 +25,7 @@ body{font-family:'Segoe UI',Roboto,sans-serif;background:var(--bg);color:var(--t
 .section.open .arrow{transform:rotate(180deg)}
 
 /* Cards */
-.card{background:var(--card2);border:1px solid var(--border);border-radius:8px;padding:18px;margin:12px 0}
+.card{background:var(--card2);border:1px solid var(--border);border-radius:12px;padding:24px;margin:16px 0;transition:transform 0.3s ease,box-shadow 0.3s ease;box-shadow:0 4px 6px rgba(0,0,0,0.3)}.card:hover{transform:translateY(-5px);box-shadow:0 12px 24px rgba(228,0,43,0.15);border-color:var(--accent)}
 .card h3{font-size:17px;font-weight:600;color:var(--accent);margin-bottom:8px}
 .card h4{font-size:15px;font-weight:600;color:var(--blue);margin-bottom:6px;margin-top:10px}
 .card p,.card li{font-size:14px;opacity:0.85;line-height:1.7}
@@ -113,7 +113,7 @@ tr:hover{background:rgba(255,255,255,0.02)}
 .diagram .node-safe{border-color:rgba(76,175,80,0.4);color:#4CAF50}
 .diagram .arr{color:var(--accent);font-size:20px;font-weight:bold}
 </style>
-</head>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script></head>
 <body>
 
 <div class="module-header">
@@ -163,6 +163,13 @@ tr:hover{background:rgba(255,255,255,0.02)}
 <tr><td>01:55 – 02:00</td><td>Takeaways + pick the one task you'll run this week</td><td>Whole room</td></tr>
 </table>
 <div class="tip"><strong>💡 Trainer:</strong> Part 3 is where the room converts from watching to doing. If Parts 1 and 2 overrun, cut Part 1 — the theory lands better after people have felt a prompt fail.</div>
+
+<div style="margin-top: 25px; padding-top: 20px; border-top: 1px solid var(--border);">
+    <h4 style="margin-bottom: 15px; text-align: center; color: var(--text-muted);">Estimated Time Saved per Task</h4>
+    <div style="height: 200px; width: 100%;">
+        <canvas id="timeSavedChart"></canvas>
+    </div>
+</div>
 </div>
 </div>
 </div>
@@ -179,11 +186,17 @@ tr:hover{background:rgba(255,255,255,0.02)}
 <p>AI is very good at <strong>transforming text you give it</strong>. It is unreliable at <strong>supplying facts you didn't give it</strong>. Almost every good use and every disaster in this programme comes from that one distinction.</p>
 <div class="diagram">
 <div class="flow">
-<div class="node node-safe">You supply the facts<br/><span style="font-size:11px;opacity:0.7">AI structures, drafts, reformats</span></div>
+<div class="node node-safe" onclick="toggleNodeInfo('node1')" style="cursor:pointer; transition:transform 0.2s;">You supply the facts<br/><span style="font-size:11px;opacity:0.7">AI structures, drafts, reformats</span></div>
 <div class="arr">vs</div>
-<div class="node node-danger">AI supplies the facts<br/><span style="font-size:11px;opacity:0.7">it invents, confidently</span></div>
+<div class="node node-danger" onclick="toggleNodeInfo('node2')" style="cursor:pointer; transition:transform 0.2s;">AI supplies the facts<br/><span style="font-size:11px;opacity:0.7">it invents, confidently</span></div>
 </div>
-<p style="font-size:13px;opacity:0.7;margin-top:12px">Every prompt you write should push the work towards the green side.</p>
+<div id="node1-info" style="display:none; background:rgba(76,175,80,0.1); border-left:3px solid var(--green); padding:15px; margin-top:15px; text-align:left; border-radius:4px; font-size:14px; animation:fadeIn 0.3s ease;">
+    <strong>✅ Best Practice:</strong> When you provide the exact context (dealer history, specific data points), the AI acts strictly as an intelligent formatter and editor. This eliminates hallucinations.
+</div>
+<div id="node2-info" style="display:none; background:rgba(228,0,43,0.1); border-left:3px solid var(--accent); padding:15px; margin-top:15px; text-align:left; border-radius:4px; font-size:14px; animation:fadeIn 0.3s ease;">
+    <strong>❌ High Risk:</strong> If you ask the AI to "write a sales pitch for a generic uPVC window," it will invent facts, numbers, and features that may not apply to VEKA products at all.
+</div>
+<p style="font-size:13px;opacity:0.7;margin-top:12px">Every prompt you write should push the work towards the green side. <em>(Click nodes for details)</em></p>
 </div>
 </div>
 
@@ -1131,6 +1144,7 @@ you include specific items.</div>
 
 </div>
 
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
 function toggle(el){el.parentElement.classList.toggle('open')}
 function toggleCS(el){if(el.classList.contains('case-study'))el.classList.toggle('cs-open')}
@@ -1138,7 +1152,65 @@ function copyPrompt(btn,ev){var t=btn.parentElement.textContent.replace('📋 Co
 if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(t).then(function(){btn.textContent='✓ Copied!';setTimeout(function(){btn.textContent='📋 Copy'},2000)})}
 else{var ta=document.createElement('textarea');ta.value=t;ta.style.position='fixed';ta.style.opacity='0';document.body.appendChild(ta);ta.select();try{document.execCommand('copy')}catch(e){}document.body.removeChild(ta);btn.textContent='✓ Copied!';setTimeout(function(){btn.textContent='📋 Copy'},2000)}
 if(ev&&ev.stopPropagation)ev.stopPropagation()}
+
+function toggleNodeInfo(id) {
+    const info = document.getElementById(id + '-info');
+    if (info.style.display === 'none') {
+        document.getElementById('node1-info').style.display = 'none';
+        document.getElementById('node2-info').style.display = 'none';
+        document.getElementById('node3-info').style.display = 'none';
+        info.style.display = 'block';
+    } else {
+        info.style.display = 'none';
+    }
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+    const ctx = document.getElementById('timeSavedChart');
+    if(ctx) {
+        new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: ['Email Drafting', 'Data Summarization', 'Meeting Notes', 'Proposal Structuring'],
+                datasets: [
+                    {
+                        label: 'Manual (Minutes)',
+                        data: [15, 45, 30, 60],
+                        backgroundColor: 'rgba(255, 255, 255, 0.2)',
+                        borderColor: 'rgba(255, 255, 255, 0.4)',
+                        borderWidth: 1
+                    },
+                    {
+                        label: 'With AI (Minutes)',
+                        data: [3, 5, 8, 12],
+                        backgroundColor: 'rgba(228, 0, 43, 0.8)',
+                        borderColor: 'rgba(228, 0, 43, 1)',
+                        borderWidth: 1
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { labels: { color: '#F8FAFC' } }
+                },
+                scales: {
+                    y: { beginAtZero: true, grid: { color: 'rgba(255, 255, 255, 0.1)' }, ticks: { color: '#94A3B8' } },
+                    x: { grid: { display: false }, ticks: { color: '#94A3B8' } }
+                }
+            }
+        });
+    }
+});
 </script>
+<style>
+.node:hover {
+    cursor: pointer;
+    transform: scale(1.05);
+    box-shadow: 0 4px 12px rgba(228, 0, 43, 0.3);
+}
+</style>
 </body>
-</html>
+
 
