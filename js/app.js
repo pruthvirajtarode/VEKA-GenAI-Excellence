@@ -1577,12 +1577,12 @@ class App {
                     </div>
                     
                     <div class="card flex flex-col items-center justify-center relative overflow-hidden">
-                        <div class="absolute" style="top: -10px; right: 10px; font-size: 8rem; opacity: 0.15; pointer-events: none;">⏱️</div>
-                        <div class="text-muted text-sm uppercase tracking-wider mb-4 font-bold border-b border-border pb-2 w-full text-center">Total Estimated Time Saved</div>
-                        <div class="text-accent flex items-baseline gap-2 mt-4">
+                        <div class="absolute" style="top: -10px; right: 10px; font-size: 8rem; opacity: 0.7; pointer-events: none; filter: drop-shadow(0px 4px 10px rgba(0,0,0,0.5));">⏱️</div>
+                        <div class="text-muted text-sm uppercase tracking-wider mb-4 font-bold border-b border-border pb-2 w-full text-center relative z-10">Total Estimated Time Saved</div>
+                        <div class="text-accent flex items-baseline gap-2 mt-4 relative z-10">
                             <span style="font-size: 5rem; font-weight: 800; line-height: 1;">${total}</span>
                         </div>
-                        <div class="text-muted mt-2 font-medium">Minutes this month</div>
+                        <div class="text-muted mt-2 font-medium relative z-10">Minutes this month</div>
                         
                         ${recentEntriesHTML}
                     </div>
