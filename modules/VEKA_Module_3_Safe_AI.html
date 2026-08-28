@@ -826,8 +826,45 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 });
-</script>
+
+document.addEventListener('DOMContentLoaded', function() {
+    // Progressive Disclosure for Flow Diagrams
+    document.querySelectorAll('.flow').forEach(flow => {
+        if(flow.textContent.includes('vs') && flow.children.length === 3) return;
+        const children = Array.from(flow.children);
+        for(let i = 1; i < children.length; i++) {
+            children[i].style.opacity = '0.15';
+            children[i].style.pointerEvents = 'none';
+            children[i].style.transition = 'all 0.4s ease';
+            children[i].style.transform = 'translateX(-10px)';
+        }
+        children[0].style.cursor = 'pointer';
+        children[0].style.transition = 'all 0.3s ease';
+        children[0].title = 'Click to reveal next step';
+        children.forEach((child, index) => {
+            if(child.classList.contains('node')) {
+                child.addEventListener('click', () => {
+                    child.style.borderColor = 'var(--accent)';
+                    child.style.background = 'rgba(228, 0, 43, 0.1)';
+                    child.style.boxShadow = '0 0 15px rgba(228, 0, 43, 0.2)';
+                    if(index + 1 < children.length) {
+                        children[index + 1].style.opacity = '1';
+                        children[index + 1].style.transform = 'translateX(0)';
+                    }
+                    if(index + 2 < children.length) {
+                        children[index + 2].style.opacity = '1';
+                        children[index + 2].style.pointerEvents = 'auto';
+                        children[index + 2].style.cursor = 'pointer';
+                        children[index + 2].style.transform = 'translateX(0)';
+                        children[index + 2].title = 'Click to reveal next step';
+                    }
+                });
+            }
+        });
+    });
+});</script>
 </body>
+
 
 
 
