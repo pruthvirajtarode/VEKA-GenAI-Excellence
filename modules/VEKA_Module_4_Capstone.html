@@ -1,0 +1,765 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>M4: Capstone — Build Your VEKA AI Assistant | VEKA GenAI Excellence</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--bg:#0f0f1a;--card:#1a1a2e;--card2:#16213e;--border:rgba(255,255,255,0.08);--text:#e0e0e0;--accent:#FF5A66;--blue:#2196F3;--green:#4CAF50;--red:#FF5252;--orange:#FF9800;--purple:#9C27B0;--tool:#3FA9C9}
+body{font-family:'Segoe UI',Roboto,sans-serif;background:var(--bg);color:var(--text);line-height:1.6;padding-bottom:60px}
+.module-header{background:linear-gradient(135deg,#B3121F 0%,#8E0E18 50%,#5E0910 100%);padding:40px 30px;text-align:center;border-bottom:3px solid var(--accent)}
+.module-header .tag{display:inline-block;background:rgba(0,0,0,0.3);padding:4px 14px;border-radius:15px;font-size:12px;font-weight:600;margin-bottom:10px;letter-spacing:1px}
+.module-header h1{font-size:36px;font-weight:800;margin-bottom:8px}
+.module-header p{font-size:18px;opacity:0.85;max-width:750px;margin:0 auto}
+.container{max-width:1000px;margin:0 auto;padding:20px}
+.section{background:var(--card);border:1px solid var(--border);border-radius:12px;margin:20px 0;overflow:hidden}
+.section-head{padding:18px 24px;cursor:pointer;display:flex;align-items:center;justify-content:space-between;transition:background 0.2s}
+.section-head:hover{background:rgba(255,255,255,0.03)}
+.section-head h2{font-size:20px;font-weight:700;display:flex;align-items:center;gap:10px}
+.section-head .arrow{font-size:18px;opacity:0.5;transition:transform 0.3s}
+.section-body{padding:0 24px 24px;display:none}
+.section.open .section-body{display:block}
+.section.open .arrow{transform:rotate(180deg)}
+.card{background:var(--card2);border:1px solid var(--border);border-radius:8px;padding:18px;margin:12px 0}
+.card h3{font-size:17px;font-weight:600;color:var(--accent);margin-bottom:8px}
+.card h4{font-size:15px;font-weight:600;color:var(--tool);margin-bottom:6px;margin-top:10px}
+.card p,.card li{font-size:14px;opacity:0.85;line-height:1.7}
+.card ul{list-style:none;margin:8px 0}
+.card ul li{padding:4px 0 4px 22px;position:relative}
+.card ul li:before{content:"▸";position:absolute;left:0;color:var(--accent);font-weight:bold}
+.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:15px}
+.grid-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:15px}
+@media(max-width:768px){.grid-2,.grid-3{grid-template-columns:1fr}}
+.stats{display:flex;gap:15px;flex-wrap:wrap;margin:15px 0}
+.stat{background:var(--card2);border:1px solid var(--border);border-radius:8px;padding:15px;text-align:center;flex:1;min-width:120px}
+.stat .n{font-size:28px;font-weight:800;color:var(--accent);display:block}
+.stat .l{font-size:12px;opacity:0.7}
+table{width:100%;border-collapse:collapse;margin:12px 0;font-size:13px}
+th{background:rgba(255,255,255,0.08);padding:10px 12px;text-align:left;font-weight:600;border-bottom:2px solid var(--border)}
+td{padding:8px 12px;border-bottom:1px solid var(--border)}
+tr:hover{background:rgba(255,255,255,0.02)}
+.tip{background:rgba(255,90,102,0.08);border-left:3px solid var(--accent);padding:12px 16px;margin:12px 0;border-radius:0 8px 8px 0;font-size:14px}
+.warning{background:rgba(255,82,82,0.08);border-left:3px solid var(--red);padding:12px 16px;margin:12px 0;border-radius:0 8px 8px 0;font-size:14px}
+.success{background:rgba(76,175,80,0.08);border-left:3px solid var(--green);padding:12px 16px;margin:12px 0;border-radius:0 8px 8px 0;font-size:14px}
+.info-box{background:rgba(63,169,201,0.08);border-left:3px solid var(--tool);padding:12px 16px;margin:12px 0;border-radius:0 8px 8px 0;font-size:14px}
+.prompt{background:#1e1e2e;border:2px solid #69F0AE;border-radius:8px;padding:16px;margin:12px 0;font-family:'Courier New',monospace;font-size:13px;color:#a6e3a1;line-height:1.5;white-space:pre-wrap;position:relative;max-height:500px;overflow-y:auto}
+.prompt-label{display:inline-block;background:#69F0AE;color:#1e1e2e;padding:3px 12px;border-radius:15px;font-size:11px;font-weight:700;margin-bottom:8px;font-family:'Segoe UI',sans-serif}
+.ms-label{display:inline-block;background:var(--tool);color:#08202a;padding:3px 12px;border-radius:15px;font-size:11px;font-weight:700;margin-bottom:8px;font-family:'Segoe UI',sans-serif}
+.copy-btn{position:absolute;top:10px;right:10px;background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.2);color:#69F0AE;padding:4px 12px;border-radius:5px;cursor:pointer;font-size:11px;font-family:'Segoe UI',sans-serif}
+.exercise{background:rgba(63,169,201,0.08);border:2px solid rgba(63,169,201,0.2);border-radius:8px;padding:18px;margin:12px 0}
+.exercise h3{color:var(--tool);font-size:16px;margin-bottom:8px}
+.step-box{background:rgba(0,0,0,0.25);border-radius:10px;padding:20px;margin:15px 0;border-left:4px solid var(--tool);position:relative}
+.step-num{position:absolute;top:-12px;left:15px;background:var(--tool);color:#08202a;width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:14px}
+.step-box h3{color:white;margin-bottom:8px;margin-left:25px;font-size:16px}
+.step-box p{font-size:14px;opacity:0.85}
+.diagram{background:rgba(0,0,0,0.3);border-radius:10px;padding:20px;margin:15px 0;text-align:center}
+.diagram .flow{display:flex;align-items:center;justify-content:center;gap:8px;flex-wrap:wrap;margin:10px 0}
+.diagram .node{background:rgba(63,169,201,0.15);border:1px solid rgba(63,169,201,0.3);border-radius:8px;padding:10px 16px;font-size:13px;font-weight:600;color:var(--tool)}
+.diagram .arr{color:var(--accent);font-size:20px;font-weight:bold}
+.badge{display:inline-block;padding:3px 10px;border-radius:12px;font-size:11px;font-weight:700}
+.badge-ms{background:rgba(63,169,201,0.15);color:var(--tool);border:1px solid rgba(63,169,201,0.3)}
+.badge-time{background:rgba(33,150,243,0.15);color:var(--blue);border:1px solid rgba(33,150,243,0.3)}
+.badge-impact{background:rgba(255,90,102,0.15);color:var(--accent);border:1px solid rgba(255,90,102,0.3)}
+.cs{background:var(--card2);border:1px solid var(--border);border-radius:10px;margin:16px 0;overflow:hidden}
+.cs-head{padding:14px 18px;cursor:pointer;display:flex;align-items:center;justify-content:space-between}
+.cs-head:hover{background:rgba(255,255,255,0.03)}
+.cs-head h3{font-size:16px;font-weight:600;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.cs-head .csa{font-size:14px;opacity:0.4;transition:transform 0.3s}
+.cs-body{padding:0 18px 18px;display:none}
+.cs.cso .cs-body{display:block}
+.cs.cso .csa{transform:rotate(180deg)}
+.cst{font-size:11px;padding:2px 8px;border-radius:10px;font-weight:600}
+.cst-agent{background:rgba(63,169,201,0.15);color:var(--tool)}
+.cst-live{background:rgba(76,175,80,0.15);color:#4CAF50}
+.cst-team{background:rgba(156,39,176,0.15);color:#CE93D8}
+</style>
+</head>
+<body>
+
+<div class="module-header">
+<div class="tag">SESSION 4 — CAPSTONE</div>
+<h1>M4: Build Your VEKA AI Assistant</h1>
+<p>Create a custom AI agent for VEKA — from blank canvas to a working assistant your team can use daily, grounded on your own documents and governed by the Module 3 safety rules</p>
+</div>
+
+<div class="container">
+
+<!-- OBJECTIVES -->
+<div class="section open">
+<div class="section-head" onclick="toggle(this)"><h2>🎯 What You'll Build</h2><span class="arrow">▼</span></div>
+<div class="section-body">
+<div class="stats">
+<div class="stat"><span class="n">120</span><span class="l">Minutes</span></div>
+<div class="stat"><span class="n">3</span><span class="l">Agents Built</span></div>
+<div class="stat"><span class="n">0</span><span class="l">Code Required</span></div>
+<div class="stat"><span class="n">Teams</span><span class="l">Deployed To</span></div>
+</div>
+<div class="card"><p>By the end of this module, you will:</p><ul>
+<li>Understand the difference between chat prompting, a lightweight agent builder, and a full agent platform</li>
+<li>Create a custom AI agent using natural language — no code</li>
+<li>Ground your agent on VEKA documents (SharePoint, Excel, technical PDFs)</li>
+<li>Write effective agent instructions that control tone, scope, and output format</li>
+<li>Add knowledge sources (system data sheets, dealer lists, HR policy, report templates)</li>
+<li>Test your agent in the preview panel before anyone else sees it</li>
+<li>Publish your agent to Microsoft Teams so your department can use it</li>
+<li>Design 3 fenestration-specific agents for VEKA</li>
+</ul></div>
+
+<div class="info-box"><strong>Prerequisites:</strong> An active Microsoft 365 Copilot licence and access to <strong>copilotstudio.microsoft.com</strong> or the agent builder inside Copilot Chat. Completion of Modules 1–3 (prompting, data &amp; ops, safe AI).</div>
+
+<div class="tip"><strong>💡 If VEKA's stack is different:</strong> the same three components — instructions, knowledge, actions — apply to a Custom GPT, a Claude Project, or a Gemini Gem. Swap the platform, keep every instruction block on this page. Your trainer will tell you which tool the room is using before Part 2.</div>
+
+<div class="card">
+<h3>Run of Show — 120 Minutes</h3>
+<table>
+<tr><th>Time</th><th>Block</th><th>Mode</th></tr>
+<tr><td>00:00 – 00:15</td><td>Part 1 — What an agent actually is, and the anatomy walkthrough</td><td>Trainer</td></tr>
+<tr><td>00:15 – 00:35</td><td>Part 2 — Build Agent #1 together, step by step, everyone follows</td><td>Guided build</td></tr>
+<tr><td>00:35 – 00:50</td><td>Part 3 — Agent #2, less hand-holding</td><td>Guided build</td></tr>
+<tr><td>00:50 – 01:00</td><td>Break</td><td>—</td></tr>
+<tr><td>01:00 – 01:12</td><td>Part 4 — Agent #3 walkthrough + Part 6 best practices</td><td>Trainer</td></tr>
+<tr><td>01:12 – 01:42</td><td>Part 5 — Team challenge: build your department's own agent</td><td>Teams of 3–4</td></tr>
+<tr><td>01:42 – 02:00</td><td>Demos (5 min per team) + Part 7 roadmap + commitment cards</td><td>Whole room</td></tr>
+</table>
+<div class="warning"><strong>⚠️ Trainer:</strong> Part 5 is the block that gets eaten when earlier parts run long. Protect it. A room that watched three agents get built but never built one themselves will not build one on Monday.</div>
+</div>
+</div>
+</div>
+
+<!-- PART 1: THEORY -->
+<div class="section open">
+<div class="section-head" onclick="toggle(this)"><h2>🧠 Part 1: What is an AI Agent?</h2><span class="arrow">▼</span></div>
+<div class="section-body">
+
+<div class="card">
+<h3>From Chat Prompting to a Custom Agent — The Evolution</h3>
+<p>In Modules 1–3 you used AI chat — typing prompts one at a time and getting responses. That's powerful, but it requires you to remember the right prompt every time, and it means your best prompt lives in your own head. An <strong>agent</strong> is the next level: a custom assistant that already knows its job, has access to your company documents, and follows your rules — without anyone needing to write a prompt from scratch.</p>
+<div class="diagram">
+<p style="font-size:13px;opacity:0.7;margin-bottom:10px">The evolution of AI at VEKA:</p>
+<div class="flow">
+<div class="node">Module 1–3<br/><span style="font-size:11px;opacity:0.7">Manual prompting</span></div>
+<div class="arr">→</div>
+<div class="node">Module 4<br/><span style="font-size:11px;opacity:0.7">Custom agents</span></div>
+<div class="arr">→</div>
+<div class="node">Future<br/><span style="font-size:11px;opacity:0.7">Automated workflows</span></div>
+</div>
+</div>
+<div class="tip"><strong>💡 The real shift:</strong> a good prompt makes <em>you</em> faster. A good agent makes <em>your whole department</em> faster, including the people who never attended this workshop.</div>
+</div>
+
+<div class="card">
+<h3>Three Ways to Build Agents at VEKA</h3>
+<table>
+<tr><th>Method</th><th>What It Is</th><th>Best For</th><th>Skill Level</th></tr>
+<tr><td style="color:var(--tool);font-weight:600">Copilot Agent Builder<br/>(M365 Chat)</td><td>Lightweight builder inside Microsoft 365 Copilot Chat. Create simple agents grounded on a document or SharePoint site.</td><td>Quick personal agents, document Q&amp;A, simple assistants</td><td>Beginner — describe in natural language</td></tr>
+<tr><td style="color:var(--tool);font-weight:600">Copilot Studio<br/>(copilotstudio.microsoft.com)</td><td>Full-featured platform for production agents. Topics, generative answers, Power Automate flows, multi-channel publishing.</td><td>Department-wide agents, workflow automation, enterprise deployment</td><td>Intermediate — visual builder, no code</td></tr>
+<tr><td style="color:var(--tool);font-weight:600">Agent platform + code<br/>(Pro developers)</td><td>Custom engine agents with APIs, custom connectors, integration into ERP or the dealer portal. Full control over every aspect.</td><td>Complex integrations, live SAP/ERP data, customer-facing tools</td><td>Advanced — requires a development team</td></tr>
+</table>
+<div class="tip"><strong>💡 Today's Focus:</strong> we'll use <strong>Agent Builder</strong> (quick wins) and <strong>Copilot Studio</strong> (production agents). No coding required.</div>
+</div>
+
+<div class="card">
+<h3>Anatomy of an Agent</h3>
+<p>Every agent has 3 core components:</p>
+<div class="grid-3">
+<div style="background:rgba(63,169,201,0.08);padding:15px;border-radius:8px;border-top:3px solid var(--tool)">
+<h4 style="color:var(--tool)">📝 Instructions</h4>
+<p>Who the agent is, how it behaves, what tone it uses, what it should and shouldn't do. Like writing a job description for an AI colleague.</p>
+</div>
+<div style="background:rgba(255,90,102,0.06);padding:15px;border-radius:8px;border-top:3px solid var(--accent)">
+<h4 style="color:var(--accent)">📚 Knowledge</h4>
+<p>Documents, SharePoint sites, Excel files, PDFs the agent can reference. This is what makes it "know" about VEKA — grounded on YOUR data, not the internet's.</p>
+</div>
+<div style="background:rgba(76,175,80,0.08);padding:15px;border-radius:8px;border-top:3px solid var(--green)">
+<h4 style="color:var(--green)">⚡ Actions</h4>
+<p>Things the agent can DO — run a Power Automate flow, log an enquiry, create a task, send a draft email. Turns the agent from answering questions to completing work.</p>
+</div>
+</div>
+<div class="info-box"><strong>Today you build components 1 and 2.</strong> Actions need IT involvement and a connector, so they're a Phase 2 conversation. An agent with good instructions and the right knowledge is already worth deploying.</div>
+</div>
+
+<div class="card">
+<h3>Carrying Module 3 Into Your Agent</h3>
+<p>Everything from Safe AI still applies — but now it goes into the instructions <em>once</em> instead of into every prompt. That's the main safety advantage of agents: the rules stop depending on whoever is typing.</p>
+<table>
+<tr><th>Module 3 principle</th><th>How it becomes an agent instruction</th></tr>
+<tr><td><strong>Synthetic data only</strong></td><td>Knowledge sources are scoped to approved folders. The agent never sees salary sheets or dealer margins because you never connect them.</td></tr>
+<tr><td><strong>Human sign-off</strong></td><td>"You produce drafts, never final documents. Every output ends with a line stating who must approve it before it is sent."</td></tr>
+<tr><td><strong>Never invent</strong></td><td>"If the answer is not in your knowledge sources, say so. Never estimate a technical value. Mark unknowns as [confirm]."</td></tr>
+</table>
+</div>
+
+</div>
+</div>
+
+<!-- PART 2: AGENT 1 — SPEC ADVISOR -->
+<div class="section">
+<div class="section-head" onclick="toggle(this)"><h2>🪟 Part 2: Build Agent #1 — VEKA Spec Advisor</h2><span class="arrow">▼</span></div>
+<div class="section-body">
+
+<div class="card">
+<h3>Agent Profile: "VEKA Spec Advisor"</h3>
+<p>An agent any sales or application engineer can ask about system selection — which profile family suits a given application, what an architect's specification implies, and what needs to be verified before anything is quoted.</p>
+<table>
+<tr><td><strong>Name</strong></td><td>VEKA Spec Advisor</td></tr>
+<tr><td><strong>Purpose</strong></td><td>Turn architect specifications and site conditions into a system recommendation draft, with every unverified value flagged</td></tr>
+<tr><td><strong>Knowledge</strong></td><td>Published system data sheets, technical brochures, application guidelines, glazing and hardware compatibility tables (SharePoint)</td></tr>
+<tr><td><strong>Users</strong></td><td>Technical Sales, Application Engineering, Dealer Support</td></tr>
+<tr><td><strong>Channel</strong></td><td>Microsoft Teams</td></tr>
+</table>
+</div>
+
+<div class="step-box"><div class="step-num">1</div>
+<h3>Open the Agent Builder</h3>
+<p>Go to <strong>microsoft365.com/chat</strong> → click <strong>"Create an agent"</strong> in the left sidebar. Or go to <strong>copilotstudio.microsoft.com</strong> → <strong>Create</strong> → <strong>New agent</strong>.</p>
+</div>
+
+<div class="step-box"><div class="step-num">2</div>
+<h3>Write the Agent Instructions</h3>
+<p>This is the most important step. The instructions define WHO the agent is and HOW it behaves. Paste this into the Instructions field:</p>
+<span class="prompt-label">AGENT INSTRUCTIONS — COPY-PASTE</span>
+<div class="prompt"><button class="copy-btn" onclick="cp(this,event)">📋 Copy</button>You are VEKA Spec Advisor, an AI assistant for VEKA's technical sales and application engineering teams. VEKA supplies uPVC window and door profile systems to fabricators, who manufacture and install the finished windows.
+
+YOUR ROLE:
+- Help interpret architect specifications and site requirements
+- Suggest which system family and configuration is worth evaluating for a given application
+- Prepare a structured recommendation draft that a qualified engineer then verifies and signs
+- Explain technical concepts in plain language for non-technical sales colleagues
+
+BEHAVIOR RULES:
+- Base every technical statement on the data sheets in your knowledge sources. Name the document you took it from.
+- NEVER state a U-value, sound reduction figure, wind load rating, water tightness class, warranty period, certification number or lead time from memory. If it is not in your knowledge sources, write [confirm: which document or person supplies this].
+- Never say a system "is compliant" or "meets" a standard. Say: "the data sheet indicates X — a qualified engineer must confirm this against the project specification."
+- Distinguish clearly between what the profile system provides and what depends on the fabricator, the glazing, the hardware or the installation. Most performance questions depend on all four.
+- Present options as a comparison table, not a single answer.
+- Always end with a "TO VERIFY BEFORE QUOTING" checklist.
+- Flag climate and application factors that change the recommendation: coastal exposure, high wind zones, monsoon-driven rain, extreme heat, high-rise, acoustic requirements near highways or airports.
+
+WHAT YOU CAN DO:
+- Read an architect specification and list what it does and does not actually specify
+- Draft a system recommendation with alternatives and trade-offs
+- Produce a technical query list to send back to the architect or fabricator
+- Explain a technical term or test standard in plain language
+- Draft the technical section of a proposal, with gaps tagged
+- Prepare questions for a site survey
+
+WHAT YOU CANNOT DO:
+- Certify compliance or approve a specification (only a qualified engineer can)
+- Quote prices, discounts, dealer margins or delivery dates
+- Make structural, safety or statutory determinations
+- Recommend a competitor's product or comment on a competitor's performance figures
+- Access live order, pricing or ERP data — you work from published documents only
+
+CRITICAL RULE: If a question would require a performance guarantee to answer properly, do not answer it. Reply: "This needs a qualified engineer's sign-off. Here is the information they will need in order to answer it: ..." and list it.
+
+TONE: Precise, plainly worded, and comfortable saying "I don't have that." Like a senior application engineer who would rather ask one more question than guess.</div>
+</div>
+
+<div class="step-box"><div class="step-num">3</div>
+<h3>Add Knowledge Sources</h3>
+<p>Upload or connect these so the agent can reference them:</p>
+<div class="card">
+<ul>
+<li><strong>Published system data sheets</strong> — the profile families you actually sell, as text-based PDFs</li>
+<li><strong>Technical brochures and application guidelines</strong> — on SharePoint, in one dedicated folder</li>
+<li><strong>Glazing and hardware compatibility tables</strong> — Excel with clean headers</li>
+<li><strong>Standard technical query template</strong> — so its output matches your existing format</li>
+<li><strong>Frequently asked technical questions</strong> — whatever your team already answers by email ten times a month</li>
+</ul>
+</div>
+<div class="info-box"><strong>How to add knowledge:</strong> Copilot Studio → Agent → Knowledge → Add → SharePoint site or Upload files. Agent Builder → "Add knowledge" → select files or paste a SharePoint URL.</div>
+<div class="warning"><strong>⚠️ Only connect published material.</strong> Draft specifications, unreleased system data and anything marked internal stay out. If a document isn't cleared for a customer's eyes, it isn't cleared for this agent either.</div>
+</div>
+
+<div class="step-box"><div class="step-num">4</div>
+<h3>Test the Agent</h3>
+<p>Use the preview panel. The agent should answer from your documents — and should refuse cleanly when it can't.</p>
+<div class="card">
+<h4>Test Questions to Try:</h4>
+<ul>
+<li>"An architect has specified 'uPVC windows with thermal break and 5-year warranty'. What does that actually tell me, and what is missing?"</li>
+<li>"Coastal site, 14 floors, heavy monsoon exposure. What should I be asking before I recommend anything?"</li>
+<li>"Explain water tightness classification to a salesperson who has never heard of it."</li>
+<li>"Draft the technical section of a proposal for a 3-tower residential project. I'll fill in the project details."</li>
+<li>"What questions should the site survey answer before we quote?"</li>
+</ul>
+</div>
+<div class="card">
+<h4>The Two Tests That Matter Most</h4>
+<ul>
+<li><strong>Ask it something it cannot know:</strong> "What U-value will this achieve?" A good agent says it needs the data sheet, the glazing spec and the fabrication detail. A bad agent gives you a number. If yours gives a number, the instructions are not strong enough — go back to step 2.</li>
+<li><strong>Ask it to compare with aluminium:</strong> it should stick to what your documents say about your own product and refuse to characterise a competitor. This is the single most likely way an agent creates a commercial problem.</li>
+</ul>
+</div>
+</div>
+
+<div class="step-box"><div class="step-num">5</div>
+<h3>Publish to Teams</h3>
+<p>Once tested with at least ten questions, publish so the team can reach it:</p>
+<p><strong>Copilot Studio:</strong> Publish → Channels → Microsoft Teams → turn on → share with the team or department.<br/>
+<strong>Agent Builder:</strong> Share → select users or groups → Done.</p>
+<div class="tip"><strong>💡 Publish narrow first.</strong> Share with three colleagues for a week before the whole department. They will find the gap you missed, quietly, without an audience.</div>
+</div>
+
+<div class="success"><strong>✅ Result:</strong> a sales colleague on a dealer call can open Teams, ask "what should I be asking about this spec?", and get a structured query list in seconds — instead of forwarding the email to engineering and waiting two days.</div>
+
+</div>
+</div>
+
+<!-- PART 3: AGENT 2 — DEALER DESK -->
+<div class="section">
+<div class="section-head" onclick="toggle(this)"><h2>🤝 Part 3: Build Agent #2 — VEKA Dealer Desk</h2><span class="arrow">▼</span></div>
+<div class="section-body">
+
+<div class="card">
+<h3>Agent Profile: "VEKA Dealer Desk"</h3>
+<table>
+<tr><td><strong>Name</strong></td><td>VEKA Dealer Desk</td></tr>
+<tr><td><strong>Purpose</strong></td><td>Draft dealer and fabricator communications — quote follow-ups, objection responses, onboarding guidance, complaint acknowledgements — in a consistent VEKA voice</td></tr>
+<tr><td><strong>Knowledge</strong></td><td>Approved email templates, objection-handling bank from Module 3, dealer onboarding checklist, escalation matrix, published product literature</td></tr>
+<tr><td><strong>Users</strong></td><td>Channel Sales, Project Sales, Dealer Support, Customer Care</td></tr>
+<tr><td><strong>Channel</strong></td><td>Microsoft Teams (usable from a phone, between dealer visits)</td></tr>
+</table>
+</div>
+
+<span class="prompt-label">AGENT INSTRUCTIONS — COPY-PASTE</span>
+<div class="prompt"><button class="copy-btn" onclick="cp(this,event)">📋 Copy</button>You are VEKA Dealer Desk, the AI writing assistant for VEKA's channel and project sales teams in India. VEKA sells uPVC profile systems to fabricators and dealers, who serve builders, architects and homeowners.
+
+YOUR ROLE:
+- Draft dealer and fabricator communications in a consistent, professional VEKA voice
+- Help handle recurring objections without over-promising
+- Draft quote follow-ups that give the customer a real reason to reply
+- Draft complaint acknowledgements that take ownership without admitting unverified fault
+- Support dealer onboarding with clear next steps
+
+BEHAVIOR RULES:
+- You draft. A human sends. End every output with: "REVIEW BEFORE SENDING — [list of items to verify]".
+- NEVER state or imply a price, discount, dealer margin, credit term, delivery date, lead time, warranty period or technical performance figure. If one is needed, write [confirm: what is needed and who supplies it].
+- Never characterise a competitor's product or performance. Redirect to what our own documents say about our own systems.
+- On a complaint: acknowledge, state what will happen next and by when [confirm the timeline], and never accept or assign fault before an investigation.
+- Follow-ups must open with something specific from the prior conversation, never "just checking in", and must never manufacture urgency with an invented offer or deadline.
+- Keep emails under 150 words unless asked otherwise. Dealers read on a phone, on a site.
+- Match the register to the reader: fabricator-owner, site engineer, architect and homeowner are four different audiences.
+- Use the approved templates in your knowledge sources as the structural starting point.
+
+WHAT YOU CAN DO:
+- Draft quote follow-up emails, first-contact emails and meeting recaps
+- Respond to the standard objections (price, lead time, aluminium comparison, local fabricator, architect specified otherwise) using the objection bank
+- Draft complaint acknowledgements and internal escalation notes
+- Produce a dealer onboarding sequence with next steps and owners
+- Rewrite a colleague's rough draft into the VEKA voice
+- Translate a technical answer from engineering into language a homeowner understands
+
+WHAT YOU CANNOT DO:
+- Commit VEKA to anything commercial or technical
+- Approve a credit, a claim, a replacement or a concession
+- Handle a legal notice, a contractual dispute or a media enquiry — escalate these
+- Access live pipeline, order or pricing data
+
+CRITICAL RULE: If a message involves a safety incident, an injury, a legal notice, or a claim of product failure on site, respond: "This needs a named human owner before anything is sent. Escalate to [role per the escalation matrix]. I can help draft the internal note."
+
+TONE: Warm, direct, unfussy. Confident about what we know; visibly honest about what needs checking. Never salesy.</div>
+
+<div class="card">
+<h4>Knowledge Sources to Add:</h4>
+<ul>
+<li><strong>Approved email templates</strong> — the formats your team already uses and marketing has cleared</li>
+<li><strong>Objection-handling bank</strong> — the table your team built in Module 3, including the "never claim" column</li>
+<li><strong>Dealer onboarding checklist</strong> — steps, owners and documents</li>
+<li><strong>Escalation matrix</strong> — who handles complaints, claims, legal notices, safety matters</li>
+<li><strong>Published product literature</strong> — the same customer-facing brochures used by Spec Advisor</li>
+</ul>
+<div class="warning"><strong>⚠️ Do not connect:</strong> the price list, the margin structure, the dealer performance ranking, or any customer contact database. None of it is needed to draft a good email, and all of it is a problem if it leaks.</div>
+</div>
+
+<div class="card">
+<h4>Test Questions:</h4>
+<ul>
+<li>"Draft a follow-up for a quote sent 21 days ago. Last conversation: their site handover slipped a month. Their client is comparing aluminium."</li>
+<li>"A dealer says we're 20% above the local fabricator. Draft a reply."</li>
+<li>"A fabricator reports discolouration on a two-year-old installation. Draft the acknowledgement and the internal escalation note."</li>
+<li>"Rewrite this rough email in our voice: [paste]"</li>
+<li>"A homeowner asked why uPVC and not aluminium. Explain it without technical jargon and without knocking aluminium."</li>
+</ul>
+</div>
+
+<div class="card">
+<h4>What to Watch For in Testing</h4>
+<ul>
+<li><strong>Invented lead times.</strong> The most common failure. Ask for a follow-up and see whether "we can deliver in four weeks" appears from nowhere.</li>
+<li><strong>Fault admitted too early.</strong> On the complaint test, check whether it apologises for a defect that hasn't been investigated yet.</li>
+<li><strong>Competitor commentary.</strong> On the aluminium question, check it stays on our own product.</li>
+</ul>
+</div>
+</div>
+</div>
+
+<!-- PART 4: AGENT 3 — REPORT WRITER -->
+<div class="section">
+<div class="section-head" onclick="toggle(this)"><h2>📊 Part 4: Build Agent #3 — VEKA Report Writer</h2><span class="arrow">▼</span></div>
+<div class="section-body">
+
+<div class="card">
+<h3>Agent Profile: "VEKA Report Writer"</h3>
+<table>
+<tr><td><strong>Name</strong></td><td>VEKA Report Writer</td></tr>
+<tr><td><strong>Purpose</strong></td><td>Generate weekly reports, management summaries, meeting minutes and review dashboards from raw notes and data extracts</td></tr>
+<tr><td><strong>Knowledge</strong></td><td>Report templates, sales and production summary extracts, meeting notes library, review pack formats (SharePoint)</td></tr>
+<tr><td><strong>Users</strong></td><td>Regional Sales Managers, Plant &amp; Operations, MIS, Leadership</td></tr>
+<tr><td><strong>Channel</strong></td><td>Microsoft Teams</td></tr>
+</table>
+</div>
+
+<span class="prompt-label">AGENT INSTRUCTIONS — COPY-PASTE</span>
+<div class="prompt"><button class="copy-btn" onclick="cp(this,event)">📋 Copy</button>You are VEKA Report Writer, the AI reporting assistant for VEKA's sales, operations and MIS teams.
+
+YOUR ROLE:
+- Generate weekly and monthly status reports from raw data and notes
+- Produce management summaries with traffic light indicators
+- Convert rough meeting notes into structured minutes with owners and deadlines
+- Track action items and flag what is overdue
+- Draft the commentary that explains a variance, based only on what the data and notes say
+
+BEHAVIOR RULES:
+- Format professionally: headers, tables, bullets. Reports under one page unless asked otherwise.
+- Always include: Date, Period, Region or Plant, Prepared By, and a "For approval by" line.
+- Use 🟢🟡🔴 for status on: Volume, Collections, Quality, Delivery.
+- Present figures in the same unit as the source extract. State the unit. Never convert silently.
+- CITE THE SOURCE for every number: name the file, tab or note it came from.
+- Never calculate, estimate, project or fill a missing figure. Missing data is written as [missing — source not provided] and listed at the end.
+- Never explain a variance with a reason that is not in the notes. If the notes do not say why, write [confirm: reason not stated in inputs].
+- Never hide bad news. Present it with context and a corrective action section — but the corrective actions come from the notes or are marked [proposed — needs owner approval].
+- Meeting minutes must include: Attendees, Date, Decisions, Action Items with Owner and Deadline. Any action without a named owner is flagged.
+
+REPORT TYPES YOU CAN GENERATE:
+1. Weekly Sales Status (region level)
+2. Management Summary (traffic lights, all regions or all lines)
+3. Meeting Minutes (from raw notes)
+4. Monthly Progress Report (comprehensive)
+5. Dealer Review Pack (per-dealer summary for a review meeting)
+6. Daily Plant Note (from shift supervisor notes)
+
+WHAT YOU CANNOT DO:
+- Decide, recommend or approve a commercial or operational action
+- Produce a forecast or a projection
+- Include any individual's salary, appraisal rating or personal data
+- Access live ERP data — you work from the uploaded extracts only
+
+TONE: Professional and structured. Like a senior MIS analyst who produces reports leadership reads without having to ask what a number means.
+
+FORMATTING:
+- Tables for comparisons
+- 🟢🟡🔴 for status
+- Bold the key numbers and findings
+- Every report ends with "Key Risks", "Next Period Priorities", and "Unresolved [confirm] items"</div>
+
+<div class="card">
+<h4>Knowledge Sources to Add:</h4>
+<ul>
+<li><strong>VEKA report templates</strong> — existing weekly and monthly formats, so output matches what leadership already reads</li>
+<li><strong>Sales and production summary extracts</strong> — Excel with clean headers, no merged cells, synthetic or aggregated for the workshop</li>
+<li><strong>Meeting notes library</strong> — the SharePoint folder where managers already drop notes</li>
+<li><strong>Review pack format</strong> — the deck or doc structure used in monthly reviews</li>
+<li><strong>Glossary of internal terms and units</strong> — stops the agent guessing what a column heading means</li>
+</ul>
+</div>
+
+<div class="card">
+<h4>Test Questions:</h4>
+<ul>
+<li>"Generate a weekly sales status for West region — volume 82% of target, collections behind, two dealer complaints open, one new fabricator onboarded."</li>
+<li>"Here are my raw review meeting notes: [paste]. Convert to structured minutes with action items and owners."</li>
+<li>"Build a management summary across all four regions from the attached extract."</li>
+<li>"Volume dropped 12% this month. Write the commentary." <em>(The correct answer flags that the reason isn't in the inputs — check whether yours invents one.)</em></li>
+<li>"Generate a daily plant note from these shift notes: line 2 down 3 hours for die change, output 88% of plan, one minor first-aid case."</li>
+</ul>
+<div class="tip"><strong>💡 Use the variance question as your acceptance test.</strong> An agent that invents "due to seasonal slowdown" when nothing in the notes says so is not ready to write anything leadership acts on.</div>
+</div>
+</div>
+</div>
+
+<!-- PART 5: TEAM EXERCISE -->
+<div class="section">
+<div class="section-head" onclick="toggle(this)"><h2>👨‍💻 Part 5: Team Exercise — Build Your Department's Agent (30 mins)</h2><span class="arrow">▼</span></div>
+<div class="section-body">
+
+<div class="exercise">
+<h3>🏋️ Team Challenge: Design &amp; Build a Custom Agent</h3>
+<p>Each team designs and builds an agent for their department. You have <strong>20 minutes to build</strong> and <strong>5 minutes to demo</strong>. Use synthetic or already-public documents only — this is a workshop, not a production rollout.</p>
+</div>
+
+<div class="grid-2">
+<div class="card">
+<h3>Team 1: Fabricator Support Agent</h3>
+<p>Build an agent that answers the questions fabricators ask your team every week — fabrication guidance, tooling queries, common defects and their causes.</p>
+<h4>Requirements:</h4>
+<ul>
+<li>Ground on fabrication guidelines and published technical literature</li>
+<li>Answer "what causes this defect and what should the fabricator check?"</li>
+<li>Produce a troubleshooting checklist by symptom</li>
+<li>Refuse to give a performance figure not in the documents</li>
+</ul>
+</div>
+<div class="card">
+<h3>Team 2: Quality &amp; Complaint Agent</h3>
+<p>Build an agent that structures incoming quality complaints, guides root-cause questioning, and drafts the internal note.</p>
+<h4>Requirements:</h4>
+<ul>
+<li>Ground on the complaint format and quality checklist templates</li>
+<li>Turn a vague complaint into a structured, investigable record</li>
+<li>Guide 5-Why questioning without concluding the cause</li>
+<li>Never assign fault before investigation — this is the pass/fail criterion</li>
+</ul>
+</div>
+<div class="card">
+<h3>Team 3: HR Onboarding Agent</h3>
+<p>Build an agent that answers new joiner questions about VEKA policies, leave, safety induction and benefits.</p>
+<h4>Requirements:</h4>
+<ul>
+<li>Ground on the employee handbook or HR policy PDF</li>
+<li>Answer "what's the leave policy?" from the document, with a section reference</li>
+<li>Walk a new joiner through their first-week steps</li>
+<li>Route anything about individual pay, appraisal or a personal issue to a human — never answer it</li>
+</ul>
+</div>
+<div class="card">
+<h3>Team 4: Architect &amp; Specifier Agent</h3>
+<p>Build an agent that helps the team respond to architects and specifiers — drafting technical query lists and specification support.</p>
+<h4>Requirements:</h4>
+<ul>
+<li>Ground on published system literature and specification templates</li>
+<li>Read a spec and list what it does and doesn't cover</li>
+<li>Draft a technical query list back to the architect</li>
+<li>Never claim compliance with a standard — flag for engineer sign-off</li>
+</ul>
+</div>
+</div>
+
+<div class="card">
+<h3>Demo Judging Criteria</h3>
+<table>
+<tr><th>Criteria</th><th>Points</th><th>What Judges Look For</th></tr>
+<tr><td>Agent Instructions Quality</td><td>25</td><td>Clear role, explicit rules, defined tone, hard scope boundaries</td></tr>
+<tr><td>Knowledge Relevance</td><td>25</td><td>Right documents connected; the agent answers from them and cites them</td></tr>
+<tr><td>Refusal Behaviour</td><td>25</td><td>Ask it something it cannot know. Does it say so cleanly, or invent?</td></tr>
+<tr><td>Business Value</td><td>15</td><td>Would VEKA actually use this agent daily?</td></tr>
+<tr><td>Presentation</td><td>10</td><td>Clear demo, live, no slides</td></tr>
+</table>
+<div class="tip"><strong>💡 Note what carries the most weight.</strong> DEC's version scores "test response quality" here — we've replaced it with <strong>refusal behaviour</strong>, because for VEKA the expensive failure is a confident wrong technical figure, not a slightly weak answer. Judges should ask every team's agent one impossible question.</div>
+</div>
+
+<div class="card">
+<h3>Team Build Sheet</h3>
+<table>
+<tr><th>Minute</th><th>Do this</th></tr>
+<tr><td>0–4</td><td>Agree the agent's one job in a single sentence. If the team can't, the scope is too big.</td></tr>
+<tr><td>4–10</td><td>Write the instructions. Start from the closest agent on this page and edit — don't start blank.</td></tr>
+<tr><td>10–14</td><td>Connect knowledge. One or two documents is enough. Check nothing sensitive is in scope.</td></tr>
+<tr><td>14–20</td><td>Test with five real questions and one impossible one. Fix the instructions, not the question.</td></tr>
+<tr><td>20–25</td><td>Decide who demos, and which single question shows it best.</td></tr>
+</table>
+</div>
+</div>
+</div>
+
+<!-- PART 6: BEST PRACTICES -->
+<div class="section">
+<div class="section-head" onclick="toggle(this)"><h2>🎯 Part 6: Agent Building Best Practices</h2><span class="arrow">▼</span></div>
+<div class="section-body">
+
+<div class="card">
+<h3>✅ Do's and Don'ts for Agent Instructions</h3>
+<div class="grid-2">
+<div style="border-left:3px solid var(--green);padding-left:12px">
+<h4 style="color:var(--green)">✅ DO</h4>
+<ul>
+<li>Define a clear role: "You are a technical sales assistant for..."</li>
+<li>Set explicit boundaries: "You can / you cannot..."</li>
+<li>Specify output format: "Comparison table, then a verify checklist"</li>
+<li>Include the refusal instruction: "If it's not in your sources, say so"</li>
+<li>Define tone in one line: "Precise, plain, comfortable saying I don't know"</li>
+<li>Add one example of a good response</li>
+<li>Name the escalation route for the situations that need a human</li>
+</ul>
+</div>
+<div style="border-left:3px solid var(--red);padding-left:12px">
+<h4 style="color:var(--red)">❌ DON'T</h4>
+<ul>
+<li>Write vague instructions: "Be helpful" tells it nothing</li>
+<li>Skip scope boundaries — the agent will fill the gap confidently</li>
+<li>Connect a folder containing pricing, margins or personal data</li>
+<li>Forget "verify before official use" on anything technical</li>
+<li>Deploy without testing at least 10 questions, including impossible ones</li>
+<li>Share externally, or with dealers, without IT and legal approval</li>
+<li>Let one person own an agent the whole department depends on</li>
+</ul>
+</div>
+</div>
+</div>
+
+<div class="card">
+<h3>Knowledge Source Best Practices</h3>
+<table>
+<tr><th>Source Type</th><th>Best Practice</th><th>VEKA Example</th></tr>
+<tr><td>SharePoint Site</td><td>Point to a dedicated folder, never an entire site</td><td>/Technical/PublishedLiterature/ — not all of Technical</td></tr>
+<tr><td>Excel / CSV</td><td>Clean single-row headers, no merged cells, stated units, under 10MB</td><td>Compatibility table with explicit column names and units</td></tr>
+<tr><td>PDFs</td><td>Text-based, not scanned images. Scanned brochures are invisible to the agent.</td><td>System data sheets, application guidelines</td></tr>
+<tr><td>Word Docs</td><td>Use real headings — H1/H2/H3 — so the agent can find sections</td><td>Employee handbook, escalation matrix</td></tr>
+<tr><td>Templates</td><td>Include your existing output formats so the agent matches them</td><td>Weekly report template, technical query format</td></tr>
+</table>
+<div class="info-box"><strong>The quality of an agent is mostly the quality of its documents.</strong> A brilliant instruction set over a folder of scanned PDFs and inconsistent spreadsheets produces a confident, useless agent. Budget time for tidying the source folder — it is the real work.</div>
+</div>
+
+<div class="card">
+<h3>Security &amp; Data Protection for Agents</h3>
+<div class="warning"><strong>⚠️ Agents inherit access permissions.</strong> If the agent is grounded on a SharePoint folder, users generally see only what they already have rights to. Verify this yourself before deploying — do not assume it.</div>
+<ul>
+<li><strong>Turn off "Search all websites"</strong> — often on by default. Disable it for internal agents so answers stay grounded in your documents.</li>
+<li><strong>Restrict sharing</strong> — share with the team that needs it, not the whole organisation, and never with external dealers without approval</li>
+<li><strong>Review knowledge scope</strong> — confirm the agent cannot reach HR data, salary sheets, pricing, margins or unreleased product data</li>
+<li><strong>Test with a non-admin account</strong> — you will see more than your colleagues do; check what they see</li>
+<li><strong>Name an owner</strong> — every published agent needs a person responsible for its instructions and its sources</li>
+<li><strong>Audit monthly</strong> — review usage logs for unexpected questions, and re-check the knowledge folder for documents that have quietly been added</li>
+</ul>
+</div>
+
+<div class="card">
+<h3>The Failure Modes to Expect</h3>
+<table>
+<tr><th>Symptom</th><th>Real cause</th><th>Fix</th></tr>
+<tr><td>Confident technical figures appearing from nowhere</td><td>No explicit "never state a value from memory" rule</td><td>Add the rule, name the tag ([confirm]), re-test</td></tr>
+<tr><td>Answers are vague and generic</td><td>Knowledge sources are scanned PDFs or not connected properly</td><td>Check the source is text-based and in scope</td></tr>
+<tr><td>Agent answers questions outside its job</td><td>No "what you cannot do" section</td><td>Add hard boundaries and an escalation line</td></tr>
+<tr><td>Output doesn't match your formats</td><td>Templates not connected as knowledge</td><td>Add your existing templates</td></tr>
+<tr><td>Nobody uses it after week two</td><td>It solved a problem people didn't have</td><td>Pick the task your team complains about, not the one that demos well</td></tr>
+</table>
+</div>
+</div>
+</div>
+
+<!-- PART 7: VEKA AGENT ROADMAP -->
+<div class="section">
+<div class="section-head" onclick="toggle(this)"><h2>🚀 Part 7: VEKA Agent Roadmap — 10 Agents to Build</h2><span class="arrow">▼</span></div>
+<div class="section-body">
+<div class="card">
+<h3>Recommended Agent Rollout — Phase by Phase</h3>
+<div class="warning"><strong>⚠️ Read the impact column as a placeholder, not a claim.</strong> These are time-and-effort estimates a workshop can reason about. Before any of this goes to leadership, replace each one with VEKA's own baseline: measure how long the task takes today, multiply by how often, and use that. An invented rupee figure in a board deck is exactly the Module 3 failure mode, one level up.</div>
+<table>
+<tr><th>Phase</th><th>Agent</th><th>Department</th><th>Timeline</th><th>Expected impact (to be validated)</th></tr>
+<tr><td rowspan="3" style="color:var(--green);font-weight:700">Phase 1<br/>Month 1–2</td><td>VEKA Spec Advisor</td><td>Technical / Application Eng.</td><td>Week 1–2</td><td>Cuts engineering round-trips on routine spec queries</td></tr>
+<tr><td>VEKA Dealer Desk</td><td>Channel &amp; Project Sales</td><td>Week 2–3</td><td>Faster, more consistent dealer communication</td></tr>
+<tr><td>VEKA Report Writer</td><td>MIS / Sales Ops</td><td>Week 3–4</td><td>Hours per month on recurring reports</td></tr>
+<tr><td rowspan="3" style="color:var(--accent);font-weight:700">Phase 2<br/>Month 3–4</td><td>VEKA Fabricator Support</td><td>Technical Services</td><td>Week 5–6</td><td>Fewer repeat calls on known defects</td></tr>
+<tr><td>VEKA Quality &amp; Complaint Desk</td><td>Quality</td><td>Week 6–7</td><td>Better-structured complaints, faster root cause</td></tr>
+<tr><td>VEKA HR Assistant</td><td>HR</td><td>Week 7–8</td><td>Fewer repeat policy queries to the HR inbox</td></tr>
+<tr><td rowspan="4" style="color:var(--tool);font-weight:700">Phase 3<br/>Month 5–6</td><td>VEKA Architect &amp; Specifier Desk</td><td>Specification Sales</td><td>Week 9–10</td><td>Faster, more complete specifier responses</td></tr>
+<tr><td>VEKA Onboarding Coach (dealers)</td><td>Channel Development</td><td>Week 10–11</td><td>Consistent onboarding regardless of who runs it</td></tr>
+<tr><td>VEKA Training Assistant</td><td>L&amp;D / Technical Training</td><td>Week 11–12</td><td>Self-serve answers between training sessions</td></tr>
+<tr><td>VEKA Knowledge Base</td><td>All functions</td><td>Week 12</td><td>Institutional memory that survives attrition</td></tr>
+</table>
+</div>
+
+<div class="card">
+<h3>How to Sequence — the Rules That Actually Matter</h3>
+<ul>
+<li><strong>Start where the documents are already clean.</strong> The published literature folder is usually the tidiest thing in the company. That's why Spec Advisor goes first.</li>
+<li><strong>Phase 1 must produce one visible win.</strong> Not three half-finished agents. One agent a department genuinely uses beats a portfolio nobody opens.</li>
+<li><strong>Never lead with the customer-facing one.</strong> Anything a dealer or architect touches directly waits until internal agents have run for a quarter without incident.</li>
+<li><strong>Each agent needs a named owner before it publishes.</strong> An unowned agent decays: sources go stale, instructions drift, nobody notices it started giving bad answers.</li>
+<li><strong>Measure before, not after.</strong> If you didn't record how long the task took beforehand, you have no ROI story — only an anecdote.</li>
+</ul>
+</div>
+
+<div class="success"><strong>💰 Building the business case:</strong> for each agent, record (a) minutes per task today, (b) tasks per month, (c) people doing it, and (d) minutes per task after, including review time. Hours saved per month = (a−d) × b × c ÷ 60. Take that to leadership with the measurement method attached. A defensible number you can show your working for beats a large one you can't.</div>
+</div>
+</div>
+
+<!-- PART 8: PROGRAM WRAP-UP -->
+<div class="section">
+<div class="section-head" onclick="toggle(this)"><h2>🎓 Part 8: Program Wrap-Up &amp; 30-Day Action Plan</h2><span class="arrow">▼</span></div>
+<div class="section-body">
+
+<div class="card">
+<h3>What You Accomplished Across 4 Modules</h3>
+<table>
+<tr><th>Module</th><th>Skill</th><th>What it changed</th></tr>
+<tr><td>M1: Prompting</td><td>Write prompts that produce usable first drafts instead of generic filler</td><td>Less time staring at a blank page</td></tr>
+<tr><td>M2: Data &amp; Ops</td><td>Turn spreadsheets and extracts into analysis and commentary</td><td>Recurring reporting stops eating the week</td></tr>
+<tr><td>M3: Safe AI</td><td>Synthetic data discipline, hallucination detection, human sign-off</td><td>The thing that makes all of the above safe to actually use</td></tr>
+<tr><td style="color:var(--tool);font-weight:600">M4: Agents</td><td style="color:var(--tool)">Build custom assistants your department uses in Teams</td><td style="color:var(--tool)">Your best prompt stops living only in your head</td></tr>
+</table>
+<div class="tip"><strong>💡 The honest summary:</strong> Modules 1–2 made you faster. Module 3 made you safe. Module 4 makes it survive you being on leave.</div>
+</div>
+
+<div class="card">
+<h3>Your 30-Day Action Plan</h3>
+<div class="grid-2">
+<div>
+<h4>Week 1: Quick Wins</h4>
+<ul>
+<li>Build one simple agent in Agent Builder</li>
+<li>Ground it on one document — your team's most-used file</li>
+<li>Share with 2–3 colleagues and collect what broke</li>
+</ul>
+<h4>Week 2: Expand</h4>
+<ul>
+<li>Fix the instructions based on what they found</li>
+<li>Add 2–3 more knowledge sources, checking scope each time</li>
+<li>Run your ten test questions again, including the impossible ones</li>
+</ul>
+</div>
+<div>
+<h4>Week 3: Go Production</h4>
+<ul>
+<li>Rebuild your best agent in Copilot Studio for the full feature set</li>
+<li>Turn off web search; verify what a non-admin colleague sees</li>
+<li>Publish to Teams for your department, with a named owner</li>
+</ul>
+<h4>Week 4: Measure &amp; Scale</h4>
+<ul>
+<li>Track usage — questions per week, and which ones it answered badly</li>
+<li>Compare time taken against your recorded baseline</li>
+<li>Present the result honestly to management and plan Phase 2</li>
+</ul>
+</div>
+</div>
+<div class="warning"><strong>⚠️ The week-three cliff.</strong> Most agents die quietly in week three, when the novelty has gone and the source folder has gone stale. Put a recurring 20-minute calendar entry on the owner's diary now, before you leave this room.</div>
+</div>
+
+<div class="card">
+<h3>Commitment Card</h3>
+<div style="padding:20px;background:rgba(63,169,201,0.05);border-radius:8px;border:1px dashed rgba(63,169,201,0.3);text-align:center;font-size:16px">
+<p>"I commit to building <strong>at least ONE agent</strong> within 2 weeks,<br/>
+grounded on my department's approved documents, and sharing it with my team in Microsoft Teams.<br/>
+I will follow the data protection rules from Module 3, test it with an impossible question before publishing,<br/>
+and verify every output before it reaches a customer, a dealer or a colleague."</p>
+<p style="margin-top:15px"><strong>Name: _________________ &nbsp;&nbsp; Date: _________________ &nbsp;&nbsp; Department: _________________</strong></p>
+<p style="margin-top:5px"><strong>My First Agent Will Be: _________________________________________________</strong></p>
+<p style="margin-top:5px"><strong>It Will Be Owned By: ____________________ &nbsp;&nbsp; First Review Date: ____________</strong></p>
+</div>
+</div>
+
+<div class="stats">
+<div class="stat"><span class="n">🎓</span><span class="l">Training Complete!</span></div>
+<div class="stat"><span class="n">3</span><span class="l">Agents Built Today</span></div>
+<div class="stat"><span class="n">10</span><span class="l">Agents on the Roadmap</span></div>
+<div class="stat"><span class="n">1</span><span class="l">You Commit to Ship</span></div>
+</div>
+
+<div class="info-box"><strong>Keep going:</strong> your agent instructions belong in the <a href="#/prompt-library" style="color:var(--tool)">Prompt Library</a>. Your baseline timings belong in the <a href="#/productivity" style="color:var(--tool)">Productivity Tracker</a>. Draft and iterate in the <a href="#/workflow-lab" style="color:var(--tool)">AI Workflow Lab</a>.</div>
+</div>
+</div>
+
+</div>
+
+<script>
+function toggle(el){el.parentElement.classList.toggle('open')}
+function tcs(el){if(el.classList.contains('cs'))el.classList.toggle('cso')}
+function cp(btn,ev){var t=btn.parentElement.textContent.replace('📋 Copy','').trim();
+if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(t).then(function(){btn.textContent='✓ Copied!';setTimeout(function(){btn.textContent='📋 Copy'},2000)})}
+else{var ta=document.createElement('textarea');ta.value=t;ta.style.position='fixed';ta.style.opacity='0';document.body.appendChild(ta);ta.select();try{document.execCommand('copy')}catch(e){}document.body.removeChild(ta);btn.textContent='✓ Copied!';setTimeout(function(){btn.textContent='📋 Copy'},2000)}
+if(ev&&ev.stopPropagation)ev.stopPropagation()}
+</script>
+</body>
+</html>

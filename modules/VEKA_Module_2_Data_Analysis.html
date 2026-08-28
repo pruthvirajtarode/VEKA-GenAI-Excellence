@@ -1,0 +1,1103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>M2: Data &amp; Ops Analysis — VEKA GenAI Excellence</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--bg:#0f0f1a;--card:#1a1a2e;--card2:#16213e;--border:rgba(255,255,255,0.08);--text:#e0e0e0;--accent:#FFD600;--blue:#2196F3;--green:#4CAF50;--red:#FF5252;--orange:#FF9800}
+body{font-family:'Segoe UI',Roboto,sans-serif;background:var(--bg);color:var(--text);line-height:1.6;padding-bottom:60px}
+.module-header{background:linear-gradient(135deg,#0D47A1 0%,#1565C0 60%,#1E88E5 100%);padding:40px 30px;text-align:center;border-bottom:3px solid var(--accent)}
+.module-header .tag{display:inline-block;background:rgba(0,0,0,0.3);padding:4px 14px;border-radius:15px;font-size:12px;font-weight:600;margin-bottom:10px;letter-spacing:1px}
+.module-header h1{font-size:36px;font-weight:800;margin-bottom:8px}
+.module-header p{font-size:18px;opacity:0.85;max-width:750px;margin:0 auto}
+.container{max-width:1000px;margin:0 auto;padding:20px}
+.section{background:var(--card);border:1px solid var(--border);border-radius:12px;margin:20px 0;overflow:hidden}
+.section-head{padding:18px 24px;cursor:pointer;display:flex;align-items:center;justify-content:space-between;transition:background 0.2s}
+.section-head:hover{background:rgba(255,255,255,0.03)}
+.section-head h2{font-size:20px;font-weight:700;display:flex;align-items:center;gap:10px}
+.section-head .arrow{font-size:18px;opacity:0.5;transition:transform 0.3s}
+.section-body{padding:0 24px 24px;display:none}
+.section.open .section-body{display:block}
+.section.open .arrow{transform:rotate(180deg)}
+.card{background:var(--card2);border:1px solid var(--border);border-radius:8px;padding:18px;margin:12px 0}
+.card h3{font-size:17px;font-weight:600;color:var(--accent);margin-bottom:8px}
+.card h4{font-size:15px;font-weight:600;color:var(--blue);margin-bottom:6px;margin-top:10px}
+.card p,.card li{font-size:14px;opacity:0.85;line-height:1.7}
+.card ul{list-style:none;margin:8px 0}
+.card ul li{padding:4px 0 4px 22px;position:relative}
+.card ul li:before{content:"▸";position:absolute;left:0;color:var(--accent);font-weight:bold}
+.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:15px}
+.grid-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:15px}
+@media(max-width:768px){.grid-2,.grid-3{grid-template-columns:1fr}}
+.stats{display:flex;gap:15px;flex-wrap:wrap;margin:15px 0}
+.stat{background:var(--card2);border:1px solid var(--border);border-radius:8px;padding:15px;text-align:center;flex:1;min-width:120px}
+.stat .n{font-size:28px;font-weight:800;color:var(--accent);display:block}
+.stat .l{font-size:12px;opacity:0.7}
+table{width:100%;border-collapse:collapse;margin:12px 0;font-size:13px}
+th{background:rgba(255,255,255,0.08);padding:10px 12px;text-align:left;font-weight:600;border-bottom:2px solid var(--border)}
+td{padding:8px 12px;border-bottom:1px solid var(--border)}
+tr:hover{background:rgba(255,255,255,0.02)}
+.tip{background:rgba(255,214,0,0.08);border-left:3px solid var(--accent);padding:12px 16px;margin:12px 0;border-radius:0 8px 8px 0;font-size:14px}
+.warning{background:rgba(255,82,82,0.08);border-left:3px solid var(--red);padding:12px 16px;margin:12px 0;border-radius:0 8px 8px 0;font-size:14px}
+.success{background:rgba(76,175,80,0.08);border-left:3px solid var(--green);padding:12px 16px;margin:12px 0;border-radius:0 8px 8px 0;font-size:14px}
+.info-box{background:rgba(33,150,243,0.08);border-left:3px solid var(--blue);padding:12px 16px;margin:12px 0;border-radius:0 8px 8px 0;font-size:14px}
+.prompt{background:#1e1e2e;border:2px solid #69F0AE;border-radius:8px;padding:16px;margin:12px 0;font-family:'Courier New',monospace;font-size:13px;color:#a6e3a1;line-height:1.5;white-space:pre-wrap;position:relative;max-height:420px;overflow-y:auto}
+.prompt-label{display:inline-block;background:#69F0AE;color:#1e1e2e;padding:3px 12px;border-radius:15px;font-size:11px;font-weight:700;margin-bottom:8px;font-family:'Segoe UI',sans-serif}
+.copy-btn{position:absolute;top:10px;right:10px;background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.2);color:#69F0AE;padding:4px 12px;border-radius:5px;cursor:pointer;font-size:11px;font-family:'Segoe UI',sans-serif}
+.output{background:#0d1117;border:1px solid #30363d;border-radius:8px;padding:16px;margin:12px 0;font-family:'Courier New',monospace;font-size:12px;color:#c9d1d9;line-height:1.5;white-space:pre-wrap;max-height:420px;overflow-y:auto}
+.output-label{display:inline-block;background:var(--blue);color:white;padding:3px 12px;border-radius:15px;font-size:11px;font-weight:700;margin-bottom:8px;font-family:'Segoe UI',sans-serif}
+.exercise{background:rgba(156,39,176,0.08);border:2px solid rgba(156,39,176,0.2);border-radius:8px;padding:18px;margin:12px 0}
+.exercise h3{color:#CE93D8;font-size:16px;margin-bottom:8px}
+.badge{display:inline-block;padding:3px 10px;border-radius:12px;font-size:11px;font-weight:700}
+.badge-time{background:rgba(33,150,243,0.15);color:var(--blue);border:1px solid rgba(33,150,243,0.3)}
+.badge-impact{background:rgba(255,214,0,0.15);color:var(--accent);border:1px solid rgba(255,214,0,0.3)}
+.badge-risk{background:rgba(255,82,82,0.15);color:var(--red);border:1px solid rgba(255,82,82,0.3)}
+.diagram{background:rgba(0,0,0,0.3);border-radius:10px;padding:20px;margin:15px 0;text-align:center}
+.diagram .flow{display:flex;align-items:center;justify-content:center;gap:8px;flex-wrap:wrap;margin:10px 0}
+.diagram .node{background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.15);border-radius:8px;padding:10px 16px;font-size:13px;font-weight:600}
+.diagram .arr{color:var(--accent);font-size:20px;font-weight:bold}
+.cs{background:var(--card2);border:1px solid var(--border);border-radius:10px;margin:16px 0;overflow:hidden}
+.cs-head{padding:14px 18px;cursor:pointer;display:flex;align-items:center;justify-content:space-between}
+.cs-head:hover{background:rgba(255,255,255,0.03)}
+.cs-head h3{font-size:16px;font-weight:600;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.cs-head .csa{font-size:14px;opacity:0.4;transition:transform 0.3s}
+.cs-body{padding:0 18px 18px;display:none}
+.cs.cso .cs-body{display:block}
+.cs.cso .csa{transform:rotate(180deg)}
+.cst{font-size:11px;padding:2px 8px;border-radius:10px;font-weight:600}
+.cst-d{background:rgba(33,150,243,0.15);color:#64B5F6}
+.cst-e{background:rgba(156,39,176,0.15);color:#CE93D8}
+.cst-c{background:rgba(76,175,80,0.15);color:#4CAF50}
+.cst-w{background:rgba(255,152,0,0.15);color:#FF9800}
+.cb{background:rgba(0,0,0,0.2);border-radius:6px;padding:14px;margin:10px 0;font-size:14px}
+.cb h4{font-size:14px;margin-bottom:6px}
+</style>
+</head>
+<body>
+
+<div class="module-header">
+<div class="tag">SESSION 2</div>
+<h1>M2: Data &amp; Ops Analysis with AI</h1>
+<p>Upload the 240-row VEKA channel dataset for instant dealer risk scanning, mix and margin erosion detection, dispatch performance analysis and management dashboards — in minutes, not hours</p>
+</div>
+
+<div class="container">
+
+<!-- OBJECTIVES -->
+<div class="section open">
+<div class="section-head" onclick="toggle(this)"><h2>🎯 Learning Objectives</h2><span class="arrow">▼</span></div>
+<div class="section-body">
+<div class="stats">
+<div class="stat"><span class="n">120</span><span class="l">Minutes</span></div>
+<div class="stat"><span class="n">8</span><span class="l">Prompts</span></div>
+<div class="stat"><span class="n">240</span><span class="l">Row Dataset</span></div>
+<div class="stat"><span class="n">20</span><span class="l">Dealers · 12 Months</span></div>
+</div>
+<div class="card"><p>By the end of this module, you will:</p><ul>
+<li>Upload any Excel or CSV to an AI tool and get a usable analysis in two minutes</li>
+<li>Scan 20 dealers across 12 months and 4 regions in a single pass</li>
+<li>Find the three dealers quietly losing a third of their volume — without a single dramatic month</li>
+<li>Detect product mix erosion that volume reporting completely hides</li>
+<li>Spot a regional dispatch problem, and separate it from the dealers affected by it</li>
+<li>Generate a management dashboard with 🟢🟡🔴 status automatically</li>
+<li>Index and anonymise data before uploading (full treatment in Session 3)</li>
+<li>Know the three things AI gets wrong on data, and how to catch them</li>
+</ul></div>
+
+<div class="info-box"><strong>The dataset is fully synthetic and pre-indexed.</strong> All dealer names are Dealer A–T. All volumes and values are index numbers, not rupees. That is deliberate: it lets us run the whole session honestly, and it demonstrates the anonymisation technique Session 3 formalises.</div>
+
+<div class="card">
+<h3>Run of Show — 120 Minutes</h3>
+<table>
+<tr><th>Time</th><th>Block</th><th>Mode</th></tr>
+<tr><td>00:00 – 00:12</td><td>Part 1 — Why this changes monthly review work</td><td>Trainer</td></tr>
+<tr><td>00:12 – 00:22</td><td>Part 2 — The dataset. Open it, look at it, ask what you'd want to know</td><td>Trainer + room</td></tr>
+<tr><td>00:22 – 00:52</td><td>Part 3 — Live demo, prompts 1 to 4. Everyone runs along.</td><td>Hands-on</td></tr>
+<tr><td>00:52 – 01:02</td><td>Break</td><td>—</td></tr>
+<tr><td>01:02 – 01:22</td><td>Part 3 continued — prompts 5 to 8</td><td>Hands-on</td></tr>
+<tr><td>01:22 – 01:32</td><td>Part 4 — What AI found that a human review missed, including one it got wrong</td><td>Trainer</td></tr>
+<tr><td>01:32 – 01:52</td><td>Part 6 — Team challenge, four teams, 2-minute presentations</td><td>Teams</td></tr>
+<tr><td>01:52 – 02:00</td><td>Part 5 anonymisation + Part 7 follow-ups + takeaways</td><td>Whole room</td></tr>
+</table>
+<div class="tip"><strong>💡 Facilitator:</strong> do not open Part 2's red flags table before the demo. The whole value of Part 3 is the room watching AI find those patterns live. Show the answers first and you've turned a discovery into a lecture.</div>
+</div>
+</div>
+</div>
+
+<!-- PART 1: THEORY -->
+<div class="section open">
+<div class="section-head" onclick="toggle(this)"><h2>🧠 Part 1: Why AI Changes Operational Data Work at VEKA</h2><span class="arrow">▼</span></div>
+<div class="section-body">
+<div class="card">
+<h3>The Problem: The Monthly Review Nobody Has Time to Do Properly</h3>
+<p>VEKA's channel business generates the same data every month for every dealer: volume against target, product mix, dispatch performance, complaints, outstanding, audit scores. Twenty dealers over a year is 240 rows and two dozen fields. A regional manager preparing for review faces this:</p>
+<div class="grid-2">
+<div>
+<h4>📋 Manual Process</h4>
+<ul>
+<li>Open the sales sheet, the complaint log and the outstanding report</li>
+<li>Build a pivot per dealer, per month</li>
+<li>Eyeball 240 rows for anything unusual</li>
+<li>Check who is below target — the easy part</li>
+<li>Notice mix and dispatch trends — almost never happens</li>
+<li>Write the commentary</li>
+<li>Build the slides</li>
+</ul>
+<p style="margin-top:10px;color:#FF5252;font-weight:600">⏱ Time: 3–5 hours per monthly review</p>
+</div>
+<div>
+<h4>🤖 With AI Analysis</h4>
+<ul>
+<li>Upload one indexed CSV</li>
+<li>Paste one analysis prompt</li>
+<li>AI reads all 240 rows at once, across every field</li>
+<li>Flags achievement, mix, dispatch, credit and quality together</li>
+<li>Finds the trends that only appear across months</li>
+<li>Drafts the commentary with sources cited</li>
+<li>Ask follow-ups for anything that looks odd</li>
+</ul>
+<p style="margin-top:10px;color:#4CAF50;font-weight:600">⏱ Time: 3–8 minutes per analysis</p>
+</div>
+</div>
+<div class="tip"><strong>💡 The real gain is not speed.</strong> It is that the analysis nobody had time for — mix erosion, cross-field patterns, slow declines — gets done at all. Speed just makes it possible.</div>
+</div>
+
+<div class="card">
+<h3>Three Levels of AI Data Analysis</h3>
+<div class="grid-3">
+<div style="background:rgba(33,150,243,0.06);padding:12px;border-radius:6px">
+<h4 style="color:#64B5F6">📊 Descriptive</h4>
+<p>"What happened?"</p>
+<ul><li>Totals and summaries</li><li>Best and worst dealers</li><li>Trend identification</li></ul>
+<p style="font-size:12px;opacity:0.7;margin-top:6px">Reliable. Verify the arithmetic.</p>
+</div>
+<div style="background:rgba(255,214,0,0.06);padding:12px;border-radius:6px">
+<h4 style="color:#FFD600">🔍 Diagnostic</h4>
+<p>"Why did it happen?"</p>
+<ul><li>Pattern and cluster detection</li><li>Cross-field correlation</li><li>Anomaly flagging</li></ul>
+<p style="font-size:12px;opacity:0.7;margin-top:6px">Useful for hypotheses. Not for conclusions.</p>
+</div>
+<div style="background:rgba(76,175,80,0.06);padding:12px;border-radius:6px">
+<h4 style="color:#4CAF50">🔮 Predictive</h4>
+<p>"What will happen?"</p>
+<ul><li>Trend extrapolation</li><li>Which dealer needs attention first</li><li>Where the erosion goes next</li></ul>
+<p style="font-size:12px;opacity:0.7;margin-top:6px">Treat as a prompt for a conversation, never a forecast.</p>
+</div>
+</div>
+<div class="warning"><strong>⚠️ The level you must be careful with is diagnostic.</strong> AI is genuinely good at spotting that three things move together. It is not able to tell you which caused which — but it will happily write a sentence that sounds like it can. Ask it for candidate explanations and the evidence needed to test each, never for "the reason".</div>
+</div>
+
+<div class="card">
+<h3>How to Upload Data — Step by Step</h3>
+<div class="diagram">
+<div class="flow">
+<div class="node">1. Export<br/><span style="font-size:11px;opacity:0.7">Save as .csv</span></div>
+<div class="arr">→</div>
+<div class="node">2. Index &amp; anonymise<br/><span style="font-size:11px;opacity:0.7">Names out, index in</span></div>
+<div class="arr">→</div>
+<div class="node">3. Check the file<br/><span style="font-size:11px;opacity:0.7">One header row</span></div>
+<div class="arr">→</div>
+<div class="node">4. Upload<br/><span style="font-size:11px;opacity:0.7">Attach 📎</span></div>
+<div class="arr">→</div>
+<div class="node">5. Paste prompt<br/><span style="font-size:11px;opacity:0.7">Be specific</span></div>
+</div>
+</div>
+<h4>File hygiene — the five things that break an analysis</h4>
+<ul>
+<li><strong>Merged cells.</strong> Unmerge everything. They arrive as blanks and shift your columns.</li>
+<li><strong>Multi-row headers.</strong> One header row only. Flatten "Q1 / Volume" into "Q1_Volume".</li>
+<li><strong>Units in the cell.</strong> "42 units" is text, not a number. Put the unit in the column name.</li>
+<li><strong>Blank rows and subtotal rows.</strong> Delete them. AI will treat a subtotal as a data row and double-count.</li>
+<li><strong>Mixed date formats.</strong> Pick one and stick to it. Mixed formats silently produce wrong trends.</li>
+</ul>
+<div class="tip"><strong>💡 Ten minutes of file cleaning beats any prompt improvement.</strong> The most common cause of a vague, useless analysis is a messy file, not a weak prompt.</div>
+</div>
+
+<div class="card">
+<h3>Good vs Bad Prompts for Data Analysis</h3>
+<div class="grid-2">
+<div style="background:rgba(255,82,82,0.06);padding:12px;border-radius:6px;border-left:3px solid #FF5252">
+<h4 style="color:#FF5252">❌ Bad Prompt</h4>
+<p>"Analyse this data"</p>
+<p style="font-size:13px;opacity:0.7;margin-top:6px">Result: a generic summary of what the columns are. Misses every real pattern. Then everyone concludes AI isn't useful for data.</p>
+</div>
+<div style="background:rgba(76,175,80,0.06);padding:12px;border-radius:6px;border-left:3px solid #4CAF50">
+<h4 style="color:#4CAF50">✓ Good Prompt</h4>
+<p>"Flag every dealer whose last 3 months average is more than 20% below their first 3 months. Rank all 20 by combined risk. For the top 3, give the fields that support it and what I should ask them. One page, for a regional review."</p>
+<p style="font-size:13px;opacity:0.7;margin-top:6px">Result: three dealers named, evidence cited, questions ready.</p>
+</div>
+</div>
+<div class="info-box"><strong>Carry the Session 1 structure across:</strong> <strong>Role</strong> (regional sales manager) → <strong>Context</strong> (the file, and what the columns mean) → <strong>Task</strong> (one verb: flag, rank, compare) → <strong>Constraints</strong> (thresholds, no invented numbers, cite the rows) → <strong>Format</strong> (table, one page, dashboard).</div>
+<div class="warning"><strong>⚠️ One data-specific constraint to add every time:</strong> "Cite the dealer and month for every figure you state, and tell me if a calculation is one you performed rather than read from the file." Without it you cannot tell a read value from a computed one — and the computed ones are where errors live.</div>
+</div>
+</div>
+</div>
+
+<!-- PART 2: THE DATASET -->
+<div class="section">
+<div class="section-head" onclick="toggle(this)"><h2>📊 Part 2: The VEKA Dataset — 240 Rows, 20 Dealers, 12 Months</h2><span class="arrow">▼</span></div>
+<div class="section-body">
+<div class="card">
+<h3>Dataset Overview</h3>
+<p>A synthetic dataset modelled on the shape of a real VEKA channel review. One row per dealer per month: 20 dealers × 12 months = 240 rows, 24 columns. This is the file participants upload.</p>
+<p style="margin-top:8px"><strong>File:</strong> <code style="color:#a6e3a1">VEKA_Channel_Ops_Synthetic_240rows.csv</code></p>
+<h4>20 Dealers Across 4 Regions:</h4>
+<div class="grid-2">
+<div><ul><li><strong>West (6):</strong> Dealers A, B, C, D, E, F</li><li><strong>North (5):</strong> Dealers G, H, I, J, K</li></ul></div>
+<div><ul><li><strong>South (5):</strong> Dealers L, M, N, O, P</li><li><strong>East (4):</strong> Dealers Q, R, S, T</li></ul></div>
+</div>
+<h4>24 Columns Across 6 Categories:</h4>
+<table>
+<tr><th>Category</th><th>Columns</th></tr>
+<tr><td>Identity</td><td>Dealer_Code, Region, City_Tier, Dealer_Since, Month</td></tr>
+<tr><td>Commercial</td><td>Order_Volume_Index, Target_Index, Achievement_Percent, Order_Value_Index</td></tr>
+<tr><td>Mix</td><td>Premium_Mix_Percent</td></tr>
+<tr><td>Supply</td><td>Order_To_Dispatch_Days, On_Time_Dispatch_Percent, Short_Supply_Incidents</td></tr>
+<tr><td>Quality</td><td>Complaints_Raised, Complaints_Closed, Open_Complaint_Age_Days, Top_Defect_Category</td></tr>
+<tr><td>Credit &amp; Engagement</td><td>Outstanding_Index, Overdue_Days, Credit_Utilisation_Percent, Training_Sessions_Attended, Fabrication_Audit_Score, Risk_Level, Notes</td></tr>
+</table>
+<div class="info-box"><strong>Why index numbers instead of rupees.</strong> Volume and value are indexed so no real commercial figure appears anywhere. Every ratio, trend and comparison works identically — which is the point Session 3 makes. The shape of the data carries the insight; the absolute values never did.</div>
+</div>
+
+<div class="grid-2">
+<div class="card">
+<h3>Portfolio at a Glance</h3>
+<table>
+<tr><td>Rows / Dealers / Months</td><td style="text-align:right;font-weight:700;color:#FFD600">240 / 20 / 12</td></tr>
+<tr><td>Portfolio achievement vs target</td><td style="text-align:right">93.0%</td></tr>
+<tr><td>Dealer-months below 80% achievement</td><td style="text-align:right;color:#FF9800">20 of 240</td></tr>
+<tr><td>Complaints raised / closed</td><td style="text-align:right">324 / 209</td></tr>
+<tr><td>Open complaints older than 45 days</td><td style="text-align:right;color:#FF5252">33 dealer-months</td></tr>
+<tr><td>Short supply incidents</td><td style="text-align:right;color:#FF9800">140</td></tr>
+<tr><td>Dealer-months with overdue &gt; 60 days</td><td style="text-align:right;color:#FF5252">15</td></tr>
+<tr><td>Dealer-months with audit score &lt; 70</td><td style="text-align:right;color:#FF5252">24</td></tr>
+<tr><td>Risk level spread</td><td style="text-align:right">162 Low / 48 Med / 24 High / 6 Critical</td></tr>
+</table>
+</div>
+<div class="card">
+<h3>🚩 Red Flags (Don't Reveal Before the Demo!)</h3>
+<ul>
+<li><strong>Dealer E</strong> (West): last 3 months <span style="color:#FF5252">59% below</span> first 3. Achievement 70.5%.</li>
+<li><strong>Dealer K</strong> (North): <span style="color:#FF5252">56% decline</span>. Achievement 73.2%.</li>
+<li><strong>Dealer N</strong> (South): <span style="color:#FF9800">46% decline</span>. Achievement 77.7%.</li>
+<li><strong>Dealer Q</strong> (East): audit score <span style="color:#FF5252">62.3</span>, overdue peaks at <span style="color:#FF5252">117 days</span>, <span style="color:#FF5252">35 complaints</span> — the most in the portfolio. Yet achievement is 94.9%.</li>
+<li><strong>Dealer B</strong> (West): audit <span style="color:#FF5252">63.3</span>, 26 complaints — but achievement 96.8%. Volume hides it completely.</li>
+<li><strong>Dealer C</strong> (West): overdue reaches <span style="color:#FF9800">107 days</span>, credit utilisation climbing all year.</li>
+<li><strong>East region dispatch:</strong> 18.5 days average vs 11–12 elsewhere. On-time only <span style="color:#FF5252">55.2%</span> vs ~72%. Worsens from 16.7 to <span style="color:#FF5252">20.0 days</span> after month 6.</li>
+<li><strong>North premium mix:</strong> <span style="color:#FF5252">30.8% → 17.1%</span> across the year. Volume held. Nobody noticed.</li>
+<li><strong>Healthiest:</strong> <span style="color:#4CAF50">Dealer A (audit 95.2) and Dealer L (audit 94.7)</span> — high volume, high premium mix, no credit issues.</li>
+</ul>
+</div>
+</div>
+
+<div class="card">
+<h3>Dealer Risk Heatmap</h3>
+<table>
+<tr><th>Dealer</th><th>Region</th><th>Tier</th><th>Avg Ach %</th><th>3-mo trend</th><th>Audit</th><th>Max overdue</th><th>Complaints</th><th>Status</th></tr>
+<tr><td style="color:#FF5252;font-weight:700">Dealer Q</td><td>East</td><td>Tier-2</td><td>94.9%</td><td>−15.5%</td><td style="color:#FF5252">62.3</td><td style="color:#FF5252">117 d</td><td style="color:#FF5252">35</td><td>🔴 Critical</td></tr>
+<tr><td style="color:#FF5252;font-weight:700">Dealer E</td><td>West</td><td>Tier-2</td><td style="color:#FF5252">70.5%</td><td style="color:#FF5252">−59.0%</td><td>85.0</td><td>0</td><td>13</td><td>🔴 Losing</td></tr>
+<tr><td style="color:#FF5252;font-weight:700">Dealer K</td><td>North</td><td>Tier-2</td><td style="color:#FF5252">73.2%</td><td style="color:#FF5252">−56.3%</td><td>85.2</td><td>0</td><td>8</td><td>🔴 Losing</td></tr>
+<tr><td style="color:#FF9800;font-weight:700">Dealer B</td><td>West</td><td>Metro</td><td>96.8%</td><td>−9.5%</td><td style="color:#FF5252">63.3</td><td>0</td><td style="color:#FF9800">26</td><td>🟠 Brand risk</td></tr>
+<tr><td style="color:#FF9800;font-weight:700">Dealer N</td><td>South</td><td>Tier-2</td><td style="color:#FF9800">77.7%</td><td style="color:#FF9800">−46.4%</td><td>84.3</td><td>0</td><td>13</td><td>🟠 Watch</td></tr>
+<tr><td style="color:#FF9800;font-weight:700">Dealer C</td><td>West</td><td>Tier-2</td><td>94.7%</td><td>−17.0%</td><td>84.1</td><td style="color:#FF9800">107 d</td><td>15</td><td>🟠 Credit</td></tr>
+<tr><td>Dealer T</td><td>East</td><td>Tier-2</td><td>95.1%</td><td>−6.2%</td><td>84.3</td><td>0</td><td>22</td><td>🟡 Caution</td></tr>
+<tr><td>Dealer J</td><td>North</td><td>Tier-3</td><td>93.6%</td><td>−13.4%</td><td>82.2</td><td>0</td><td>20</td><td>🟡 Caution</td></tr>
+<tr><td>Dealer P</td><td>South</td><td>Tier-2</td><td>95.6%</td><td>−12.7%</td><td>82.4</td><td>0</td><td>18</td><td>🟡 Caution</td></tr>
+<tr><td>Dealer H</td><td>North</td><td>Tier-2</td><td>94.0%</td><td>−11.2%</td><td>84.7</td><td>0</td><td>9</td><td>🟡 Caution</td></tr>
+<tr><td>Dealer D</td><td>West</td><td>Metro</td><td>96.2%</td><td>−6.6%</td><td>83.5</td><td>0</td><td>18</td><td>🟢 Stable</td></tr>
+<tr><td>Dealer G</td><td>North</td><td>Metro</td><td>97.3%</td><td>−6.9%</td><td>84.3</td><td>0</td><td>19</td><td>🟢 Stable</td></tr>
+<tr><td>Dealer I</td><td>North</td><td>Metro</td><td>94.2%</td><td>−1.5%</td><td>84.5</td><td>0</td><td>12</td><td>🟢 Stable</td></tr>
+<tr><td>Dealer M</td><td>South</td><td>Metro</td><td>94.3%</td><td>−9.4%</td><td>84.7</td><td>0</td><td>12</td><td>🟢 Stable</td></tr>
+<tr><td>Dealer R</td><td>East</td><td>Metro</td><td>94.7%</td><td>−3.7%</td><td>84.9</td><td>0</td><td>12</td><td>🟢 Stable</td></tr>
+<tr><td>Dealer F</td><td>West</td><td>Tier-3</td><td>96.9%</td><td>−8.9%</td><td>84.5</td><td>0</td><td>17</td><td>🟢 Stable</td></tr>
+<tr><td>Dealer O</td><td>South</td><td>Tier-3</td><td>94.8%</td><td>−5.0%</td><td>82.8</td><td>0</td><td>6</td><td>🟢 Stable</td></tr>
+<tr><td>Dealer S</td><td>East</td><td>Tier-3</td><td>95.5%</td><td>−1.7%</td><td>83.0</td><td>0</td><td>6</td><td>🟢 Stable</td></tr>
+<tr><td style="color:#4CAF50;font-weight:700">Dealer A</td><td>West</td><td>Metro</td><td>95.5%</td><td>−8.4%</td><td style="color:#4CAF50">95.2</td><td>0</td><td>17</td><td>🟢 Best</td></tr>
+<tr><td style="color:#4CAF50;font-weight:700">Dealer L</td><td>South</td><td>Metro</td><td>95.8%</td><td>−9.6%</td><td style="color:#4CAF50">94.7</td><td>0</td><td>26</td><td>🟢 Best</td></tr>
+</table>
+<div class="warning"><strong>⚠️ Look at the "3-mo trend" column before the demo, facilitators.</strong> Almost every dealer is slightly negative, because months 10–12 are a seasonal low. Three dealers are catastrophically negative. That contrast is the single best teaching moment in this module — and it is also where AI most reliably gets it wrong. See Case Study 5.</div>
+</div>
+</div>
+</div>
+
+<!-- PART 3: 8 PROMPTS -->
+<div class="section">
+<div class="section-head" onclick="toggle(this)"><h2>🎬 Part 3: Live Demo — 8 Analysis Prompts</h2><span class="arrow">▼</span></div>
+<div class="section-body">
+<p style="margin-bottom:15px">Upload the 240-row CSV first, then paste any prompt. Click each to expand. Prompts 1–4 before the break, 5–8 after.</p>
+
+<!-- P1 -->
+<div class="cs" onclick="tcs(this)"><div class="cs-head"><h3><span class="cst cst-d">LIVE DEMO</span> Prompt 1: Dealer Risk Scan</h3><span class="csa">▼</span></div><div class="cs-body">
+<p><span class="badge badge-time">⏱ 3 min</span> <span class="badge badge-risk">⚠ Run this one first</span></p>
+<span class="prompt-label">COPY-PASTE PROMPT</span>
+<div class="prompt"><button class="copy-btn" onclick="cp(this,event)">📋 Copy</button>You are a channel sales analyst. I've uploaded a dealer performance
+dataset: 20 dealers (Dealer A to T), 12 months, one row per dealer
+per month. All volumes and values are INDEX numbers, not currency.
+
+Produce a risk scan.
+
+1. RANK all 20 dealers by combined risk, highest first. Build the
+   ranking from: average Achievement_Percent, the change from the
+   first 3 months to the last 3 months, Fabrication_Audit_Score,
+   maximum Overdue_Days, and total Complaints_Raised.
+
+2. For the TOP 5 riskiest, give one row each with:
+   dealer, region, the specific fields that put them there (with
+   values), and the single question I should ask them.
+
+3. IDENTIFY any dealer whose commercial numbers look fine but whose
+   quality or credit fields do not. Flag these separately — they are
+   the ones a volume-based review misses.
+
+RULES:
+- Cite the dealer and month for every figure you state.
+- Tell me which figures you calculated versus read directly.
+- Do not infer a cause for anything. If the data suggests a
+  hypothesis, label it [hypothesis] and say what would test it.
+- If a field is missing or blank for a dealer, say so rather than
+  working around it.
+
+FORMAT: ranked table, then the top-5 detail, then the mismatch list.</div>
+<span class="output-label">WHAT GOOD OUTPUT LOOKS LIKE</span>
+<div class="output">RANKED RISK — TOP 5
+
+1. Dealer Q (East, Tier-2)
+   Audit score avg 62.3 (lowest in portfolio)
+   Overdue_Days peaks 117 (2026-06)
+   Complaints_Raised total 35 (highest of 20 dealers)
+   Achievement avg 94.9% — commercially unremarkable
+   ASK: what changed in their fabrication process, and why is
+   payment slipping while volume holds?
+
+2. Dealer E (West, Tier-2)
+   First 3 months avg volume index 30.4 -> last 3 avg 12.5 (-59.0%)
+   Achievement avg 70.5%, lowest in portfolio
+   Audit 85.0, no credit issues — this is demand or competition,
+   not capability [hypothesis]
+   ASK: are they still quoting our system, and against whom?
+
+3. Dealer K (North, Tier-2) — -56.3%, achievement 73.2%
+4. Dealer N (South, Tier-2) — -46.4%, achievement 77.7%
+5. Dealer C (West, Tier-2) — overdue 107 d, utilisation rising
+   through the year, volume -17.0%
+
+GOOD NUMBERS, BAD FIELDS — the mismatch list
+
+Dealer B (West, Metro): achievement 96.8% but audit 63.3 and 26
+complaints. Nothing in the commercial view would flag this.
+
+Dealer Q: already ranked 1. Same pattern, more severe.
+
+Dealer T (East): achievement 95.1%, 22 complaints — worth checking
+whether this is dealer-specific or the East dispatch issue.
+
+CALCULATED BY ME: all averages, all first-3-vs-last-3 changes,
+the composite ranking.
+READ DIRECTLY: Achievement_Percent, Fabrication_Audit_Score,
+Overdue_Days, Complaints_Raised.
+
+[hypothesis] Dealer B and Dealer Q share a profile: strong volume,
+weak audit, high complaints. Testing this needs the defect
+categories and the training attendance — both are in the file.</div>
+<div class="success"><strong>✅ Facilitator moment:</strong> the mismatch list is the payoff. Ask the room: "in your current monthly review, would Dealer B ever come up?" Almost always no — because they hit their number.</div>
+</div></div>
+
+<!-- P2 -->
+<div class="cs" onclick="tcs(this)"><div class="cs-head"><h3><span class="cst cst-d">LIVE DEMO</span> Prompt 2: Who Is Quietly Losing Volume</h3><span class="csa">▼</span></div><div class="cs-body">
+<p><span class="badge badge-time">⏱ 3 min</span> <span class="badge badge-impact">Highest-value prompt in the module</span></p>
+<span class="prompt-label">COPY-PASTE PROMPT</span>
+<div class="prompt"><button class="copy-btn" onclick="cp(this,event)">📋 Copy</button>Using the uploaded dealer dataset, find erosion that a
+month-on-month review would not catch.
+
+1. For every dealer, compare the average Order_Volume_Index of the
+   FIRST 3 months against the LAST 3 months. Show the percentage
+   change. Rank from worst to best.
+
+2. IMPORTANT: before you interpret anything, check whether the
+   portfolio as a whole declines over the same window. If it does,
+   tell me the portfolio-level change first, then re-state each
+   dealer's change RELATIVE to that. I need to know who is losing
+   ground versus who is just moving with the season.
+
+3. Identify the dealers whose decline is materially worse than the
+   portfolio trend. For each: was any single month dramatic, or was
+   it gradual? State the month-by-month figures.
+
+4. Flag any dealer where the decline is NOT visible in
+   Achievement_Percent because their target was also low.
+
+RULES:
+- Do not describe a gradual decline as a "drop" or an "event".
+- Cite the months.
+- Do not attribute a cause. Label any explanation [hypothesis].</div>
+<span class="output-label">WHAT GOOD OUTPUT LOOKS LIKE</span>
+<div class="output">PORTFOLIO CONTEXT FIRST
+Portfolio volume index, first 3 months vs last 3: a modest decline.
+Months 2025-10, 2025-11, 2026-02 and 2026-03 are the strongest in
+the file; 2026-06 to 2026-08 the weakest. This looks seasonal, so
+individual dealer declines must be read against it.
+
+DEALERS DECLINING FAR BEYOND THE PORTFOLIO TREND
+
+Dealer E (West)   30.4 -> 12.5   -59.0%
+Dealer K (North)  50.8 -> 22.2   -56.3%
+Dealer N (South)  41.5 -> 22.3   -46.4%
+
+These three are an order of magnitude worse than every other
+dealer. No single month falls off a cliff — Dealer E declines in
+small steps each month, which is exactly why a month-on-month
+review would never escalate it. Twelve small declines and a third
+of the volume is gone.
+
+MOVING WITH THE SEASON — not a concern on this evidence
+Dealer C -17.0%, Dealer J -13.4%, Dealer P -12.7%, Dealer L -9.6%,
+Dealer B -9.5%, Dealer M -9.4%, Dealer F -8.9%, Dealer A -8.4%,
+Dealer G -6.9%, Dealer D -6.6%, Dealer T -6.2%, Dealer O -5.0%,
+Dealer R -3.7%, Dealer S -1.7%, Dealer I -1.5%
+
+HIDDEN BY TARGET SETTING
+Dealer E and Dealer K both carry lower targets than their history
+would justify, so Achievement_Percent understates the decline.
+Achievement of 70.5% and 73.2% is bad — but the underlying volume
+loss is worse than those figures suggest.
+
+[hypothesis] All three are Tier-2. Whether that is meaningful or
+coincidence needs the competitive context, which is not in this
+file.</div>
+<div class="tip"><strong>💡 Instruction 2 is the important one.</strong> Without it, AI reports fifteen "declining" dealers and the real three get lost in the noise. Forcing it to establish the baseline first is the difference between a useful answer and an alarming, useless one.</div>
+</div></div>
+
+<!-- P3 -->
+<div class="cs" onclick="tcs(this)"><div class="cs-head"><h3><span class="cst cst-d">LIVE DEMO</span> Prompt 3: Product Mix Erosion</h3><span class="csa">▼</span></div><div class="cs-body">
+<p><span class="badge badge-time">⏱ 3 min</span> <span class="badge badge-impact">The one volume reporting cannot see</span></p>
+<span class="prompt-label">COPY-PASTE PROMPT</span>
+<div class="prompt"><button class="copy-btn" onclick="cp(this,event)">📋 Copy</button>Analyse Premium_Mix_Percent in the uploaded dataset.
+
+1. BY REGION: average premium mix in the first 3 months versus the
+   last 3 months. Show both figures and the change.
+
+2. Identify any region where premium mix has fallen materially
+   while Order_Volume_Index held roughly steady. Explain in plain
+   terms what that means commercially — a business can hit its
+   volume target and still be losing value.
+
+3. BY DEALER within that region: which dealers drive the shift, and
+   which held their mix?
+
+4. Cross-check: does the mix shift track with City_Tier, with
+   Training_Sessions_Attended, or with neither?
+
+RULES:
+- Cite region, dealer and month for every figure.
+- Do not state a cause. Label explanations [hypothesis] and say
+  what evidence would test each one.
+- Do not translate index numbers into currency or estimate a
+  financial impact — you do not have the price data.</div>
+<span class="output-label">WHAT GOOD OUTPUT LOOKS LIKE</span>
+<div class="output">PREMIUM MIX BY REGION — first 3 months vs last 3
+
+North   30.8%  ->  17.1%    -13.7 points
+West    34.5%  ->  34.5%     no change
+South   32.8%  ->  32.2%     -0.6 points
+East    31.0%  ->  31.2%     +0.2 points
+
+NORTH IS THE OUTLIER, AND VOLUME HID IT
+
+North's order volume held up across the year — Dealer G averages
+97.3% achievement, Dealer I 94.2%, and neither would appear on a
+volume-based exception report. But the mix has almost halved. The
+region is selling a similar quantity of a cheaper basket.
+
+This is the pattern volume reporting is structurally unable to see:
+the target is met, the trend line looks flat, and value per unit
+falls every month.
+
+BY DEALER — North
+The shift is broad rather than concentrated in one dealer. All five
+North dealers show declining premium mix across the period, which
+argues against a single-dealer explanation.
+
+CROSS-CHECKS
+City_Tier: does not explain it. North contains Metro, Tier-2 and
+Tier-3 dealers and all move the same way.
+Training_Sessions_Attended: no clear relationship in this file.
+
+[hypothesis 1] A competitor is pricing aggressively at the premium
+end specifically in the North. Test: win/loss data by system
+family, which is not in this file.
+[hypothesis 2] A change in what the North team is leading with.
+Test: ask them what they quote first.
+[hypothesis 3] End-customer budgets shifting. Test: project type
+mix, not in this file.
+
+All three are testable. None is supported by this dataset alone.</div>
+<div class="success"><strong>✅ This is usually the moment the room goes quiet.</strong> Everyone recognises a region that hits its number every month. The idea that it could be losing value the whole time, invisibly, lands hard.</div>
+</div></div>
+
+<!-- P4 -->
+<div class="cs" onclick="tcs(this)"><div class="cs-head"><h3><span class="cst cst-d">LIVE DEMO</span> Prompt 4: Dispatch &amp; Supply Performance</h3><span class="csa">▼</span></div><div class="cs-body">
+<p><span class="badge badge-time">⏱ 3 min</span></p>
+<span class="prompt-label">COPY-PASTE PROMPT</span>
+<div class="prompt"><button class="copy-btn" onclick="cp(this,event)">📋 Copy</button>Analyse supply performance in the uploaded dataset.
+
+1. BY REGION: average Order_To_Dispatch_Days and
+   On_Time_Dispatch_Percent. Rank best to worst.
+
+2. For the worst region, check whether the problem is constant
+   across the 12 months or whether it changes at a point in time.
+   If it changes, name the month and show the before and after
+   averages.
+
+3. Total Short_Supply_Incidents by region and by month. Does the
+   pattern match the dispatch pattern?
+
+4. SEPARATE THE DEALER FROM THE REGION: for dealers in the worst
+   region, state clearly which of their problems are theirs and
+   which are the region's. A dealer should not be marked down for a
+   dispatch issue they do not control.
+
+5. Does poor dispatch correlate with complaints or with volume
+   decline in this data? Answer honestly, including if it does not.
+
+RULES: cite figures, no invented causes, label [hypothesis].</div>
+<span class="output-label">WHAT GOOD OUTPUT LOOKS LIKE</span>
+<div class="output">SUPPLY PERFORMANCE BY REGION
+
+Region   Dispatch days   On-time %
+West         11.2          72.9
+North        12.2          70.8
+South        11.4          72.7
+East         18.5          55.2   <-- clear outlier
+
+East takes roughly 60% longer to dispatch than the other three and
+delivers on time barely half the time.
+
+IT IS NOT CONSTANT — IT DEGRADES
+
+East, first 5 months:  16.7 days average
+East, last 6 months:   20.0 days average
+
+Already the worst region at the start of the period, and getting
+worse. Short_Supply_Incidents in East also rise in the second half,
+consistent with the dispatch pattern.
+
+SEPARATING DEALER FROM REGION — East dealers
+
+Dealer Q: audit 62.3, overdue 117 days, 35 complaints. The audit
+and credit problems are Dealer Q's own. The dispatch delays are
+not.
+Dealer T: 22 complaints, otherwise unremarkable commercially.
+Dealer R, Dealer S: no dealer-specific issues visible. Their
+service numbers reflect the region.
+
+This distinction matters for the review conversation. Three of four
+East dealers have no problem of their own.
+
+CORRELATION — answering honestly
+
+Complaints: East does show elevated complaints, and Gasket seating
+and Sash alignment cluster there. Whether that is caused by
+dispatch pressure or is a separate fabrication issue cannot be
+determined from this file. [hypothesis]
+
+Volume decline: no. The three worst-declining dealers (E, K, N) are
+in West, North and South. East dealers are among the most stable in
+the portfolio despite the worst service. On this data, dispatch
+performance and volume loss are not linked.</div>
+<div class="tip"><strong>💡 Instruction 5 earns its place.</strong> Asking AI to report a correlation that <em>isn't</em> there is how you find out whether it's analysing or pattern-matching to what you clearly expected.</div>
+</div></div>
+
+<!-- P5 -->
+<div class="cs" onclick="tcs(this)"><div class="cs-head"><h3><span class="cst cst-d">LIVE DEMO</span> Prompt 5: Quality &amp; Complaint Patterns</h3><span class="csa">▼</span></div><div class="cs-body">
+<p><span class="badge badge-time">⏱ 3 min</span> <span class="badge badge-risk">⚠ Brand risk, not commercial risk</span></p>
+<span class="prompt-label">COPY-PASTE PROMPT</span>
+<div class="prompt"><button class="copy-btn" onclick="cp(this,event)">📋 Copy</button>Analyse quality and complaints in the uploaded dataset.
+
+1. Total Complaints_Raised vs Complaints_Closed for the portfolio.
+   How many remain open? Which dealers carry the oldest open
+   complaints (Open_Complaint_Age_Days)?
+
+2. Top_Defect_Category: which categories dominate overall, and does
+   any category cluster in a particular region or dealer rather
+   than being spread evenly?
+
+3. Cross-reference Fabrication_Audit_Score with Complaints_Raised.
+   Which dealers have BOTH a low audit score and high complaints?
+
+4. Now the important part: for those dealers, what is their
+   Achievement_Percent? Say plainly whether a review based on
+   commercial performance alone would have flagged them.
+
+5. Check Training_Sessions_Attended for those dealers against the
+   portfolio. Is there a visible relationship, or not?
+
+RULES:
+- Do NOT determine whether any defect is a product issue, a
+  fabrication issue or an installation issue. That requires
+  investigation, not data.
+- Cite dealer and month. Label all explanations [hypothesis].</div>
+<span class="output-label">WHAT GOOD OUTPUT LOOKS LIKE</span>
+<div class="output">COMPLAINT VOLUME
+Raised 324, closed 209 across the period — roughly 115 open.
+33 dealer-months carry an open complaint older than 45 days.
+
+DEFECT CATEGORIES — portfolio
+Sash alignment 29, Gasket seating 25, Reinforcement omission 22,
+Hardware fitment 20, Surface mark 17, Welded corner finish 16.
+
+Clustering: Sash alignment and Gasket seating concentrate in East.
+Reinforcement omission appears most in West. The spread is not
+uniform, which is itself worth a conversation.
+
+LOW AUDIT + HIGH COMPLAINTS
+
+Dealer Q (East):  audit 62.3, complaints 35
+Dealer B (West):  audit 63.3, complaints 26
+
+These are the two lowest audit scores in the portfolio and two of
+the three highest complaint counts.
+
+AND HERE IS THE PROBLEM
+
+Dealer Q achievement: 94.9%
+Dealer B achievement: 96.8%
+
+Both are hitting their numbers. A review built on volume and
+achievement would not flag either of them. Dealer B in particular
+is a Metro dealer with strong volume — on a commercial dashboard
+they look like a good account.
+
+The exposure here is not revenue. It is that windows carrying the
+VEKA name are being fabricated to a standard the audit score says
+is well below the rest of the channel, and the end customer will
+attribute any failure to the profile, not the fabricator.
+
+TRAINING
+Both dealers sit at or below portfolio-average training attendance.
+The relationship across all 20 dealers is not strong enough in this
+file to call it a pattern. [hypothesis] Targeted retraining is the
+obvious first intervention, but the audit sub-scores would be
+needed to know what to train on — they are not in this file.</div>
+</div></div>
+
+<!-- P6 -->
+<div class="cs" onclick="tcs(this)"><div class="cs-head"><h3><span class="cst cst-d">LIVE DEMO</span> Prompt 6: Credit &amp; Outstanding Health</h3><span class="csa">▼</span></div><div class="cs-body">
+<p><span class="badge badge-time">⏱ 2 min</span></p>
+<span class="prompt-label">COPY-PASTE PROMPT</span>
+<div class="prompt"><button class="copy-btn" onclick="cp(this,event)">📋 Copy</button>Analyse credit exposure in the uploaded dataset.
+
+1. List every dealer whose Overdue_Days exceeds 60 in any month.
+   For each: the peak value, the month it peaked, and whether the
+   trend across the 12 months is improving, flat or worsening.
+
+2. Credit_Utilisation_Percent: flag any dealer exceeding 100% in
+   any month, with the month.
+
+3. Cross-reference: for the dealers in part 1, is their
+   Order_Volume_Index rising, flat or falling? A dealer with
+   rising outstanding and falling volume is a different problem
+   from one with rising outstanding and rising volume — say which
+   each one is.
+
+4. Rank the dealers in part 1 by urgency, and state the basis for
+   your ranking.
+
+RULES:
+- These are index values, not currency. Do not convert them or
+  estimate an amount at risk.
+- Cite dealer and month. No recommendation on credit action —
+  that is a Finance decision. Give me the picture, not the verdict.</div>
+<span class="output-label">WHAT GOOD OUTPUT LOOKS LIKE</span>
+<div class="output">DEALERS EXCEEDING 60 DAYS OVERDUE
+
+Dealer Q (East, Tier-2)
+  Peak 117 days
+  Trend: worsening steadily through the second half
+  Outstanding_Index rises across the year
+  Volume: falling (-15.5% first 3 vs last 3)
+  PROFILE: rising exposure, falling volume. The worse of the two
+  patterns — the account is shrinking while owing more.
+
+Dealer C (West, Tier-2)
+  Peak 107 days
+  Trend: worsening; Credit_Utilisation_Percent climbs across the
+  period
+  Volume: falling (-17.0%)
+  PROFILE: same pattern as Dealer Q, less severe on the audit and
+  complaint side.
+
+15 dealer-months across the portfolio exceed 60 days overdue, and
+they concentrate in these two dealers in the later months rather
+than being spread across the channel.
+
+CREDIT UTILISATION
+Dealer Q and Dealer C approach and at points exceed their limit in
+the later months. No other dealer shows sustained high utilisation.
+
+URGENCY RANKING — basis stated
+
+1. Dealer Q — highest overdue, worsening trend, falling volume,
+   and separately the worst audit score and highest complaint
+   count in the portfolio. Every field points the same way.
+2. Dealer C — same directional pattern, no quality issue attached.
+
+Basis: peak overdue, direction of travel, and whether volume is
+supporting the exposure. I have not weighted these — I have shown
+you the components so you can weight them.
+
+NOT MY CALL: any decision on credit hold, limit revision or
+collection action. This is the picture only.</div>
+<div class="success"><strong>✅ Note the last two lines.</strong> Asking for the picture and explicitly not the verdict keeps the analysis useful and keeps the decision where it belongs. Worth adding to any prompt that touches credit, HR or pricing.</div>
+</div></div>
+
+<!-- P7 -->
+<div class="cs" onclick="tcs(this)"><div class="cs-head"><h3><span class="cst cst-d">LIVE DEMO</span> Prompt 7: Who Are Our Best Dealers, and Why</h3><span class="csa">▼</span></div><div class="cs-body">
+<p><span class="badge badge-time">⏱ 2 min</span> <span class="badge badge-impact">The prompt everyone forgets to run</span></p>
+<span class="prompt-label">COPY-PASTE PROMPT</span>
+<div class="prompt"><button class="copy-btn" onclick="cp(this,event)">📋 Copy</button>Using the uploaded dataset, identify the strongest dealers and what
+distinguishes them.
+
+1. Rank all 20 dealers on a combined "healthy account" view:
+   Achievement_Percent, Premium_Mix_Percent,
+   Fabrication_Audit_Score, Overdue_Days (lower is better),
+   complaint closure rate, and stability of volume across months.
+
+2. For the top 3: which fields separate them from the portfolio
+   average? Give the values side by side.
+
+3. Is there anything the top 3 share that the bottom 3 do not —
+   City_Tier, Dealer_Since, Training_Sessions_Attended, region?
+   Say honestly if there is no clear pattern.
+
+4. What would you want to know that this dataset does not contain,
+   in order to understand why these dealers perform well?
+
+RULES: cite figures, label [hypothesis], no invented causes.</div>
+<span class="output-label">WHAT GOOD OUTPUT LOOKS LIKE</span>
+<div class="output">STRONGEST ACCOUNTS
+
+1. Dealer A (West, Metro, since 2014)
+   Audit 95.2 vs portfolio ~84
+   Premium mix 41.3% vs portfolio ~32%
+   Achievement 95.5%, zero overdue
+   Highest total volume index in the portfolio
+
+2. Dealer L (South, Metro, since 2015)
+   Audit 94.7, premium mix 41.5%, achievement 95.8%, zero overdue
+
+3. Dealer I (North, Metro, since 2013)
+   Most stable volume in the file (-1.5% first 3 vs last 3),
+   achievement 94.2%, no credit or quality flags
+
+WHAT SEPARATES THEM
+Audit score is the sharpest differentiator: 95.2 and 94.7 against a
+portfolio average near 84 and a floor of 62.3. Premium mix is the
+second: the top accounts sell a richer basket, not just more of it.
+
+SHARED CHARACTERISTICS — honestly assessed
+All three top dealers are Metro and long-standing (2013–2015). The
+three weakest on volume trend (E, K, N) are all Tier-2 and more
+recent. That is a real pattern in this file.
+
+But it is not evidence of causation, and the sample is 20 dealers.
+Dealer D and Dealer M are also Metro and long-standing with
+unremarkable audit scores, and Dealer Q is Tier-2 with the worst
+audit but near-average achievement. The pattern is suggestive, not
+explanatory. [hypothesis]
+
+WHAT THIS DATASET CANNOT TELL YOU
+- Local market size and competitive intensity per dealer
+- Whether the dealer's own team is stable
+- What they actually lead with when quoting
+- Whether the audit score reflects investment in tooling or
+  something else
+- Win/loss reasons
+
+Without at least the first and the last of these, "Metro dealers
+perform better" may simply mean "larger markets produce larger
+numbers".</div>
+<div class="tip"><strong>💡 Instruction 4 is the habit worth building.</strong> "What would you need that this file doesn't have?" turns an analysis into a data-collection plan, and it's the fastest way to find out whether your monthly report is even measuring the right things.</div>
+</div></div>
+
+<!-- P8 -->
+<div class="cs" onclick="tcs(this)"><div class="cs-head"><h3><span class="cst cst-d">LIVE DEMO</span> Prompt 8: The Management Dashboard</h3><span class="csa">▼</span></div><div class="cs-body">
+<p><span class="badge badge-time">⏱ 4 min</span> <span class="badge badge-impact">Run last — it uses everything above</span></p>
+<span class="prompt-label">COPY-PASTE PROMPT</span>
+<div class="prompt"><button class="copy-btn" onclick="cp(this,event)">📋 Copy</button>Build a one-page management dashboard from the uploaded dataset,
+for a monthly channel review with regional heads.
+
+STRUCTURE:
+
+1. HEADLINE — three lines maximum. What leadership must know.
+
+2. STATUS TABLE — one row per region. Columns: Volume,
+   Mix, Service, Quality, Credit. Use 🟢🟡🔴 in each cell, with the
+   supporting figure in brackets.
+
+3. THE FIVE THINGS THAT NEED A DECISION — each with: what the data
+   shows, which dealer or region, who should own it, and what the
+   decision actually is. Ordered by urgency.
+
+4. WHAT IS GOING WELL — two or three items. Do not skip this.
+
+5. WHAT THIS DATA CANNOT TELL US — the questions leadership will
+   ask that this file cannot answer. Be explicit.
+
+RULES:
+- Every figure cites its source field.
+- Index numbers stay index numbers. No currency, no financial
+  impact estimates, no forecasts.
+- Do not recommend a commercial action. Frame each item as a
+  decision for a named human role.
+- Separate what the data shows from what it might mean. Any
+  interpretation goes in brackets marked [hypothesis].
+- Under one page.
+
+END WITH: "Prepared by AI from the channel dataset. Every figure
+requires verification against source systems before use.
+For approval by: ______"</div>
+<span class="output-label">WHAT GOOD OUTPUT LOOKS LIKE</span>
+<div class="output">CHANNEL REVIEW DASHBOARD — 20 dealers, 12 months
+
+HEADLINE
+Portfolio achievement 93.0% of target. Three dealers have lost
+close to half their volume gradually and were never escalated.
+Two dealers hit their commercial numbers while carrying the worst
+fabrication audit scores in the channel.
+
+REGIONAL STATUS
+Region  Volume        Mix            Service         Quality      Credit
+West    🟡 (mixed)    🟢 (34.5 flat) 🟢 (11.2 d)     🟠 (Dlr B)   🟠 (Dlr C)
+North   🟠 (Dlr K)    🔴 (30.8→17.1) 🟢 (12.2 d)     🟢           🟢
+South   🟠 (Dlr N)    🟢 (32.8→32.2) 🟢 (11.4 d)     🟢           🟢
+East    🟢 (stable)   🟢 (31.0→31.2) 🔴 (18.5 d,     🔴 (Dlr Q)   🔴 (Dlr Q)
+                                        55.2% OTD)
+
+NEEDS A DECISION
+
+1. Dealer Q — worst audit (62.3), worst overdue (117 d), most
+   complaints (35), volume falling. Owner: Regional Head East +
+   Finance. Decision: continue, remediate, or restrict.
+2. North premium mix 30.8% → 17.1% while volume held. Owner: Head
+   of Sales North. Decision: is this a pricing response, a
+   competitive shift, or how the team is selling? [hypothesis]
+3. Dealers E, K, N — 59%, 56% and 46% below their own first
+   quarter, gradually. Owner: respective Regional Heads. Decision:
+   who visits, and this month or next.
+4. East dispatch 18.5 days and degrading (16.7 → 20.0). Owner:
+   Supply Chain. Decision: is this capacity, routing, or planning.
+5. Dealer B — achievement 96.8%, audit 63.3, 26 complaints.
+   Owner: Technical Services. Decision: audit and retrain, or
+   escalate.
+
+GOING WELL
+- Dealer A and Dealer L: audit 95.2 and 94.7, premium mix above
+  41%, zero overdue. Worth understanding and copying.
+- West and South premium mix held flat all year.
+- Credit issues are contained to two dealers, not spreading.
+
+WHAT THIS DATA CANNOT TELL US
+- Why North's mix fell — no win/loss or competitor data in the file
+- Whether East's dispatch problem is capacity or planning
+- Whether Dealer Q's audit score reflects tooling, training or
+  staffing
+- Any rupee value of any of the above — this file is indexed
+
+Prepared by AI from the channel dataset. Every figure requires
+verification against source systems before use.
+For approval by: ______</div>
+<div class="warning"><strong>⚠️ Section 5 is not optional.</strong> A dashboard that doesn't state its own blind spots invites leadership to act as if it had none. Insist on it in every reporting prompt you write.</div>
+</div></div>
+
+</div>
+</div>
+
+<!-- PART 4: CASE STUDIES -->
+<div class="section">
+<div class="section-head" onclick="toggle(this)"><h2>📂 Part 4: Case Studies — What AI Caught, and What It Got Wrong</h2><span class="arrow">▼</span></div>
+<div class="section-body">
+<p style="margin-bottom:15px;opacity:0.8">Five findings from this dataset. Four are things a normal monthly review misses. The fifth is a mistake AI makes reliably — and it is the most important one on the page.</p>
+
+<div class="cs" onclick="tcs(this)"><div class="cs-head"><h3><span class="cst cst-c">CASE STUDY</span> CS-1: A Third of the Volume, Gone in Small Steps</h3><span class="csa">▼</span></div><div class="cs-body">
+<div class="cb" style="border-left:3px solid #FF5252"><h4 style="color:#FF5252">📍 What the data shows</h4><p>Dealer E's volume index falls from 30.4 (first 3 months) to 12.5 (last 3). Dealer K falls 56.3%, Dealer N 46.4%. No single month shows a dramatic collapse in any of them.</p></div>
+<div class="cb" style="border-left:3px solid #FF9800"><h4 style="color:#FF9800">💥 Why a human review missed it</h4><p>Month-on-month reporting compares this month to last month. A 4–5% monthly decline never triggers anything — it reads as normal fluctuation, and there is always a plausible local reason. Twelve of those and the account is half gone. Nobody was negligent; the reporting shape simply cannot see it.</p></div>
+<div class="cb" style="border-left:3px solid #4CAF50"><h4 style="color:#4CAF50">✅ What AI did differently</h4><p>It compared a three-month window at each end of the year rather than adjacent months, and it did that for all 20 dealers at once. That is a trivial analysis that nobody had time to run consistently. The finding is not clever — it is just done.</p></div>
+</div></div>
+
+<div class="cs" onclick="tcs(this)"><div class="cs-head"><h3><span class="cst cst-c">CASE STUDY</span> CS-2: North Hit Its Target While Losing Value All Year</h3><span class="csa">▼</span></div><div class="cs-body">
+<div class="cb" style="border-left:3px solid #FF5252"><h4 style="color:#FF5252">📍 What the data shows</h4><p>North's premium mix falls from 30.8% to 17.1% across twelve months. Over the same period, North's volume holds — Dealer G averages 97.3% achievement, Dealer I 94.2%. The decline is spread across all five North dealers, not concentrated in one.</p></div>
+<div class="cb" style="border-left:3px solid #FF9800"><h4 style="color:#FF9800">💥 Why a human review missed it</h4><p>Because the region passed every test it was given. Volume: on target. Achievement: green. Credit: clean. Service: fine. Mix sat in a column nobody had a threshold for, so nobody had a reason to look at it.</p></div>
+<div class="cb" style="border-left:3px solid #4CAF50"><h4 style="color:#4CAF50">✅ The lesson</h4><p>This is the most valuable finding in the dataset and the hardest to reach manually, because it requires holding two fields together across time. It also has no answer in the file — AI correctly produced three testable hypotheses and said which data would settle them, rather than picking one.</p></div>
+</div></div>
+
+<div class="cs" onclick="tcs(this)"><div class="cs-head"><h3><span class="cst cst-c">CASE STUDY</span> CS-3: Two Dealers Hitting Target, Damaging the Brand</h3><span class="csa">▼</span></div><div class="cs-body">
+<div class="cb" style="border-left:3px solid #FF5252"><h4 style="color:#FF5252">📍 What the data shows</h4><p>Dealer Q: audit 62.3, 35 complaints, achievement 94.9%. Dealer B: audit 63.3, 26 complaints, achievement 96.8%. The two lowest audit scores in the channel, both attached to entirely respectable commercial performance.</p></div>
+<div class="cb" style="border-left:3px solid #FF9800"><h4 style="color:#FF9800">💥 Why a human review missed it</h4><p>Because commercial and quality data live in different reports, owned by different functions, reviewed in different meetings. Nobody was looking at both columns in the same row. Dealer B is a Metro account hitting 96.8% — on the sales dashboard they are a success story.</p></div>
+<div class="cb" style="border-left:3px solid #4CAF50"><h4 style="color:#4CAF50">✅ Why it matters more than the revenue</h4><p>A homeowner with a poorly fabricated window blames the window, not the fabricator. Volume from a dealer whose audit score sits 20 points below the channel is not straightforwardly good news. AI found this in one pass because it does not respect the boundaries between your reports.</p></div>
+</div></div>
+
+<div class="cs" onclick="tcs(this)"><div class="cs-head"><h3><span class="cst cst-c">CASE STUDY</span> CS-4: Three Good Dealers Marked Down for Someone Else's Problem</h3><span class="csa">▼</span></div><div class="cs-body">
+<div class="cb" style="border-left:3px solid #FF5252"><h4 style="color:#FF5252">📍 What the data shows</h4><p>East averages 18.5 dispatch days against 11–12 elsewhere, with on-time at 55.2%. It degrades from 16.7 to 20.0 days after month 6. Dealers R, S and T show no dealer-specific problems — their service metrics reflect the region they sit in.</p></div>
+<div class="cb" style="border-left:3px solid #FF9800"><h4 style="color:#FF9800">💥 The trap</h4><p>A dealer scorecard that includes on-time delivery will mark down every East dealer, including the three doing nothing wrong. They then arrive at their review to be told about a problem they cannot fix, which is the fastest way to lose a good dealer's goodwill.</p></div>
+<div class="cb" style="border-left:3px solid #4CAF50"><h4 style="color:#4CAF50">✅ The prompt instruction that fixed it</h4><p>"Separate the dealer from the region: state clearly which problems are theirs and which are the region's." Without that line, the analysis blames the dealers. With it, one conversation goes to Supply Chain and three difficult meetings never need to happen.</p></div>
+</div></div>
+
+<div class="cs" onclick="tcs(this)"><div class="cs-head"><h3><span class="cst cst-w">CAUTIONARY</span> CS-5: When AI Got It Confidently Wrong</h3><span class="csa">▼</span></div><div class="cs-body">
+<div class="cb" style="border-left:3px solid #FF5252"><h4 style="color:#FF5252">📍 What happened</h4><p>Asked simply to "find declining dealers", AI returned a list of <strong>fifteen</strong> dealers with negative trends and described the portfolio as being in broad decline. Dealer A, one of the two best accounts in the channel, appeared on the list at −8.4%.</p></div>
+<div class="cb" style="border-left:3px solid #FF9800"><h4 style="color:#FF9800">💥 Why it was wrong</h4><p>Months 10–12 in this dataset are a seasonal low and months 2–4 a seasonal high. Comparing them makes almost every dealer look negative. The analysis was arithmetically correct and completely misleading. Acting on it would have meant fifteen difficult dealer conversations, and the three that genuinely mattered buried among them.</p></div>
+<div class="cb" style="border-left:3px solid #4CAF50"><h4 style="color:#4CAF50">✅ The fix — one instruction</h4><p>"Before you interpret anything, check whether the portfolio as a whole declines over the same window. If it does, state the portfolio change first, then re-state each dealer relative to it." Adding that reduced fifteen names to three, correctly.</p></div>
+<div class="cb" style="border-left:3px solid #2196F3"><h4 style="color:#64B5F6">📌 The general lesson</h4><p>AI will not tell you it lacks a baseline. It will produce a confident, well-formatted, internally consistent answer to the question you asked — including when the question was missing the context that made it meaningful. <strong>Always ask for the baseline before the exception.</strong> This applies to every comparison you will ever run: against what, over what period, compared to whom.</p></div>
+</div></div>
+
+</div>
+</div>
+
+<!-- PART 5: DATA PROTECTION -->
+<div class="section">
+<div class="section-head" onclick="toggle(this)"><h2>🔒 Part 5: Anonymise Before Uploading</h2><span class="arrow">▼</span></div>
+<div class="section-body">
+<div class="warning"><strong>⚠️ Today's dataset is already safe. Your real one is not.</strong> The file you used in this session ships with dealers as A–T and every value indexed. Your actual channel report has dealer names, rupee values, margins and contact details. Session 3 covers the full framework — this is the two-minute working version.</div>
+
+<div class="card">
+<h3>Quick Anonymisation — 2 Minutes in Excel</h3>
+<table>
+<tr><th>Field</th><th>Do this</th><th>Why it still works</th></tr>
+<tr><td>Dealer / customer names</td><td>Find-and-replace with Dealer A, B, C…</td><td>AI needs to know rows differ, not what they're called</td></tr>
+<tr><td>Volume and value</td><td>Divide by a factor only you know, or index so the largest = 100</td><td>Every ratio, trend and comparison is unchanged</td></tr>
+<tr><td>Margins and discounts</td><td>Remove the column entirely</td><td>Almost never needed for the analysis you're running</td></tr>
+<tr><td>Regions and cities</td><td>Region 1–4, or keep if not identifying</td><td>Keep only if you need the geographic pattern</td></tr>
+<tr><td>Contact names, phones, emails</td><td>Delete the columns</td><td>Never relevant to an analysis</td></tr>
+<tr><td>Individual employee data</td><td>Never upload, in any form</td><td>No exceptions. Session 3 explains the legal position.</td></tr>
+</table>
+<div class="tip"><strong>💡 Do it in the file, not in your head.</strong> Find-and-replace on a copy is repeatable and complete. Retyping "carefully" is how one row slips through — and one row is enough.</div>
+<div class="warning"><strong>⚠️ Then check for re-identification.</strong> "Dealer A, West, Metro, since 2014, highest volume in the portfolio" identifies exactly one company to anyone in the industry. Removing the name is not sufficient if the remaining fields point to one dealer. Drop a field or widen a category.</div>
+</div>
+</div>
+</div>
+
+<!-- PART 6: TEAM CHALLENGE -->
+<div class="section">
+<div class="section-head" onclick="toggle(this)"><h2>👨‍💻 Part 6: Hands-On Team Challenge (20 minutes)</h2><span class="arrow">▼</span></div>
+<div class="section-body">
+
+<div class="exercise"><h3>🏋️ Team Challenge: Own One Question, Present in Two Minutes</h3><p>Four teams. Each uploads the same 240-row CSV and runs ONE assigned prompt, then presents its top three findings in two minutes. Judged on: is the finding real, is it actionable, and did they say what they could not conclude.</p></div>
+
+<div class="grid-2">
+<div class="card">
+<h3>Team 1: The Risk Desk 🔍</h3>
+<p>Prompt 1 (Dealer Risk Scan). Find the three accounts that need attention first. Which one gets the visit this month?</p>
+<p style="font-size:13px;opacity:0.7;margin-top:8px">Judge asks: "If you can only act on one, which — and what do you say to them?"</p>
+</div>
+<div class="card">
+<h3>Team 2: The Value Hunters 💰</h3>
+<p>Prompt 3 (Mix Erosion). Find where the business is losing value without losing volume. Explain it to someone who only reads the volume number.</p>
+<p style="font-size:13px;opacity:0.7;margin-top:8px">Judge asks: "What would you need to prove why it's happening?"</p>
+</div>
+<div class="card">
+<h3>Team 3: The Brand Guards ⚠️</h3>
+<p>Prompt 5 (Quality &amp; Complaints). Find the dealers whose commercial numbers hide a quality problem. Say why it matters more than the revenue.</p>
+<p style="font-size:13px;opacity:0.7;margin-top:8px">Judge asks: "Would your current monthly review have caught this? Honestly?"</p>
+</div>
+<div class="card">
+<h3>Team 4: The Board Briefers 📋</h3>
+<p>Prompt 8 (Dashboard). Build the one-pager and present it as if leadership is listening right now.</p>
+<p style="font-size:13px;opacity:0.7;margin-top:8px">Judge asks: "What decision does leadership make today, and what can't you tell them?"</p>
+</div>
+</div>
+
+<div class="card">
+<h3>Scoring — 20 points</h3>
+<table>
+<tr><th>Criterion</th><th>Points</th><th>What judges look for</th></tr>
+<tr><td>Finding is real</td><td>5</td><td>Cites dealer and month; the figure checks out in the file</td></tr>
+<tr><td>Finding is actionable</td><td>5</td><td>Names an owner and a decision, not just an observation</td></tr>
+<tr><td>Stated the limits</td><td>5</td><td>Said clearly what the data cannot conclude. Teams that skip this lose all five.</td></tr>
+<tr><td>Clarity in two minutes</td><td>5</td><td>No slides, no preamble, straight to the finding</td></tr>
+</table>
+<div class="tip"><strong>💡 Facilitator:</strong> the "stated the limits" five points are worth more than they look. Weighting honesty as highly as insight is what stops the room walking out treating AI output as fact — and it sets up Session 3 perfectly.</div>
+</div>
+</div>
+</div>
+
+<!-- PART 7: ADVANCED -->
+<div class="section">
+<div class="section-head" onclick="toggle(this)"><h2>🚀 Part 7: Follow-Up Patterns &amp; Your Prompt Library</h2><span class="arrow">▼</span></div>
+<div class="section-body">
+
+<div class="card">
+<h3>6 Follow-Up Questions That Deepen Any Analysis</h3>
+<table>
+<tr><th>#</th><th>Ask this</th><th>What it gets you</th></tr>
+<tr><td>1</td><td>"Compared to what? Show me the baseline before the exception."</td><td>Kills the seasonality error from CS-5. Ask it first, every time.</td></tr>
+<tr><td>2</td><td>"Which of those figures did you calculate, and which did you read?"</td><td>Isolates where an arithmetic error could be hiding</td></tr>
+<tr><td>3</td><td>"What in this file contradicts what you just told me?"</td><td>Surfaces the counter-evidence AI skipped over</td></tr>
+<tr><td>4</td><td>"What would you need that this file doesn't contain?"</td><td>Turns the analysis into a data-collection plan</td></tr>
+<tr><td>5</td><td>"Give me three explanations, and what would distinguish them."</td><td>Stops a single confident cause from becoming the accepted story</td></tr>
+<tr><td>6</td><td>"Now write it for a dealer who is about to be told this."</td><td>Reframes a finding as a conversation, not an accusation</td></tr>
+</table>
+<div class="success"><strong>✅ Question 3 is the most under-used prompt in this entire programme.</strong> AI builds a coherent narrative and drops the rows that don't fit. Asking directly for the contradictions gets them back.</div>
+</div>
+
+<div class="card">
+<h3>Build Your Prompt Library</h3>
+<p>Save the prompts you actually used, with the changes you made. A prompt you tuned for your own report beats a generic one every month afterwards.</p>
+<ul>
+<li><strong>Name it for the task, not the tool</strong> — "Monthly channel risk scan", not "ChatGPT prompt 3"</li>
+<li><strong>Save the whole thing</strong>, including the rules section. That section is what makes it safe to reuse.</li>
+<li><strong>Note what it got wrong the first time</strong> and the instruction that fixed it. That note is worth more than the prompt.</li>
+<li><strong>Record your baseline</strong> — how long this analysis takes you manually today. Session 4 will ask for that number.</li>
+</ul>
+<div class="info-box"><strong>Next:</strong> Session 3 covers what may and may not go into a prompt — the full three-tier framework behind Part 5. Session 4 turns your best analysis into an agent your whole team can run without knowing any of this.</div>
+</div>
+</div>
+</div>
+
+<!-- TAKEAWAYS -->
+<div class="section">
+<div class="section-head" onclick="toggle(this)"><h2>🎯 Key Takeaways</h2><span class="arrow">▼</span></div>
+<div class="section-body">
+<div class="card">
+<table>
+<tr><th>#</th><th>Rule</th><th>Why It Matters</th></tr>
+<tr><td style="font-size:20px;font-weight:800;color:#FFD600">1</td><td><strong>Ask for the baseline before the exception</strong></td><td>Without it, seasonality turns 3 real problems into 15 fake ones</td></tr>
+<tr><td style="font-size:20px;font-weight:800;color:#FFD600">2</td><td><strong>Clean the file, then prompt</strong></td><td>Merged cells and subtotal rows break more analyses than weak prompts do</td></tr>
+<tr><td style="font-size:20px;font-weight:800;color:#FFD600">3</td><td><strong>Index the values, keep the shape</strong></td><td>Every ratio and trend survives anonymisation. The rupee figure was never the insight.</td></tr>
+<tr><td style="font-size:20px;font-weight:800;color:#FFD600">4</td><td><strong>Make it cite every figure</strong></td><td>Dealer and month, and which numbers it calculated. That's how you find the error.</td></tr>
+<tr><td style="font-size:20px;font-weight:800;color:#FFD600">5</td><td><strong>Hypotheses, never causes</strong></td><td>AI spots that things move together. It cannot tell you which caused which.</td></tr>
+<tr><td style="font-size:20px;font-weight:800;color:#FFD600">6</td><td><strong>Demand the blind spots</strong></td><td>"What can't this data tell us" belongs in every report you generate</td></tr>
+<tr><td style="font-size:20px;font-weight:800;color:#FFD600">7</td><td><strong>Never for final arithmetic</strong></td><td>Structure the analysis with AI. Calculate the number that leaves the building in Excel.</td></tr>
+</table>
+</div>
+
+<div class="stats">
+<div class="stat"><span class="n">240</span><span class="l">Rows analysed</span></div>
+<div class="stat"><span class="n">8 min</span><span class="l">vs 3–5 hrs manual</span></div>
+<div class="stat"><span class="n">4</span><span class="l">Findings a review misses</span></div>
+<div class="stat"><span class="n">1</span><span class="l">Mistake AI makes reliably</span></div>
+</div>
+
+<div class="card">
+<h3>Before You Leave This Room</h3>
+<ul>
+<li>Save your best two prompts to the <strong>Prompt Library</strong></li>
+<li>Note <strong>how long your monthly analysis takes today</strong> — the "before" number for Session 4</li>
+<li>Pick <strong>one report you will run this way next month</strong>, and index a copy of the file this week</li>
+</ul>
+</div>
+</div>
+</div>
+
+</div>
+
+<script>
+function toggle(el){el.parentElement.classList.toggle('open')}
+function tcs(el){if(el.classList.contains('cs'))el.classList.toggle('cso')}
+function cp(btn,ev){var t=btn.parentElement.textContent.replace('📋 Copy','').trim();
+if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(t).then(function(){btn.textContent='✓ Copied!';setTimeout(function(){btn.textContent='📋 Copy'},2000)})}
+else{var ta=document.createElement('textarea');ta.value=t;ta.style.position='fixed';ta.style.opacity='0';document.body.appendChild(ta);ta.select();try{document.execCommand('copy')}catch(e){}document.body.removeChild(ta);btn.textContent='✓ Copied!';setTimeout(function(){btn.textContent='📋 Copy'},2000)}
+if(ev&&ev.stopPropagation)ev.stopPropagation()}
+</script>
+</body>
+</html>

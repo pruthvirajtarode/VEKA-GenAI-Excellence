@@ -1034,28 +1034,9 @@ class App {
         renderModule1: (container) => {
             const state = window.stateManager.state;
             container.innerHTML = `
-                <div class="mb-6 relative overflow-hidden rounded-lg" style="min-height: 200px; display: flex; align-items: flex-end; padding: 2rem; background: linear-gradient(to right, rgba(0,0,0,0.9), rgba(0,0,0,0.4)), url('https://images.unsplash.com/photo-1620712943543-bcc4688e7485?q=80&w=1200&auto=format&fit=crop') center/cover;">
-                    <div style="position: relative; z-index: 1;">
-                        <h2 class="page-title text-3xl mb-2" style="text-shadow: 0 2px 4px rgba(0,0,0,0.5);">Session 1 — Prompting & Communication</h2>
-                        <p class="text-white opacity-90 mt-2 text-lg">Stop asking the AI a question. Start giving it a briefing.</p>
-                    </div>
-                </div>
+                <iframe src="modules/VEKA_Module_1_Prompting_Docs.html" style="width: 100%; height: calc(100vh - 150px); border: 1px solid var(--border-color); border-radius: var(--radius-lg); margin-bottom: 2rem; box-shadow: var(--shadow-md);"></iframe>
 
                 <div class="dashboard-grid">
-                    <div class="card">
-                        <h3 class="mb-4">The C·T·P·F Framework</h3>
-                        <p class="text-muted mb-4">A good prompt requires direction, not just a question.</p>
-                        
-                        <div class="flex flex-col gap-2 mb-4">
-                            <div class="p-3 border rounded"><strong class="text-accent">C</strong>ontext - What is the background?</div>
-                            <div class="p-3 border rounded"><strong class="text-accent">T</strong>one - How should it sound?</div>
-                            <div class="p-3 border rounded"><strong class="text-accent">P</strong>ersona - Who is speaking?</div>
-                            <div class="p-3 border rounded"><strong class="text-accent">F</strong>ormat - How should it be structured?</div>
-                        </div>
-                        
-                        <a href="#/prompt-builder" class="btn btn-primary w-full">Practice in Prompt Builder ➔</a>
-                    </div>
-
                     <div class="card">
                         <h3 class="mb-4">Module 1 Checkpoint</h3>
                         <div class="flex flex-col gap-2 mb-4">
@@ -1109,28 +1090,9 @@ class App {
         renderModule2: (container) => {
             const state = window.stateManager.state;
             container.innerHTML = `
-                <div class="mb-6 relative overflow-hidden rounded-lg" style="min-height: 200px; display: flex; align-items: flex-end; padding: 2rem; background: linear-gradient(to right, rgba(0,0,0,0.9), rgba(0,0,0,0.4)), url('https://images.unsplash.com/photo-1551288049-bebda4e38f71?q=80&w=1200&auto=format&fit=crop') center/cover;">
-                    <div style="position: relative; z-index: 1;">
-                        <h2 class="page-title text-3xl mb-2" style="text-shadow: 0 2px 4px rgba(0,0,0,0.5);">Session 2 — AI for Finance & Operations</h2>
-                        <p class="text-white opacity-90 mt-2 text-lg">Data analysis, pattern spotting, and workflow automation.</p>
-                    </div>
-                </div>
+                <iframe src="modules/VEKA_Module_2_Data_Analysis.html" style="width: 100%; height: calc(100vh - 150px); border: 1px solid var(--border-color); border-radius: var(--radius-lg); margin-bottom: 2rem; box-shadow: var(--shadow-md);"></iframe>
 
                 <div class="dashboard-grid">
-                    <div class="card">
-                        <h3 class="mb-4">Data Analysis Workflow</h3>
-                        <div class="flex flex-col gap-2 mb-4">
-                            <div class="p-3 border rounded text-center">What happened?</div>
-                            <div style="text-align: center; color: var(--text-muted);">↓</div>
-                            <div class="p-3 border rounded text-center">Why might it have happened?</div>
-                            <div style="text-align: center; color: var(--text-muted);">↓</div>
-                            <div class="p-3 border rounded text-center">What should I investigate?</div>
-                            <div style="text-align: center; color: var(--text-muted);">↓</div>
-                            <div class="p-3 border rounded text-center" style="border-color: var(--accent); font-weight: bold;">Human Decision</div>
-                        </div>
-                        <a href="#/data-lab" class="btn btn-primary w-full">Open VEKA Data Lab ➔</a>
-                    </div>
-                    
                     <div class="card">
                         <h3 class="mb-4">Module 2 Checkpoint</h3>
                         <div class="flex flex-col gap-2 mb-4">
@@ -1180,24 +1142,9 @@ class App {
         renderModule3: (container) => {
             const state = window.stateManager.state;
             container.innerHTML = `
-                <div class="mb-6 relative overflow-hidden rounded-lg" style="min-height: 200px; display: flex; align-items: flex-end; padding: 2rem; background: linear-gradient(to right, rgba(0,0,0,0.9), rgba(0,0,0,0.4)), url('https://images.unsplash.com/photo-1550751827-4bd374c3f58b?q=80&w=1200&auto=format&fit=crop') center/cover;">
-                    <div style="position: relative; z-index: 1;">
-                        <h2 class="page-title text-3xl mb-2" style="text-shadow: 0 2px 4px rgba(0,0,0,0.5);">Session 3 — Sales, HR & Safe AI</h2>
-                        <p class="text-white opacity-90 mt-2 text-lg">High-stakes writing and enterprise safety principles.</p>
-                    </div>
-                </div>
+                <iframe src="modules/VEKA_Module_3_Safe_AI.html" style="width: 100%; height: calc(100vh - 150px); border: 1px solid var(--border-color); border-radius: var(--radius-lg); margin-bottom: 2rem; box-shadow: var(--shadow-md);"></iframe>
 
                 <div class="dashboard-grid">
-                    <div class="card">
-                        <h3 class="mb-4">The Safety Principles</h3>
-                        <ul style="padding-left: 1.5rem; color: var(--text-muted);" class="mb-4">
-                            <li class="mb-2"><strong class="text-main">Synthetic Data Only:</strong> No real VEKA financials, salary data, or customer lists in public tools.</li>
-                            <li class="mb-2"><strong class="text-main">Human Sign-off:</strong> AI is an assistant. The human verifies, decides, and signs off.</li>
-                            <li class="mb-2"><strong class="text-main">Never Invent:</strong> Use [confirm] or [assumption]. Cite the source row.</li>
-                        </ul>
-                        <a href="#/prompt-rescue" class="btn btn-primary w-full">Open Rescue Kit ➔</a>
-                    </div>
-                    
                     <div class="card">
                         <h3 class="mb-4">Module 3 Checkpoint</h3>
                         <div class="flex flex-col gap-2 mb-4">
@@ -1247,24 +1194,10 @@ class App {
         renderModule4: (container) => {
             const state = window.stateManager.state;
             container.innerHTML = `
-                <div class="mb-6 relative overflow-hidden rounded-lg" style="min-height: 200px; display: flex; align-items: flex-end; padding: 2rem; background: linear-gradient(to right, rgba(0,0,0,0.9), rgba(0,0,0,0.4)), url('https://images.unsplash.com/photo-1451187580459-43490279c0fa?q=80&w=1200&auto=format&fit=crop') center/cover;">
-                    <div style="position: relative; z-index: 1;">
-                        <h2 class="page-title text-3xl mb-2" style="text-shadow: 0 2px 4px rgba(0,0,0,0.5);">Session 4 — From Prompt to Asset</h2>
-                        <p class="text-white opacity-90 mt-2 text-lg">Build your Capstone AI Workflow Blueprint.</p>
-                    </div>
-                </div>
+                <iframe src="modules/VEKA_Module_4_Capstone.html" style="width: 100%; height: calc(100vh - 150px); border: 1px solid var(--border-color); border-radius: var(--radius-lg); margin-bottom: 2rem; box-shadow: var(--shadow-md);"></iframe>
 
-                <div class="card mb-6" style="border-color: var(--accent);">
-                    <div class="flex items-center justify-between flex-wrap gap-4 mb-4">
-                        <div>
-                            <h3 style="font-size: 1.5rem;" class="text-accent">Build Your VEKA AI Assistant</h3>
-                            <p class="text-muted">Turn a real workflow bottleneck into an AI asset.</p>
-                        </div>
-                        <a href="#/workflow-lab" class="btn btn-primary" style="font-size: 1.1rem; padding: 1rem 2rem;">Start Capstone Project ➔</a>
-                    </div>
-                </div>
-                
-                <div class="card">
+                <div class="dashboard-grid">
+                    <div class="card">
                     <h3 class="mb-4">Module 4 Checkpoint</h3>
                     <button id="btn-complete-m4" class="btn ${state.progress.module4 === 100 ? 'btn-secondary' : 'btn-primary'} w-full" ${state.progress.module4 === 100 ? 'disabled' : ''}>
                         ${state.progress.module4 === 100 ? 'Completed' : 'Mark Module Complete'}

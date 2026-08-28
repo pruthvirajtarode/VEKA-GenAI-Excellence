@@ -1,0 +1,783 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>M3: Safe AI — VEKA GenAI Excellence</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--bg:#0f0f1a;--card:#1a1a2e;--card2:#16213e;--border:rgba(255,255,255,0.08);--text:#e0e0e0;--accent:#FFD600;--blue:#2196F3;--green:#4CAF50;--red:#FF5252;--orange:#FF9800}
+body{font-family:'Segoe UI',Roboto,sans-serif;background:var(--bg);color:var(--text);line-height:1.6;padding-bottom:60px}
+.module-header{background:linear-gradient(135deg,#B71C1C 0%,#D32F2F 60%,#E53935 100%);padding:40px 30px;text-align:center;border-bottom:3px solid var(--accent)}
+.module-header .tag{display:inline-block;background:rgba(0,0,0,0.3);padding:4px 14px;border-radius:15px;font-size:12px;font-weight:600;margin-bottom:10px;letter-spacing:1px}
+.module-header h1{font-size:36px;font-weight:800;margin-bottom:8px}
+.module-header p{font-size:18px;opacity:0.85;max-width:750px;margin:0 auto}
+.container{max-width:1000px;margin:0 auto;padding:20px}
+
+/* Sections */
+.section{background:var(--card);border:1px solid var(--border);border-radius:12px;margin:20px 0;overflow:hidden}
+.section-head{padding:18px 24px;cursor:pointer;display:flex;align-items:center;justify-content:space-between;transition:background 0.2s}
+.section-head:hover{background:rgba(255,255,255,0.03)}
+.section-head h2{font-size:20px;font-weight:700;display:flex;align-items:center;gap:10px}
+.section-head .arrow{font-size:18px;opacity:0.5;transition:transform 0.3s}
+.section-body{padding:0 24px 24px;display:none}
+.section.open .section-body{display:block}
+.section.open .arrow{transform:rotate(180deg)}
+
+/* Cards */
+.card{background:var(--card2);border:1px solid var(--border);border-radius:8px;padding:18px;margin:12px 0}
+.card h3{font-size:17px;font-weight:600;color:var(--accent);margin-bottom:8px}
+.card h4{font-size:15px;font-weight:600;color:var(--blue);margin-bottom:6px;margin-top:10px}
+.card p,.card li{font-size:14px;opacity:0.85;line-height:1.7}
+.card ul{list-style:none;margin:8px 0}
+.card ul li{padding:4px 0 4px 22px;position:relative}
+.card ul li:before{content:"▸";position:absolute;left:0;color:var(--accent);font-weight:bold}
+
+/* Layout */
+.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:15px}
+.grid-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:15px}
+@media(max-width:768px){.grid-2,.grid-3{grid-template-columns:1fr}}
+
+/* Stats */
+.stats{display:flex;gap:15px;flex-wrap:wrap;margin:15px 0}
+.stat{background:var(--card2);border:1px solid var(--border);border-radius:8px;padding:15px;text-align:center;flex:1;min-width:120px}
+.stat .n{font-size:28px;font-weight:800;color:var(--accent);display:block}
+.stat .l{font-size:12px;opacity:0.7}
+
+/* Tables */
+table{width:100%;border-collapse:collapse;margin:12px 0;font-size:13px}
+th{background:rgba(255,255,255,0.08);padding:10px 12px;text-align:left;font-weight:600;border-bottom:2px solid var(--border)}
+td{padding:8px 12px;border-bottom:1px solid var(--border)}
+tr:hover{background:rgba(255,255,255,0.02)}
+
+/* Alerts */
+.tip{background:rgba(255,214,0,0.08);border-left:3px solid var(--accent);padding:12px 16px;margin:12px 0;border-radius:0 8px 8px 0;font-size:14px}
+.warning{background:rgba(255,82,82,0.08);border-left:3px solid var(--red);padding:12px 16px;margin:12px 0;border-radius:0 8px 8px 0;font-size:14px}
+.success{background:rgba(76,175,80,0.08);border-left:3px solid var(--green);padding:12px 16px;margin:12px 0;border-radius:0 8px 8px 0;font-size:14px}
+.info-box{background:rgba(33,150,243,0.08);border-left:3px solid var(--blue);padding:12px 16px;margin:12px 0;border-radius:0 8px 8px 0;font-size:14px}
+
+/* Prompts */
+.prompt{background:#1e1e2e;border:2px solid #69F0AE;border-radius:8px;padding:16px;margin:12px 0;font-family:'Courier New',monospace;font-size:13px;color:#a6e3a1;line-height:1.5;white-space:pre-wrap;position:relative}
+.prompt-label{display:inline-block;background:#69F0AE;color:#1e1e2e;padding:3px 12px;border-radius:15px;font-size:11px;font-weight:700;margin-bottom:8px;font-family:'Segoe UI',sans-serif}
+.copy-btn{position:absolute;top:10px;right:10px;background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.2);color:#69F0AE;padding:4px 12px;border-radius:5px;cursor:pointer;font-size:11px;font-family:'Segoe UI',sans-serif}
+
+/* Exercise */
+.exercise{background:rgba(156,39,176,0.08);border:2px solid rgba(156,39,176,0.2);border-radius:8px;padding:18px;margin:12px 0}
+.exercise h3{color:#CE93D8;font-size:16px;margin-bottom:8px}
+
+/* Badges */
+.badge{display:inline-block;padding:3px 10px;border-radius:12px;font-size:11px;font-weight:700}
+.badge-safe{background:rgba(76,175,80,0.15);color:var(--green);border:1px solid rgba(76,175,80,0.3)}
+.badge-risky{background:rgba(255,82,82,0.15);color:var(--red);border:1px solid rgba(255,82,82,0.3)}
+.badge-warn{background:rgba(255,152,0,0.15);color:var(--orange);border:1px solid rgba(255,152,0,0.3)}
+
+/* Case Study */
+.case-study{background:var(--card2);border:1px solid var(--border);border-radius:10px;margin:16px 0;overflow:hidden}
+.case-study-header{padding:14px 18px;cursor:pointer;display:flex;align-items:center;justify-content:space-between}
+.case-study-header:hover{background:rgba(255,255,255,0.03)}
+.case-study-header h3{font-size:16px;font-weight:600;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.case-study-header .cs-arrow{font-size:14px;opacity:0.4;transition:transform 0.3s}
+.case-study-body{padding:0 18px 18px;display:none}
+.case-study.cs-open .case-study-body{display:block}
+.case-study.cs-open .cs-arrow{transform:rotate(180deg)}
+.cs-tag{font-size:11px;padding:2px 8px;border-radius:10px;font-weight:600}
+.cs-tag-leak{background:rgba(255,82,82,0.15);color:#FF5252}
+.cs-tag-halluc{background:rgba(255,152,0,0.15);color:#FF9800}
+.cs-tag-good{background:rgba(76,175,80,0.15);color:#4CAF50}
+.cs-tag-policy{background:rgba(33,150,243,0.15);color:#2196F3}
+.cs-tag-global{background:rgba(156,39,176,0.15);color:#CE93D8}
+.cs-block{background:rgba(0,0,0,0.2);border-radius:6px;padding:14px;margin:10px 0;font-size:14px}
+.cs-block h4{font-size:14px;margin-bottom:6px}
+.cs-block.what-happened{border-left:3px solid #FF5252}
+.cs-block.impact{border-left:3px solid #FF9800}
+.cs-block.lesson{border-left:3px solid #4CAF50}
+.cs-block.action{border-left:3px solid #2196F3}
+
+/* Theory diagram */
+.diagram{background:rgba(0,0,0,0.3);border-radius:10px;padding:20px;margin:15px 0;text-align:center}
+.diagram .flow{display:flex;align-items:center;justify-content:center;gap:8px;flex-wrap:wrap;margin:10px 0}
+.diagram .node{background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.15);border-radius:8px;padding:10px 16px;font-size:13px;font-weight:600}
+.diagram .node-danger{border-color:rgba(255,82,82,0.4);color:#FF5252}
+.diagram .node-safe{border-color:rgba(76,175,80,0.4);color:#4CAF50}
+.diagram .arr{color:var(--accent);font-size:20px;font-weight:bold}
+</style>
+</head>
+<body>
+
+<div class="module-header">
+<div class="tag">SESSION 3</div>
+<h1>M3: Safe AI — Governance &amp; Data Protection</h1>
+<p>Theory, real-world incidents, VEKA case studies, hallucination detection, data classification, and enterprise AI policy — everything you need to use AI responsibly in a fenestration business</p>
+</div>
+
+<div class="container">
+
+<!-- OBJECTIVES -->
+<div class="section open">
+<div class="section-head" onclick="toggle(this)"><h2>🎯 Learning Objectives</h2><span class="arrow">▼</span></div>
+<div class="section-body">
+<div class="stats">
+<div class="stat"><span class="n">120</span><span class="l">Minutes</span></div>
+<div class="stat"><span class="n">12</span><span class="l">Case Studies</span></div>
+<div class="stat"><span class="n">15</span><span class="l">Quiz Scenarios</span></div>
+<div class="stat"><span class="n">3</span><span class="l">Data Tiers</span></div>
+</div>
+<div class="card"><p>By the end of this module, you will:</p><ul>
+<li>Understand how AI actually processes and stores what you type into it</li>
+<li>Know the 5 categories of AI risk relevant to a profile systems manufacturer</li>
+<li>Classify any VEKA data into 3 tiers: Public, Internal, Confidential</li>
+<li>Anonymise dealer data, quotations and reports before using AI</li>
+<li>Detect AI hallucinations in technical specifications, standards and calculations</li>
+<li>Understand India's Digital Personal Data Protection Act (DPDP 2023) in practical terms</li>
+<li>Apply a draft VEKA AI usage policy to your daily work</li>
+<li>Score 13+ out of 15 on the "Is This Safe?" quiz</li>
+</ul></div>
+
+<div class="tip"><strong>💡 Why this module sits in the middle of the programme.</strong> Sessions 1 and 2 made you faster. If we stopped there, we would have taught a room of people to move confidential commercial data around quickly. This session is what makes the rest of the programme safe to actually use.</div>
+</div>
+</div>
+
+<!-- ============================================================ -->
+<!-- PART 1: THEORY — HOW AI ACTUALLY WORKS -->
+<!-- ============================================================ -->
+<div class="section open">
+<div class="section-head" onclick="toggle(this)"><h2>🧠 Part 1: How AI Actually Works — What Happens to Your Data</h2><span class="arrow">▼</span></div>
+<div class="section-body">
+
+<div class="card">
+<h3>What is a Large Language Model (LLM)?</h3>
+<p>ChatGPT, Claude, Copilot and Gemini are Large Language Models. Think of them as extremely advanced autocomplete. They were trained on enormous quantities of text — books, websites, papers, forums — and learned the patterns in human language.</p>
+<p style="margin-top:8px"><strong>Key insight:</strong> LLMs don't "know" things the way a person does. They predict the most likely next word based on patterns they have seen. This is exactly why they can sound completely confident while being completely wrong — and why a fabricated U-value reads just as professionally as a real one.</p>
+
+<div class="diagram">
+<p style="font-size:13px;opacity:0.7;margin-bottom:10px">How an LLM generates a response:</p>
+<div class="flow">
+<div class="node">Your Prompt</div>
+<div class="arr">→</div>
+<div class="node">Pattern Matching<br/><span style="font-size:11px;opacity:0.7">against training data</span></div>
+<div class="arr">→</div>
+<div class="node">Word-by-Word<br/>Prediction</div>
+<div class="arr">→</div>
+<div class="node">Response<br/><span style="font-size:11px;opacity:0.7">(may contain errors)</span></div>
+</div>
+</div>
+<div class="info-box"><strong>Nothing in that chain checks whether the answer is true.</strong> There is no fact-checking step. Fluency and accuracy are separate things, and the model only optimises for one of them.</div>
+</div>
+
+<div class="card">
+<h3>What Happens When You Type Into a Free AI Tool?</h3>
+<div class="diagram">
+<p style="font-size:13px;opacity:0.7;margin-bottom:10px">Data flow — free consumer tools:</p>
+<div class="flow">
+<div class="node">You type a message<br/>or upload a file</div>
+<div class="arr">→</div>
+<div class="node node-danger">Sent to the provider's<br/>servers (often overseas)</div>
+<div class="arr">→</div>
+<div class="node node-danger">Retained for a<br/>period</div>
+<div class="arr">→</div>
+<div class="node node-danger">May be used to<br/>improve future models</div>
+</div>
+<p style="font-size:13px;opacity:0.7;margin-top:15px;margin-bottom:10px">Data flow — enterprise / business tier:</p>
+<div class="flow">
+<div class="node">You type a message<br/>or upload a file</div>
+<div class="arr">→</div>
+<div class="node node-safe">Sent encrypted to<br/>servers</div>
+<div class="arr">→</div>
+<div class="node node-safe">Processed under a<br/>no-training agreement</div>
+<div class="arr">→</div>
+<div class="node node-safe">NOT used<br/>for training</div>
+</div>
+</div>
+<p style="margin-top:10px"><strong>The critical difference:</strong> consumer tiers may retain your input and use it to improve the model. Business and enterprise tiers contractually do not. This is why the licence cost matters — it is the difference between a locked cabinet and a notice board.</p>
+<div class="warning"><strong>⚠️ Verify the current terms yourself before you rely on this.</strong> Retention periods and training policies change, and they differ by provider and by plan. Check the data-processing terms for the exact plan VEKA is on, and get IT to confirm it in writing. Do not rely on a training slide — including this one.</div>
+</div>
+
+<div class="card">
+<h3>Why Does This Matter for a Profile Systems Business?</h3>
+<p>VEKA sits in an unusual position: a manufacturer with trade-secret process knowledge, selling through a competitive channel, into projects won on price. That combination produces data that is unusually valuable to the wrong reader.</p>
+<div class="grid-2">
+<div>
+<h4>🪟 Data That Is Uniquely Sensitive Here</h4>
+<ul>
+<li><strong>Compound and formulation detail</strong> — the recipe is decades of R&amp;D and is not patented in most of its detail</li>
+<li><strong>Extrusion parameters, die and tooling design</strong> — process know-how competitors cannot buy</li>
+<li><strong>Dealer and fabricator price lists, discount slabs, rebate schemes</strong> — reveal your entire commercial structure</li>
+<li><strong>Project quotations</strong> — you are bidding against other systems suppliers and against aluminium</li>
+<li><strong>Unreleased system designs and launch plans</strong> — competitive timing advantage</li>
+<li><strong>Fabricator performance and volume data</strong> — a competitor's poaching list</li>
+</ul>
+</div>
+<div>
+<h4>💥 Consequences Specific to This Business</h4>
+<ul>
+<li>Leaked discount structure → every dealer negotiation resets from your floor, permanently</li>
+<li>Leaked project quotation → undercut on a multi-tower order</li>
+<li>Invented performance figure in a proposal → a commitment you cannot meet, on a facade you cannot replace cheaply</li>
+<li>Fabricated standard reference in a specification → rejected at approval stage, or worse, accepted and discovered later</li>
+<li>Formulation or process detail exposed → an advantage you cannot get back</li>
+<li>Employee personal data leaked → DPDP Act exposure, penalties up to ₹250 crore</li>
+</ul>
+</div>
+</div>
+<div class="tip"><strong>💡 The asymmetry to hold on to:</strong> a leak takes two seconds and cannot be undone. Anonymising the same data takes two minutes. There is no version of this where the shortcut was worth it.</div>
+</div>
+</div>
+</div>
+
+<!-- ============================================================ -->
+<!-- PART 2: THEORY — 5 CATEGORIES OF AI RISK -->
+<!-- ============================================================ -->
+<div class="section">
+<div class="section-head" onclick="toggle(this)"><h2>⚠️ Part 2: The 5 Categories of AI Risk at VEKA</h2><span class="arrow">▼</span></div>
+<div class="section-body">
+
+<div class="card" style="border-top:3px solid #FF5252">
+<h3 style="color:#FF5252">Risk 1: Data Leakage — Your Information Leaves Your Control</h3>
+<p>When you paste data into a consumer AI tool, it goes to a third party's servers, may be retained, and on some plans may be used to improve the model. Your dealer discount structure, a project quotation, or an unreleased system spec is then outside your control and outside your contracts.</p>
+<h4>Real-world parallel:</h4>
+<p>In 2023 Samsung restricted internal use of generative AI tools after engineers pasted internal code into ChatGPT. If that can happen at a company of that size with that much security investment, it can happen in a sales office. VEKA's equivalent is a project quotation or a discount matrix pasted in for a "quick summary".</p>
+</div>
+
+<div class="card" style="border-top:3px solid #FF9800">
+<h3 style="color:#FF9800">Risk 2: Hallucination — AI Generates False Information</h3>
+<p>AI does not distinguish fact from fiction. It generates the most statistically likely text, not the most accurate. In fenestration, a fabricated thermal or acoustic figure, an invented standard clause, or a made-up warranty term becomes a written commercial commitment the moment it goes into a proposal.</p>
+<h4>Why it is worse in this domain than in general use:</h4>
+<p>Models hallucinate more where training data is thin. Indian fenestration standards, system-specific test data and fabricator-dependent performance are all thin. The general concept of a U-value is well represented in training data; <em>your</em> system's tested U-value with <em>that</em> glazing in <em>that</em> configuration is not. The model will produce a number anyway.</p>
+</div>
+
+<div class="card" style="border-top:3px solid #9C27B0">
+<h3 style="color:#CE93D8">Risk 3: Over-Reliance — Trusting AI Without Verification</h3>
+<p>As teams get comfortable, they stop checking. This is the most dangerous risk because it is invisible until something goes wrong. A quotation total that is wrong, a technical claim nobody verified, a rejection email with a line that should never have been written — all because "the AI wrote it".</p>
+<h4>The human factor:</h4>
+<p>Structured, confident, well-formatted output triggers less scrutiny than a colleague's rough draft would. The better the formatting, the less it gets read. Watch for the moment your own review becomes a skim — that is the moment the risk arrives.</p>
+</div>
+
+<div class="card" style="border-top:3px solid #2196F3">
+<h3 style="color:#64B5F6">Risk 4: Compliance Violation — Breaking Rules Without Knowing</h3>
+<p>India's Digital Personal Data Protection Act 2023 sets rules on how personal data may be processed. Uploading employee identity documents, salary data or candidate CVs to an external AI service can constitute unauthorised processing and transfer, with penalties running to very large sums.</p>
+<h4>Practical DPDP points for VEKA:</h4>
+<ul>
+<li><strong>Consent and purpose:</strong> data collected for HR purposes cannot simply be reused for AI analysis</li>
+<li><strong>Third parties:</strong> an AI provider is a processor; your obligations do not disappear because a tool is convenient</li>
+<li><strong>Candidate data:</strong> a CV is someone else's personal data and you do not have consent to send it to a third party</li>
+<li><strong>Breach handling:</strong> if personal data leaks via an AI tool, there are notification obligations with tight timelines</li>
+<li><strong>Contractual overlay:</strong> separately from DPDP, your customer and supplier agreements may restrict sharing their information with third parties at all</li>
+</ul>
+<div class="info-box"><strong>Not legal advice.</strong> Have VEKA's legal team confirm how DPDP and your specific contracts apply before you set policy on the basis of a training module.</div>
+</div>
+
+<div class="card" style="border-top:3px solid #4CAF50">
+<h3 style="color:#4CAF50">Risk 5: Ethical Misuse — Using AI Inappropriately</h3>
+<p>AI can be used to fabricate documents that look authentic. Even where technically possible, these uses are dishonest and frequently illegal.</p>
+<h4>Examples in this business:</h4>
+<ul>
+<li>Generating a test report or certificate that was never issued</li>
+<li>Producing a performance claim for a marketing sheet with no test behind it</li>
+<li>Drafting a sustainability or recycled-content claim that nothing supports</li>
+<li>Creating a fabricated meeting record with invented attendees or decisions</li>
+<li>Writing a technical justification designed to get a specification approved that should not be</li>
+</ul>
+<p style="margin-top:8px"><strong>Position to state plainly in the room:</strong> using AI to generate false, misleading or fraudulent documentation is a disciplinary matter and potentially a legal one. There is no ambiguity here and no grey area to explore.</p>
+</div>
+
+<div class="tip"><strong>💡 Key Teaching Point:</strong> these five risks are not theoretical. They occur routinely at organisations that adopt AI without governance. The goal of Module 3 is to keep the productivity gains from Sessions 1 and 2 while removing the tail risk that comes attached to them.</div>
+
+</div>
+</div>
+
+<!-- ============================================================ -->
+<!-- PART 3: THEORY — AI TRUST EQUATION -->
+<!-- ============================================================ -->
+<div class="section">
+<div class="section-head" onclick="toggle(this)"><h2>🔑 Part 3: The AI Trust Equation — When to Trust, When to Verify</h2><span class="arrow">▼</span></div>
+<div class="section-body">
+
+<div class="card">
+<h3>The 4-Level Trust Framework for AI Outputs</h3>
+<p>Not all AI outputs carry the same risk. Use this to decide how much verification a given output needs — before you generate it, not after.</p>
+<table>
+<tr><th>Trust Level</th><th>Type of Output</th><th>Verification Needed</th><th>VEKA Example</th></tr>
+<tr><td style="color:#4CAF50;font-weight:700">Level 1: LOW RISK<br/>Trust freely</td><td>Drafting, formatting, summarising, brainstorming, general explanation</td><td>Quick read-through</td><td>Drafting a meeting agenda, rewriting a rough internal note, explaining a technical term to a new joiner</td></tr>
+<tr><td style="color:#64B5F6;font-weight:700">Level 2: MEDIUM RISK<br/>Verify key facts</td><td>Data analysis, comparisons, trend identification, internal summaries</td><td>Cross-check every number against the source file</td><td>Regional sales variance summary, dealer activity comparison, production output trend</td></tr>
+<tr><td style="color:#FF9800;font-weight:700">Level 3: HIGH RISK<br/>Expert verification</td><td>Technical claims, standards references, specification support, anything customer-facing</td><td>A qualified engineer or the document owner must review and sign</td><td>Technical section of a proposal, response to an architect's specification query, fabricator troubleshooting guidance</td></tr>
+<tr><td style="color:#FF5252;font-weight:700">Level 4: CRITICAL RISK<br/>Never use AI alone</td><td>Performance guarantees, structural and wind-load determinations, final pricing, legal positions, compound and process specification</td><td>Certified professional sign-off mandatory; AI output is not an input</td><td>Wind load suitability for a high-rise facade, warranty terms, final project quotation, formulation change</td></tr>
+</table>
+<div class="warning"><strong>⚠️ The trap in this table is Level 3 disguised as Level 1.</strong> "Draft a follow-up email to a dealer" feels like drafting. The moment the draft contains a lead time or a performance number, it became Level 3. Judge the output, not the task label.</div>
+</div>
+
+<div class="diagram">
+<p style="font-size:15px;font-weight:600;color:var(--accent);margin-bottom:15px">The Golden Rule:</p>
+<div class="flow">
+<div class="node" style="font-size:16px;padding:15px 25px;border-color:var(--accent)">AI Generates</div>
+<div class="arr" style="font-size:30px">→</div>
+<div class="node" style="font-size:16px;padding:15px 25px;border-color:var(--accent)">Human Verifies</div>
+<div class="arr" style="font-size:30px">→</div>
+<div class="node" style="font-size:16px;padding:15px 25px;border-color:var(--accent)">Human Decides</div>
+<div class="arr" style="font-size:30px">→</div>
+<div class="node" style="font-size:16px;padding:15px 25px;border-color:var(--accent)">Human is Accountable</div>
+</div>
+<p style="font-size:14px;opacity:0.7;margin-top:15px">"The AI told me" is never an acceptable defence. The person who uses the output owns the outcome.</p>
+</div>
+
+<div class="card">
+<h3>The Two Tags That Make Verification Possible</h3>
+<p>You cannot verify what you cannot see. Instruct the model to expose its own gaps, every time:</p>
+<ul>
+<li><strong>[confirm]</strong> — a fact the model does not have and you must supply</li>
+<li><strong>[assumption]</strong> — an inference it made, flagged for your approval</li>
+</ul>
+<span class="prompt-label">ADD TO EVERY HIGH-RISK PROMPT</span>
+<div class="prompt"><button class="copy-btn" onclick="copyPrompt(this,event)">📋 Copy</button>Do not invent any figure, date, specification, standard reference,
+certification, warranty term or lead time.
+
+Where a value would strengthen this output but is not in what I gave
+you, write [confirm: what is needed and who supplies it] instead of
+a value.
+
+Mark any inference as [assumption: ...].
+
+Cite the source line for every number you do use.
+
+At the end, list every [confirm] and [assumption] separately so I can
+work through them.</div>
+<div class="tip"><strong>💡 Use tag count as a smoke alarm.</strong> If a real technical or commercial task comes back with zero [confirm] tags, that is not a clean bill of health — it almost certainly means something got filled in silently. Go and find it.</div>
+</div>
+
+</div>
+</div>
+
+<!-- ============================================================ -->
+<!-- PART 4: GLOBAL AI SAFETY INCIDENTS -->
+<!-- ============================================================ -->
+<div class="section">
+<div class="section-head" onclick="toggle(this)"><h2>🌍 Part 4: Real-World AI Safety Incidents — Lessons from Industry</h2><span class="arrow">▼</span></div>
+<div class="section-body">
+
+<p style="margin-bottom:15px;opacity:0.8">Documented incidents at large organisations. They show what happens when AI is used without governance. Click each to expand.</p>
+
+<div class="case-study" onclick="toggleCS(this)">
+<div class="case-study-header"><h3><span class="cs-tag cs-tag-global">GLOBAL</span> Samsung — Internal Code Pasted Into ChatGPT</h3><span class="cs-arrow">▼</span></div>
+<div class="case-study-body">
+<div class="cs-block what-happened"><h4 style="color:#FF5252">What Happened</h4><p>In 2023, Samsung semiconductor staff pasted internal source code and meeting content into ChatGPT to debug and summarise. The material left the company's control and sat on a third party's servers.</p></div>
+<div class="cs-block impact"><h4 style="color:#FF9800">Impact</h4><p>Samsung restricted internal use of generative AI tools and moved towards building internal alternatives. The precise competitive damage was never publicly quantified — which is itself part of the lesson. With this kind of exposure you rarely find out what it cost you, because you never see the competitor who benefited.</p></div>
+<div class="cs-block lesson"><h4 style="color:#4CAF50">Lesson for VEKA</h4><p>The people who did this were engineers at a company with serious security training, doing something that felt helpful. Nobody was being reckless. VEKA's equivalent is pasting a project quotation, a discount matrix or an extrusion parameter sheet in for a quick check. The intent is fine; the exposure is permanent.</p></div>
+</div>
+</div>
+
+<div class="case-study" onclick="toggleCS(this)">
+<div class="case-study-header"><h3><span class="cs-tag cs-tag-global">GLOBAL</span> Air Canada — Chatbot Gave a Wrong Policy, Company Paid</h3><span class="cs-arrow">▼</span></div>
+<div class="case-study-body">
+<div class="cs-block what-happened"><h4 style="color:#FF5252">What Happened</h4><p>Air Canada's website chatbot told a customer he could book at full fare and apply for a bereavement discount afterwards. The airline's actual policy required applying before travel. The customer relied on the chatbot and was then refused.</p></div>
+<div class="cs-block impact"><h4 style="color:#FF9800">Impact</h4><p>Air Canada argued it should not be held responsible for what its chatbot said. In early 2024 a Canadian tribunal rejected that argument and ordered the airline to compensate the customer. The principle established was blunt: a company is responsible for the information it publishes, including AI-generated information.</p></div>
+<div class="cs-block lesson"><h4 style="color:#4CAF50">Lesson for VEKA</h4><p>If AI drafts a technical answer, a warranty statement or a delivery commitment that goes to a dealer, an architect or a homeowner — and it is wrong — VEKA owns it. "The tool generated it" is not a defence. This is the single strongest argument for the human sign-off gate, and it is worth reading aloud in the room.</p></div>
+</div>
+</div>
+
+<div class="case-study" onclick="toggleCS(this)">
+<div class="case-study-header"><h3><span class="cs-tag cs-tag-global">GLOBAL</span> New York Lawyer — Court Filing With Fabricated Cases</h3><span class="cs-arrow">▼</span></div>
+<div class="case-study-body">
+<div class="cs-block what-happened"><h4 style="color:#FF5252">What Happened</h4><p>In 2023 a lawyer used ChatGPT to research precedents and filed a brief citing six cases. The citations had correct formatting, plausible names and realistic reasoning. He did not verify them.</p></div>
+<div class="cs-block impact"><h4 style="color:#FF9800">Impact</h4><p>The cases did not exist. The court sanctioned the lawyer and the story went worldwide. What made it possible was not carelessness about quality — the output looked <em>better</em> than genuine research, which is precisely why it went unchecked.</p></div>
+<div class="cs-block lesson"><h4 style="color:#4CAF50">Lesson for VEKA</h4><p>When AI produces a standard reference with a clause number, a test result, or a named certification, treat the specificity as a warning rather than as reassurance. AI fabricates technical references with exactly the same confidence it states real ones. A specification citing a clause nobody can find is the fenestration version of this case.</p></div>
+</div>
+</div>
+
+<div class="case-study" onclick="toggleCS(this)">
+<div class="case-study-header"><h3><span class="cs-tag cs-tag-global">ILLUSTRATIVE</span> Supplier Contract Breached by a Convenient Upload</h3><span class="cs-arrow">▼</span></div>
+<div class="case-study-body">
+<div class="cs-block what-happened"><h4 style="color:#FF5252">📍 Scenario</h4><p>Staff at a services firm upload client deliverables to a consumer AI tool for review. The client's contract contains a confidentiality clause restricting disclosure to third parties, and a requirement about where data is processed. The AI provider's servers sit outside that boundary.</p></div>
+<div class="cs-block impact"><h4 style="color:#FF9800">💥 Risk</h4><p>The breach is contractual, not just technical. It exists the moment the upload happens, whether or not anything is ever "leaked" in the ordinary sense. Consequences typically include contract termination rights, an audit at your cost, and a relationship that never fully recovers.</p></div>
+<div class="cs-block lesson"><h4 style="color:#4CAF50">Lesson for VEKA</h4><p>This one is written as an illustration rather than a named incident, because the pattern matters more than the company. VEKA's version: a builder's tender documents, a customer's drawing set, or a supplier's technical data sheet uploaded for a quick summary. <strong>Before uploading anything that came from outside VEKA, check whether an agreement covers it.</strong> Usually one does.</p></div>
+</div>
+</div>
+
+</div>
+</div>
+
+<!-- ============================================================ -->
+<!-- PART 5: DATA CLASSIFICATION -->
+<!-- ============================================================ -->
+<div class="section">
+<div class="section-head" onclick="toggle(this)"><h2>🔒 Part 5: Data Classification — The 3-Tier System for VEKA</h2><span class="arrow">▼</span></div>
+<div class="section-body">
+<div class="grid-3">
+<div class="card" style="border-top:3px solid #4CAF50">
+<h3 style="color:#4CAF50">🟢 Tier 1: Public / Safe</h3>
+<p>Share freely with any AI tool</p>
+<ul>
+<li>General industry and technical knowledge</li>
+<li>Anything already on the public VEKA website</li>
+<li>Published brochures and customer-facing literature</li>
+<li>Published standards and public regulations</li>
+<li>Generic templates and checklists</li>
+<li>Training material like this module</li>
+</ul>
+</div>
+<div class="card" style="border-top:3px solid #FF9800">
+<h3 style="color:#FF9800">🟡 Tier 2: Internal — Anonymise</h3>
+<p>Share ONLY after removing identifiers</p>
+<ul>
+<li>Sales data (remove dealer and project names)</li>
+<li>Production output (remove line and plant identity)</li>
+<li>Complaint records (remove customer and individual names)</li>
+<li>Site photographs (remove logos, faces, signage)</li>
+<li>Internal reports (remove names and exact figures)</li>
+<li>Meeting notes (remove attendees and commercial detail)</li>
+</ul>
+</div>
+<div class="card" style="border-top:3px solid #FF5252">
+<h3 style="color:#FF5252">🔴 Tier 3: Confidential — NEVER</h3>
+<p>NEVER upload to any external AI</p>
+<ul>
+<li>Compound formulation and additive recipes</li>
+<li>Extrusion parameters, die and tooling design</li>
+<li>Dealer price lists, discount slabs, rebate schemes</li>
+<li>Project quotations and pricing strategy</li>
+<li>Employee salary, Aadhaar, PAN; candidate CVs</li>
+<li>Customer and supplier contracts; unreleased system data</li>
+</ul>
+</div>
+</div>
+
+<h3 style="color:white;margin-top:20px;font-size:18px">VEKA Anonymisation Guide</h3>
+<table>
+<tr><th>Original Data</th><th>Anonymised Version</th><th>Why</th></tr>
+<tr><td>"Meridian Fenestration, Pune ordered 42 units"</td><td>"Dealer A, West region, ~40 units"</td><td>Dealer identity and exact volume protected</td></tr>
+<tr><td>"Skyline Towers project, 3 towers, Mumbai"</td><td>"Residential high-rise project, metro city"</td><td>Customer and project identity protected</td></tr>
+<tr><td>"Mr. Sharma, Regional Head, approved this"</td><td>"Regional management approved this"</td><td>Individual identity protected</td></tr>
+<tr><td>"West region did ₹4.2 Cr in July"</td><td>"Region 1 did index 100 in month 1"</td><td>Shape of the data kept, commercial figure removed</td></tr>
+<tr><td>"Our quotation: ₹1.85 Cr for the 3-tower order"</td><td><span style="color:#FF5252">⛔ NEVER SHARE — Tier 3</span></td><td>A competitor needs only to be ₹1 lower</td></tr>
+<tr><td>"Dealer slab: 18% base, 4% volume rebate above X"</td><td><span style="color:#FF5252">⛔ NEVER SHARE — Tier 3</span></td><td>Exposes your entire commercial floor</td></tr>
+<tr><td>"Compound: [additive package and ratios]"</td><td><span style="color:#FF5252">⛔ NEVER SHARE — Tier 3</span></td><td>Trade secret. No business reason to ever paste this.</td></tr>
+<tr><td>"Candidate CV: name, phone, salary history"</td><td><span style="color:#FF5252">⛔ NEVER SHARE — Tier 3</span></td><td>Third-party personal data; no consent for this use</td></tr>
+</table>
+
+<div class="card">
+<h3>How to Anonymise in Practice — 4 Moves</h3>
+<ul>
+<li><strong>Replace, don't delete.</strong> Dealer A/B/C, Project Alpha/Beta, Region 1/2/3. AI needs to know two things are different, not what they are called.</li>
+<li><strong>Index or scale the numbers.</strong> Divide everything by a factor only you know, or convert to an index where the largest is 100. Ratios and trends survive; the commercial figure does not.</li>
+<li><strong>Keep the structure, drop the identity.</strong> Column headings, units and relationships all matter to the analysis. Names and absolute values usually do not.</li>
+<li><strong>Do it in the file, not in your head.</strong> Find-and-replace on a copy of the spreadsheet takes two minutes and is repeatable. Retyping "carefully" is how one row slips through.</li>
+</ul>
+<div class="warning"><strong>⚠️ Check for re-identification.</strong> "Dealer A, 42 units, Pune, uPVC, last week" identifies exactly one dealer to anyone in the industry. Anonymising the name is not enough if the combination of remaining details points to one company. Remove the location or the timing too.</div>
+</div>
+
+<div class="tip"><strong>💡 The VEKA Rule:</strong> if you would not print it and leave it on the table at a competitor's office, do not paste it into a consumer AI tool.</div>
+</div>
+</div>
+
+<!-- ============================================================ -->
+<!-- PART 6: VEKA CASE STUDIES -->
+<!-- ============================================================ -->
+<div class="section">
+<div class="section-head" onclick="toggle(this)"><h2>📂 Part 6: VEKA Case Studies — Data Leak Scenarios</h2><span class="arrow">▼</span></div>
+<div class="section-body">
+
+<p style="margin-bottom:15px;opacity:0.8">Fictional but realistic scenarios modelled on VEKA's actual business. All names and figures are synthetic. Click each to expand.</p>
+
+<div class="case-study" onclick="toggleCS(this)">
+<div class="case-study-header"><h3><span class="cs-tag cs-tag-leak">DATA LEAK</span> CS-1: The Discount Matrix Pasted In for a "Quick Table"</h3><span class="cs-arrow">▼</span></div>
+<div class="case-study-body">
+<div class="cs-block what-happened"><h4 style="color:#FF5252">📍 Scenario</h4><p>A channel sales manager wants a cleaner version of the dealer discount structure for a regional review. He pastes the whole matrix into a free AI tool — base discount by slab, volume rebate thresholds, special terms for three named key accounts — and asks it to format the table nicely.</p></div>
+<div class="cs-block impact"><h4 style="color:#FF9800">💥 Risk</h4><p>This is the most commercially damaging single paste available to anyone in the sales organisation. It is your entire pricing floor, your incentive design, and which accounts get special treatment — in one block. A competitor with this document knows exactly what to offer every dealer you have. And unlike a lost order, you would never know it happened.</p></div>
+<div class="cs-block lesson"><h4 style="color:#4CAF50">✅ Fix</h4><p>Formatting a table needs no real numbers at all. Replace every figure with a placeholder, get the structure back, then fill the real values in yourself in Excel. Or just do it in Excel. <strong>Time cost of doing it safely: about the same. Risk: zero.</strong></p></div>
+</div>
+</div>
+
+<div class="case-study" onclick="toggleCS(this)">
+<div class="case-study-header"><h3><span class="cs-tag cs-tag-leak">DATA LEAK</span> CS-2: The Builder's Tender Documents Uploaded for a Summary</h3><span class="cs-arrow">▼</span></div>
+<div class="case-study-body">
+<div class="cs-block what-happened"><h4 style="color:#FF5252">📍 Scenario</h4><p>A project sales executive receives a 60-page tender pack from a developer — drawings, specification, commercial conditions, penalty clauses. Rather than read it, he uploads the whole PDF and asks: "What are the fenestration requirements and what are the penalties for delay?"</p></div>
+<div class="cs-block impact"><h4 style="color:#FF9800">💥 Risk</h4><p>Two separate problems. First, the developer's confidential tender documents are now on a third party's servers, and the tender terms almost certainly prohibit that — a breach that exists whether or not anything is ever exposed. Second, VEKA's interest in this project and the commercial terms it is working with have left the building. Consequences range from disqualification from the tender to a damaged relationship with a developer you want repeat business from.</p></div>
+<div class="cs-block lesson"><h4 style="color:#4CAF50">✅ Fix</h4><p>Search the PDF for the clause you need — that is thirty seconds. If you genuinely need AI help interpreting a clause, extract that single paragraph, remove party names and project identity, and paste only that. On enterprise tooling with the right agreement, more is possible — but check the tender terms first, not after. <strong>Documents that arrived from outside VEKA are the highest-risk uploads in the company, because someone else's contract governs them.</strong></p></div>
+</div>
+</div>
+
+<div class="case-study" onclick="toggleCS(this)">
+<div class="case-study-header"><h3><span class="cs-tag cs-tag-leak">DATA LEAK</span> CS-3: Candidate CVs Screened in a Consumer Tool</h3><span class="cs-arrow">▼</span></div>
+<div class="case-study-body">
+<div class="cs-block what-happened"><h4 style="color:#FF5252">📍 Scenario</h4><p>HR has 40 CVs for a technical sales role and a deadline. Someone uploads all 40 — names, phone numbers, addresses, current employers, salary history — and asks the AI to rank them against the job description.</p></div>
+<div class="cs-block impact"><h4 style="color:#FF9800">💥 Risk</h4><p>Forty people's personal data, belonging to them and not to VEKA, sent to a third party with no consent for that purpose. This sits squarely in DPDP territory, with substantial penalty exposure. There is a second problem alongside it: an unexamined AI ranking can encode bias against gaps in employment, non-metro colleges, or unfamiliar company names — and produce a hiring decision nobody can explain if challenged.</p></div>
+<div class="cs-block lesson"><h4 style="color:#4CAF50">✅ Fix</h4><p>Never upload a CV. Instead, build the scorecard first (Module 3 lab), then extract only anonymised, job-relevant attributes yourself: "Candidate 1: 6 years technical sales, fenestration background, handled 20+ dealer accounts, comfortable on site." Rank those. The AI adds the same structure and you have disclosed nothing. <strong>The final shortlist decision stays with a human either way.</strong></p></div>
+</div>
+</div>
+
+<div class="case-study" onclick="toggleCS(this)">
+<div class="case-study-header"><h3><span class="cs-tag cs-tag-leak">DATA LEAK</span> CS-4: The Formulation Question</h3><span class="cs-arrow">▼</span></div>
+<div class="case-study-body">
+<div class="cs-block what-happened"><h4 style="color:#FF5252">📍 Scenario</h4><p>A plant engineer is troubleshooting a surface finish issue. He pastes the compound formulation — additive package, ratios, supplier grades — plus current extrusion line parameters, and asks the AI what might be causing it.</p></div>
+<div class="cs-block impact"><h4 style="color:#FF9800">💥 Risk</h4><p>This is the nuclear scenario for a manufacturer. Formulation and process knowledge is the accumulated result of decades of development. Much of it is protected as trade secret rather than by patent, which means its protection depends entirely on it never leaving the company. Once pasted, that protection is gone and cannot be restored. Unlike a lost order, there is no recovery and no version of this you can fix later.</p></div>
+<div class="cs-block lesson"><h4 style="color:#4CAF50">✅ Fix</h4><p>Ask the question generically: "What process factors typically cause this class of surface defect in PVC profile extrusion?" You get the same diagnostic thinking with none of your specifics. Then apply it internally against your own data. <strong>Formulation and process parameters are Tier 3 permanently, on every tool, including enterprise ones, unless R&amp;D and legal have specifically approved otherwise.</strong></p></div>
+</div>
+</div>
+
+<div class="case-study" onclick="toggleCS(this)">
+<div class="case-study-header"><h3><span class="cs-tag cs-tag-good">BEST PRACTICE</span> CS-5: Regional Sales Analysis Done Right</h3><span class="cs-arrow">▼</span></div>
+<div class="case-study-body">
+<div class="cs-block" style="border-left:3px solid #4CAF50"><h4 style="color:#4CAF50">📍 Scenario</h4><p>An MIS analyst needs to understand why one region is underperforming. She spends eight minutes on a copy of the file: dealer names become Dealer A–P, regions become Region 1–4, and all values are converted to an index where the highest month is 100. Column headings, units and the time series stay exactly as they were. Then she uploads it.</p></div>
+<div class="cs-block action"><h4 style="color:#2196F3">📊 Result</h4><p>The analysis found that the underperformance sat in a small cluster of dealers rather than across the region, and flagged a pattern in order timing nobody had looked at. Analysis quality was identical to using real names — because the shape of the data carries the insight, and the identities never did. Eight minutes of preparation; nothing disclosed. <strong>This is the pattern to copy.</strong></p></div>
+<div class="cs-block lesson"><h4 style="color:#4CAF50">✅ Why it worked</h4><p>She anonymised in the file, not in her head. She kept structure and dropped identity. And she checked the result for re-identification before uploading — Region 1 with sixteen dealers is not identifiable; a region with two would have been.</p></div>
+</div>
+</div>
+
+</div>
+</div>
+
+<!-- ============================================================ -->
+<!-- PART 7: HALLUCINATION CASE STUDIES -->
+<!-- ============================================================ -->
+<div class="section">
+<div class="section-head" onclick="toggle(this)"><h2>🔍 Part 7: AI Hallucinations — Fenestration-Specific Dangers</h2><span class="arrow">▼</span></div>
+<div class="section-body">
+<div class="warning"><strong>⚠️ AI can state things confidently that are entirely wrong.</strong> In this business, an invented number does not stay a mistake — it becomes a written commitment on a facade that costs a great deal to replace.</div>
+
+<div class="case-study" onclick="toggleCS(this)">
+<div class="case-study-header"><h3><span class="cs-tag cs-tag-halluc">HALLUCINATION</span> CS-6: The Invented Standard Clause</h3><span class="cs-arrow">▼</span></div>
+<div class="case-study-body">
+<div class="cs-block what-happened"><h4 style="color:#FF5252">📍 Scenario</h4><p>A technical executive asks an AI tool what the applicable standard requires for uPVC window water tightness. The answer arrives with a standard number, a specific clause reference in the form "Clause 7.4.2(b)", a test pressure and a pass criterion. It reads exactly like a technical extract. He pastes it into a specification response to an architect.</p></div>
+<div class="cs-block impact"><h4 style="color:#FF9800">💥 Problem</h4><p>The standard exists. The clause number does not. The test pressure came from a different context entirely. The architect's consultant tried to look up the clause during specification review, could not find it, and queried it — which meant VEKA's entire technical submission was then read with suspicion. The cost is not just the rework; it is that a specifier who has caught you once reads everything you send differently afterwards.</p></div>
+<div class="cs-block lesson"><h4 style="color:#4CAF50">✅ How to Catch It</h4><p>Never let a clause number leave the building unverified. Look it up in the actual standard document, every time. Better prompt: "Explain what water tightness testing assesses and why it matters. Do not cite clause numbers or test values — I will take those from the standard and our data sheets." <strong>Ask AI for the concept; take the numbers from the source.</strong></p></div>
+</div>
+</div>
+
+<div class="case-study" onclick="toggleCS(this)">
+<div class="case-study-header"><h3><span class="cs-tag cs-tag-halluc">HALLUCINATION</span> CS-7: A U-Value That Nobody Tested</h3><span class="cs-arrow">▼</span></div>
+<div class="case-study-body">
+<div class="cs-block what-happened"><h4 style="color:#FF5252">📍 Scenario</h4><p>A sales engineer is building a proposal for a residential project and needs a thermal performance figure. He asks the AI what U-value the system achieves. It returns a specific number to one decimal place, plus a comparison stating the system performs a given percentage better than aluminium.</p></div>
+<div class="cs-block impact"><h4 style="color:#FF9800">💥 Problem</h4><p>Both numbers are invented. Worse, the question was unanswerable in principle: the thermal performance of an installed window depends on the profile system, the glazing unit, the spacer, the reinforcement, the size and configuration, and the installation detail. No single number exists for "the system" in isolation. By putting a figure in a proposal, VEKA made a performance commitment on a project of hundreds of units. If the built windows are later tested and fall short, that is a warranty conversation on a facade.</p></div>
+<div class="cs-block lesson"><h4 style="color:#4CAF50">✅ How to Catch It</h4><p>Any performance figure comes from a test report for a defined configuration, or it does not go in the document. Instruct the agent: "Never state a thermal, acoustic, wind load or water tightness value. Write [confirm: which test report and configuration] instead." Then the proposal arrives with a gap you have to fill — which is exactly what you want it to do. <strong>The most dangerous questions are the ones with no valid single answer, because AI will always produce one anyway.</strong></p></div>
+</div>
+</div>
+
+<div class="case-study" onclick="toggleCS(this)">
+<div class="case-study-header"><h3><span class="cs-tag cs-tag-halluc">HALLUCINATION</span> CS-8: The Warranty Term That Was Never Offered</h3><span class="cs-arrow">▼</span></div>
+<div class="case-study-body">
+<div class="cs-block what-happened"><h4 style="color:#FF5252">📍 Scenario</h4><p>AI drafts a dealer proposal email. Nobody mentioned warranty in the prompt. The draft includes a sentence offering a ten-year warranty against warping and discolouration. It reads well, so it stays. The email goes out.</p></div>
+<div class="cs-block impact"><h4 style="color:#FF9800">💥 Problem</h4><p>VEKA has now made a written warranty commitment in terms nobody in the company approved, to a customer who will reasonably rely on it. The actual warranty position depends on the system, the market, the fabricator's own workmanship warranty and the installation. Softening it later to "up to ten years" does not undo a written statement already sent. This is the most common hallucination in commercial writing and the easiest to miss, precisely because it makes the email sound stronger.</p></div>
+<div class="cs-block lesson"><h4 style="color:#4CAF50">✅ How to Catch It</h4><p>Read every AI-drafted customer document looking specifically for <em>commitments</em>, not errors. Warranty, delivery, price, performance. Anything in one of those four categories that you did not put in the prompt was invented. Run the adversarial pass: "List every sentence that states or implies a commercial or technical commitment, and what evidence would be needed to keep it."</p></div>
+</div>
+</div>
+
+<div class="case-study" onclick="toggleCS(this)">
+<div class="case-study-header"><h3><span class="cs-tag cs-tag-halluc">HALLUCINATION</span> CS-9: Quotation Total Wrong by ₹6.4 Lakh</h3><span class="cs-arrow">▼</span></div>
+<div class="case-study-body">
+<div class="cs-block what-happened"><h4 style="color:#FF5252">📍 Scenario</h4><p>An estimator pastes a 38-line schedule of window types, quantities and rates into an AI tool and asks it to total the order value. It returns a clean figure. That figure goes into the quotation.</p></div>
+<div class="cs-block impact"><h4 style="color:#FF9800">💥 Problem</h4><p>Manual checking in Excel found the AI had mis-multiplied rate by quantity on three lines. The gap was ₹6.4 lakh (synthetic figure) on a mid-sized order — enough to turn a thin-margin job into a loss-making one, and enough that discovering it after the customer accepts leaves you with no good options. Language models are pattern engines, not calculators; arithmetic across many rows is a known weak point.</p></div>
+<div class="cs-block lesson"><h4 style="color:#4CAF50">✅ How to Catch It</h4><p>Do final arithmetic in Excel. Always. Use AI to structure the schedule, spot a missing window type, or sanity-check that a rate looks out of line — never for the number that goes in the quotation. <strong>A two-minute cross-check catches errors worth lakhs, and it never gets cheaper than two minutes.</strong></p></div>
+</div>
+</div>
+
+<div class="case-study" onclick="toggleCS(this)">
+<div class="case-study-header"><h3><span class="cs-tag cs-tag-halluc">HALLUCINATION</span> CS-10: AI "Approves" a High-Rise Configuration</h3><span class="cs-arrow">▼</span></div>
+<div class="case-study-body">
+<div class="cs-block what-happened"><h4 style="color:#FF5252">📍 Scenario</h4><p>An application engineer describes a proposed window configuration in text — size, opening type, floor level, coastal location — and asks whether it is suitable for the wind loads on an 18-floor coastal tower. The AI responds that the configuration appears suitable, with a short explanation.</p></div>
+<div class="cs-block impact"><h4 style="color:#FF9800">💥 Problem</h4><p>The AI processed a sentence, not a structural condition. Wind load suitability depends on design wind pressure at that height and exposure, the reinforcement specification, the profile section properties, the glazing, the anchoring, and the fabricator's execution. None of that was available to it. What it produced was a confident-sounding sentence that gives false comfort to the one person in the chain who most needed to escalate. If the configuration is built and fails in service on a coastal high-rise, the consequences are not commercial.</p></div>
+<div class="cs-block lesson"><h4 style="color:#4CAF50">✅ How to Catch It</h4><p>Structural suitability is Trust Level 4 — AI output is not an input to it. Only a qualified engineer working from actual design wind pressures and the reinforcement specification can make this call. Instruct any agent: "If a question requires a structural, wind load or safety determination, do not answer. State what information a qualified engineer would need and stop." <strong>An AI that says "escalate this" is working correctly.</strong></p></div>
+</div>
+</div>
+
+<div class="case-study" onclick="toggleCS(this)">
+<div class="case-study-header"><h3><span class="cs-tag cs-tag-halluc">HALLUCINATION</span> CS-11: A Fabricator's Track Record, Entirely Invented</h3><span class="cs-arrow">▼</span></div>
+<div class="case-study-body">
+<div class="cs-block what-happened"><h4 style="color:#FF5252">📍 Scenario</h4><p>Before appointing a new fabricator, a channel manager asks the AI what it knows about "Crestline Windows Pvt Ltd" — projects completed, reliability, certifications. It returns a detailed profile: eight years in business, four named projects, a quality certification, a good reputation in the region.</p></div>
+<div class="cs-block impact"><h4 style="color:#FF9800">💥 Problem</h4><p>Crestline Windows is a name invented for this workshop. Every detail in that profile was fabricated. If a manager relied on it to appoint a fabricator, VEKA would be putting its brand on windows made by a company with an unknown track record — and brand damage from bad fabrication is the hardest kind to repair, because the homeowner blames the profile.</p></div>
+<div class="cs-block lesson"><h4 style="color:#4CAF50">✅ How to Catch It</h4><p>Never use AI to verify that an organisation exists or is any good. Instead: ask for documents directly, call references yourself, check company registry filings, visit the workshop, look at their machines and their finished work. <strong>AI cannot verify real-world entities. It generates plausible profiles, and a plausible profile is worse than no information, because it stops you looking.</strong></p></div>
+</div>
+</div>
+
+<div class="case-study" onclick="toggleCS(this)">
+<div class="case-study-header"><h3><span class="cs-tag cs-tag-halluc">HALLUCINATION</span> CS-12: A Sustainability Claim With Nothing Behind It</h3><span class="cs-arrow">▼</span></div>
+<div class="case-study-body">
+<div class="cs-block what-happened"><h4 style="color:#FF5252">📍 Scenario</h4><p>Marketing asks AI to draft copy for a sustainability page. The draft includes a recycled content percentage, a lifecycle claim, and a reference to an environmental certification scheme. It is well written and nobody questions the specifics.</p></div>
+<div class="cs-block impact"><h4 style="color:#FF9800">💥 Problem</h4><p>Environmental claims are among the most heavily scrutinised statements a manufacturer can publish, and an unsupported one is a regulatory and reputational risk in most markets, not merely an inaccuracy. A recycled content figure has to trace to actual material flows. A certification reference has to be a certification you actually hold. AI produced all three because they made the page better.</p></div>
+<div class="cs-block lesson"><h4 style="color:#4CAF50">✅ How to Catch It</h4><p>Treat every environmental claim as Trust Level 4. AI can draft the structure and the tone; every factual claim comes from a document with a name and a date, verified by whoever owns sustainability reporting. Instruct: "Do not state any recycled content figure, lifecycle claim or certification. Write [confirm: which report and who owns it]."</p></div>
+</div>
+</div>
+
+<div class="card">
+<h3>Hallucination Red Flags — Quick Reference</h3>
+<table>
+<tr><th>Red Flag</th><th>Example</th><th>Action</th></tr>
+<tr><td>Very specific clause numbers</td><td>"As per Clause 7.4.2(b)(iii)..."</td><td>Look it up in the actual standard</td></tr>
+<tr><td>Precise decimal performance values</td><td>"U-value of exactly 1.3 W/m²K"</td><td>Find the test report and configuration, or delete it</td></tr>
+<tr><td>Comparative percentages</td><td>"40% better than aluminium"</td><td>Ask: better than which section, tested how?</td></tr>
+<tr><td>Confident "always" or "never"</td><td>"The standard always requires..."</td><td>Standards have conditions and exceptions</td></tr>
+<tr><td>Warranty or lead time you didn't mention</td><td>"10-year warranty", "dispatch in 4 weeks"</td><td>Invented. Delete, then check who can approve it.</td></tr>
+<tr><td>Detailed company or dealer profiles</td><td>"They completed four projects and hold..."</td><td>Verify independently — AI fabricates these</td></tr>
+<tr><td>Round-number estimates</td><td>"Exactly ₹5,00,000 per floor"</td><td>Real commercial figures are rarely round</td></tr>
+<tr><td>Any answer to an unanswerable question</td><td>"Yes, this configuration is suitable"</td><td>If it couldn't know, it didn't know</td></tr>
+</table>
+<div class="tip"><strong>💡 The pattern across all eight rows:</strong> the hallucinated version always reads <em>more</em> professional than the honest one. Confidence and specificity are what invention looks like. Learn to find them suspicious.</div>
+</div>
+
+<div class="exercise">
+<h3>🧪 Live Exercise: Spot the Hallucination</h3>
+<p>Facilitator runs this live on the projector. Participants call out which claims could possibly be real and which had to be invented. Award a point per catch.</p>
+<span class="prompt-label">DEMO PROMPT</span>
+<div class="prompt"><button class="copy-btn" onclick="copyPrompt(this,event)">📋 Copy</button>Write a short proposal paragraph for a uPVC window order.
+
+Details: dealer in Pune, 42 window units, 70mm system,
+the client is also considering aluminium.
+
+Include our technical advantages, warranty, delivery
+timeline and relevant certifications to make it persuasive.
+
+[Only four facts were given. Every other specific in the output
+was generated. Participants identify each one and say what
+evidence would be needed to keep it.]</div>
+<div class="info-box"><strong>Facilitator note:</strong> run it a second time with the "never invent" instruction from Part 3 added, and put the two outputs side by side. The second version is shorter, full of [confirm] tags, and looks worse — which is the whole point of the exercise. Ask the room which one they would rather have sent.</div>
+</div>
+</div>
+</div>
+
+<!-- ============================================================ -->
+<!-- PART 8: FREE vs PAID -->
+<!-- ============================================================ -->
+<div class="section">
+<div class="section-head" onclick="toggle(this)"><h2>💳 Part 8: Free vs Paid AI Tools — Data Security Comparison</h2><span class="arrow">▼</span></div>
+<div class="section-body">
+<div class="warning"><strong>⚠️ Verify every row before you present this.</strong> Provider terms, retention periods and prices change frequently, and they differ by plan and region. Have IT confirm the current position for the exact plans VEKA is considering, and update the table. The shape of the comparison is stable; the details are not.</div>
+<table>
+<tr><th>Feature</th><th><span class="badge badge-risky">Consumer / Free</span></th><th><span class="badge badge-safe">ChatGPT Business</span></th><th><span class="badge badge-safe">Claude Team</span></th><th><span class="badge badge-warn">MS Copilot</span></th></tr>
+<tr><td>Trains on your data?</td><td style="color:#FF5252">May do ⚠️</td><td style="color:#4CAF50">No ✓</td><td style="color:#4CAF50">No ✓</td><td style="color:#4CAF50">No ✓</td></tr>
+<tr><td>Data retained?</td><td>For a period</td><td>Per agreement</td><td>Per agreement</td><td>Within your M365 tenant</td></tr>
+<tr><td>Human review possible?</td><td style="color:#FF5252">Possible</td><td style="color:#4CAF50">Restricted</td><td style="color:#4CAF50">Restricted</td><td style="color:#4CAF50">Restricted</td></tr>
+<tr><td>Security certifications</td><td>Varies</td><td>Yes</td><td>Yes</td><td>Yes</td></tr>
+<tr><td>Admin controls?</td><td>None</td><td>Full</td><td>Full</td><td>Via M365</td></tr>
+<tr><td>Indicative cost/user/month</td><td>Free / low</td><td colspan="3" style="text-align:center">Roughly comparable across business tiers — get current quotes</td></tr>
+<tr><td>Safe for Tier 2?</td><td style="color:#FF9800">Only anonymised</td><td style="color:#4CAF50">Yes</td><td style="color:#4CAF50">Yes</td><td style="color:#4CAF50">Yes</td></tr>
+<tr><td>Safe for Tier 3?</td><td style="color:#FF5252">Never</td><td style="color:#FF5252">Never</td><td style="color:#FF5252">Never</td><td style="color:#FF9800">Only within tenant, with approval</td></tr>
+</table>
+
+<div class="card">
+<h3>💰 Building the Business Case — Do the Arithmetic, Don't Borrow It</h3>
+<p>An ROI table is only persuasive if leadership can see where the numbers came from. Fill this in with VEKA's own measurements rather than industry averages.</p>
+<div class="grid-2">
+<div><h4>Annual investment</h4>
+<table>
+<tr><td>Licence cost per user per month</td><td style="text-align:right">___</td></tr>
+<tr><td>× users</td><td style="text-align:right">___</td></tr>
+<tr><td>× 12 months</td><td style="text-align:right">___</td></tr>
+<tr><td style="font-weight:700">Total investment</td><td style="text-align:right;font-weight:700">___</td></tr>
+</table>
+</div>
+<div><h4>Annual return — measure each one</h4>
+<table>
+<tr><td>Time saved (minutes × frequency × people × cost per hour)</td><td style="text-align:right">___</td></tr>
+<tr><td>Rework avoided (errors caught before they ship)</td><td style="text-align:right">___</td></tr>
+<tr><td>Risk avoided (state the assumption, don't guess)</td><td style="text-align:right">___</td></tr>
+<tr><td style="font-weight:700">Total return</td><td style="text-align:right;font-weight:700;color:#FFD600">___</td></tr>
+</table></div>
+</div>
+<div class="tip"><strong>💡 On the risk-avoidance line:</strong> resist the temptation to put a large number there. You cannot measure a leak that did not happen. State it as an exposure range with the reasoning attached, or leave it out and win the argument on measured time savings alone. A defensible small number survives scrutiny; an impressive large one invites it.</div>
+</div>
+
+<div class="info-box"><strong>The honest framing for leadership:</strong> the licence does not buy better answers. It buys a contractual position on data handling, admin visibility, and the ability to say yes to Tier 2 work without a two-minute anonymisation step every time. That is a governance purchase, not a productivity one — and it is easier to defend on those terms.</div>
+</div>
+</div>
+
+<!-- ============================================================ -->
+<!-- PART 9: AI USAGE POLICY -->
+<!-- ============================================================ -->
+<div class="section">
+<div class="section-head" onclick="toggle(this)"><h2>📜 Part 9: VEKA AI Usage Policy (Draft)</h2><span class="arrow">▼</span></div>
+<div class="section-body">
+<div class="info-box"><strong>This is a starting draft for discussion, not an approved policy.</strong> It needs review by IT, legal and HR, and sign-off by leadership, before it means anything. Use this session to mark it up.</div>
+<div class="card">
+<h3>Draft AI Usage Policy — VEKA</h3>
+<h4>Section 1: Approved AI Tools</h4>
+<ul><li>Approved enterprise tools — Tier 1 and Tier 2 data</li><li>Consumer or free tools — Tier 1 only, and anonymised Tier 2</li><li>Microsoft Copilot — internal documents within the VEKA tenant</li><li>All other AI tools, browser extensions and plug-ins require IT approval before use</li></ul>
+<h4>Section 2: Data Handling</h4>
+<ul><li>Tier 1 (Public): use freely</li><li>Tier 2 (Internal): must be anonymised before any consumer tool; may be used as-is on approved enterprise tools</li><li>Tier 3 (Confidential): never uploaded to any external AI, including enterprise tools, without specific written approval</li><li>Documents received from customers, developers or suppliers: check the governing agreement before uploading anything</li><li>Default: when unsure, treat it as Tier 2 and anonymise</li></ul>
+<h4>Section 3: Verification Requirements</h4>
+<ul><li>Every AI output used in an official document requires human verification</li><li>Technical claims and standards references → qualified engineer sign-off</li><li>Performance, wind load and structural questions → never AI-answered; escalate</li><li>Commercial figures → cross-checked in Excel or the source system</li><li>Customer-facing documents → reviewed by the named document owner before sending</li><li>Environmental and certification claims → verified by whoever owns sustainability reporting</li></ul>
+<h4>Section 4: Prohibited Uses</h4>
+<ul><li>Uploading compound formulations, extrusion parameters, die or tooling design</li><li>Uploading dealer price lists, discount slabs, rebate schemes or project quotations</li><li>Uploading employee personal data, or candidate CVs</li><li>Uploading customer, developer or supplier contracts and tender documents</li><li>Using AI output as an engineering, structural or safety determination</li><li>Generating certificates, test reports, performance claims or environmental claims that are not backed by a real document</li></ul>
+<h4>Section 5: Accountability</h4>
+<ul><li>The person using AI is fully responsible for verifying the output</li><li>"The AI generated it" is never an acceptable explanation</li><li>Report a suspected data exposure to IT immediately, and without fear of blame — late reporting is the bigger problem</li><li>Every published agent or shared prompt has a named owner</li><li>Quarterly review of AI usage by function heads</li></ul>
+</div>
+
+<div class="exercise">
+<h3>🏋️ Group Exercise: Customise the Policy for YOUR Function</h3>
+<p>In groups of 3–4, add three function-specific rules. They should be specific enough that someone could break them. Examples:</p>
+<div class="grid-2">
+<div class="card"><h4>Technical &amp; Application Engineering</h4><ul><li>"No performance value leaves this team without a named test report and configuration"</li><li>"Clause numbers are copied from the standard document, never from AI"</li><li>"Wind load and structural questions are escalated, never answered from a chat window"</li></ul></div>
+<div class="card"><h4>Sales &amp; Channel</h4><ul><li>"No quotation, discount or rebate figure is ever pasted into any AI tool"</li><li>"Every AI-drafted customer email is read specifically for invented commitments before sending"</li><li>"Tender documents received from a developer are never uploaded — extract the clause instead"</li></ul></div>
+<div class="card"><h4>HR</h4><ul><li>"No CV, ID document or salary figure enters an AI tool, in any form"</li><li>"AI drafts language for difficult conversations; a human decides every outcome"</li><li>"Any AI-assisted screening criteria are reviewed for bias before use"</li></ul></div>
+<div class="card"><h4>Production, Quality &amp; Plant</h4><ul><li>"Formulation and line parameters are Tier 3 permanently — ask process questions generically"</li><li>"Complaint records are anonymised before any analysis"</li><li>"AI never assigns a root cause; it structures the investigation"</li></ul></div>
+</div>
+<div class="tip"><strong>💡 Facilitator:</strong> collect these sheets. The function-written rules are usually sharper than anything a policy document produces centrally, and they are the ones people actually follow because their own team wrote them.</div>
+</div>
+</div>
+</div>
+
+<!-- ============================================================ -->
+<!-- PART 10: IS THIS SAFE QUIZ -->
+<!-- ============================================================ -->
+<div class="section">
+<div class="section-head" onclick="toggle(this)"><h2>🧪 Part 10: "Is This Safe?" — 15 VEKA Scenarios</h2><span class="arrow">▼</span></div>
+<div class="section-body">
+<p style="margin-bottom:15px;opacity:0.8">Run this as a live show-of-hands before revealing the column. For each: <span class="badge badge-safe">SAFE ✓</span> or <span class="badge badge-risky">RISKY ✗</span> or <span class="badge badge-warn">ANONYMIZE ⚠</span></p>
+<table>
+<tr><th>#</th><th>Scenario</th><th>Verdict</th><th>Why</th></tr>
+<tr><td>1</td><td>Ask AI to explain water tightness testing in plain language</td><td><span class="badge badge-safe">SAFE ✓</span></td><td>General technical concept, no VEKA data</td></tr>
+<tr><td>2</td><td>Paste the dealer discount matrix in to format it as a table</td><td><span class="badge badge-risky">RISKY ✗</span></td><td>Tier 3 — your entire commercial floor</td></tr>
+<tr><td>3</td><td>Ask AI to summarise a brochure already on the VEKA website</td><td><span class="badge badge-safe">SAFE ✓</span></td><td>Already public</td></tr>
+<tr><td>4</td><td>Upload 40 candidate CVs to rank against a job description</td><td><span class="badge badge-risky">RISKY ✗</span></td><td>Third-party personal data — DPDP exposure</td></tr>
+<tr><td>5</td><td>Upload sales data with dealers as A/B/C and values indexed</td><td><span class="badge badge-safe">SAFE ✓</span></td><td>Properly anonymised Tier 2</td></tr>
+<tr><td>6</td><td>Upload a developer's full tender pack for a summary</td><td><span class="badge badge-risky">RISKY ✗</span></td><td>Someone else's contract governs it</td></tr>
+<tr><td>7</td><td>Upload site photos with no logos, signage or faces</td><td><span class="badge badge-safe">SAFE ✓</span></td><td>No identifiers present</td></tr>
+<tr><td>8</td><td>Ask AI what U-value our system achieves</td><td><span class="badge badge-risky">RISKY ✗</span></td><td>Unanswerable — it will invent a number anyway</td></tr>
+<tr><td>9</td><td>Paste the compound formulation to troubleshoot a defect</td><td><span class="badge badge-risky">RISKY ✗</span></td><td>Trade secret. Ask the question generically instead.</td></tr>
+<tr><td>10</td><td>Ask AI to draft a dealer follow-up email</td><td><span class="badge badge-warn">ANONYMIZE ⚠</span></td><td>Fine with dealer anonymised — then check for invented commitments</td></tr>
+<tr><td>11</td><td>Paste a project quotation to sanity-check the total</td><td><span class="badge badge-risky">RISKY ✗</span></td><td>Tier 3, and AI arithmetic is unreliable anyway</td></tr>
+<tr><td>12</td><td>Ask AI to compare two opening configurations conceptually</td><td><span class="badge badge-warn">ANONYMIZE ⚠</span></td><td>Fine technically — remove project and customer identity</td></tr>
+<tr><td>13</td><td>Upload a complaint record to structure the investigation</td><td><span class="badge badge-warn">ANONYMIZE ⚠</span></td><td>Remove customer, dealer and individual names first</td></tr>
+<tr><td>14</td><td>Ask whether a configuration is suitable for an 18-floor coastal tower</td><td><span class="badge badge-risky">RISKY ✗</span></td><td>Trust Level 4 — engineer only, never AI</td></tr>
+<tr><td>15</td><td>Ask AI how to structure a technical query list to an architect</td><td><span class="badge badge-safe">SAFE ✓</span></td><td>Generic method question, no company data</td></tr>
+</table>
+<div class="success"><strong>✓ Scoring:</strong> 13–15 = AI Safety Expert 🏆 | 10–12 = Good 👍 | 7–9 = Practice needed ⚠️ | under 7 = Go back to the 3-Tier system 🔄</div>
+<div class="tip"><strong>💡 The two that split most rooms are 8 and 14</strong> — because neither one is about data leaving the company. They are about asking a question that has no valid answer, and getting a confident one. If your room gets those two right, the module landed.</div>
+</div>
+</div>
+
+<!-- ============================================================ -->
+<!-- KEY TAKEAWAYS -->
+<!-- ============================================================ -->
+<div class="section">
+<div class="section-head" onclick="toggle(this)"><h2>🎯 Key Takeaways — 6 Rules to Remember</h2><span class="arrow">▼</span></div>
+<div class="section-body">
+<div class="card">
+<table>
+<tr><th>#</th><th>Rule</th><th>Why It Matters for VEKA</th></tr>
+<tr><td style="font-size:20px;font-weight:800;color:#FFD600">1</td><td><strong>Classify first, share second</strong></td><td>Know your data tier before you open the tool, not after</td></tr>
+<tr><td style="font-size:20px;font-weight:800;color:#FFD600">2</td><td><strong>Anonymise Tier 2</strong></td><td>Replace names, index the numbers — AI needs the shape, not the identity</td></tr>
+<tr><td style="font-size:20px;font-weight:800;color:#FFD600">3</td><td><strong>Never share Tier 3</strong></td><td>Formulation, pricing, quotations, personal data, contracts. No exceptions and no "just this once".</td></tr>
+<tr><td style="font-size:20px;font-weight:800;color:#FFD600">4</td><td><strong>Tag the gaps, then close them</strong></td><td>[confirm] and [assumption] turn silent invention into a visible to-do list</td></tr>
+<tr><td style="font-size:20px;font-weight:800;color:#FFD600">5</td><td><strong>AI assists, humans decide</strong></td><td>You are accountable, not the tool. Air Canada settled that question already.</td></tr>
+<tr><td style="font-size:20px;font-weight:800;color:#FFD600">6</td><td><strong>Some questions have no answer</strong></td><td>Performance, structural and compliance questions will get a confident reply regardless. Escalate them.</td></tr>
+</table>
+</div>
+<div class="stats">
+<div class="stat"><span class="n">12</span><span class="l">Case Studies</span></div>
+<div class="stat"><span class="n">15</span><span class="l">Quiz Scenarios</span></div>
+<div class="stat"><span class="n">5</span><span class="l">Risk Categories</span></div>
+<div class="stat"><span class="n">3</span><span class="l">Data Tiers</span></div>
+</div>
+<div class="info-box"><strong>Next:</strong> Session 4 takes these rules and builds them into an agent, so the safety instructions live in the tool instead of depending on whoever is typing. Bring one recurring task with you.</div>
+</div>
+</div>
+
+</div>
+
+<script>
+function toggle(el){el.parentElement.classList.toggle('open')}
+function toggleCS(el){if(el.classList.contains('case-study'))el.classList.toggle('cs-open')}
+function copyPrompt(btn,ev){var t=btn.parentElement.textContent.replace('📋 Copy','').trim();
+if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(t).then(function(){btn.textContent='✓ Copied!';setTimeout(function(){btn.textContent='📋 Copy'},2000)})}
+else{var ta=document.createElement('textarea');ta.value=t;ta.style.position='fixed';ta.style.opacity='0';document.body.appendChild(ta);ta.select();try{document.execCommand('copy')}catch(e){}document.body.removeChild(ta);btn.textContent='✓ Copied!';setTimeout(function(){btn.textContent='📋 Copy'},2000)}
+if(ev&&ev.stopPropagation)ev.stopPropagation()}
+</script>
+</body>
+</html>
