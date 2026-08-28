@@ -962,13 +962,24 @@ class App {
             
             const renderBadges = () => {
                 if (!state.badges || state.badges.length === 0) {
-                    return `<p class="text-muted text-sm italic">No badges earned yet. Complete modules to earn badges!</p>`;
+                    return `
+                    <div class="flex flex-wrap gap-4 mt-4">
+                        <div class="flex flex-col items-center justify-center p-4 bg-surface rounded-lg w-28 text-center" style="border: 1px dashed var(--border-color); opacity: 0.5;">
+                            <span class="text-3xl mb-2 grayscale">🔒</span>
+                            <span class="text-xs font-semibold leading-tight text-muted">Complete M1</span>
+                        </div>
+                        <div class="flex flex-col items-center justify-center p-4 bg-surface rounded-lg w-28 text-center" style="border: 1px dashed var(--border-color); opacity: 0.5;">
+                            <span class="text-3xl mb-2 grayscale">🔒</span>
+                            <span class="text-xs font-semibold leading-tight text-muted">Complete M2</span>
+                        </div>
+                    </div>
+                    <p class="text-muted text-sm italic mt-4">Start learning to unlock these badges!</p>`;
                 }
                 return `
                     <div class="flex flex-wrap gap-4 mt-4">
                         ${state.badges.map(b => `
-                            <div class="flex flex-col items-center justify-center p-4 bg-surface rounded-lg w-28 text-center" style="border: 1px solid var(--border-color);">
-                                <span class="text-3xl mb-2">🏅</span>
+                            <div class="flex flex-col items-center justify-center p-4 bg-surface rounded-lg w-28 text-center" style="border: 1px solid var(--border-color); box-shadow: 0 0 15px rgba(245, 166, 35, 0.1);">
+                                <span class="text-3xl mb-2" style="filter: drop-shadow(0 0 5px rgba(245, 166, 35, 0.5));">🏅</span>
                                 <span class="text-xs font-semibold leading-tight">${b.name}</span>
                             </div>
                         `).join('')}
@@ -1019,7 +1030,7 @@ class App {
                             <h4 class="mb-4 text-sm uppercase text-muted font-bold" style="letter-spacing: 0.05em;">Recent Activity</h4>
                             <ul class="text-sm space-y-3" style="list-style: none; padding: 0;">
                                 ${state.progress.completedExercises.length === 0 ? 
-                                    '<li class="text-muted italic">No activity yet.</li>' : 
+                                    '<li class="flex items-center gap-3"><span style="color: var(--text-muted); opacity: 0.5;">⏱️</span><span class="text-muted italic">Ready to begin your first module.</span></li>' : 
                                     state.progress.completedExercises.slice(-5).reverse().map(ex => `
                                         <li class="flex items-center gap-3">
                                             <span style="color: #10B981;">✓</span>
@@ -1041,25 +1052,23 @@ class App {
                     const accentColor = style.getPropertyValue('--accent').trim() || '#E4002B';
                     
                     Chart.defaults.color = textColor;
+                    const m1 = state.progress.module1 || 0;
+                    const m2 = state.progress.module2 || 0;
+                    const m3 = state.progress.module3 || 0;
+                    const m4 = state.progress.module4 || 0;
+                    const totalProg = m1 + m2 + m3 + m4;
+
                     window.moduleChartInstance = new Chart(ctx, {
                         type: 'doughnut',
                         data: {
-                            labels: ['Session 1', 'Session 2', 'Session 3', 'Session 4'],
+                            labels: totalProg === 0 ? ['Not Started'] : ['Session 1', 'Session 2', 'Session 3', 'Session 4'],
                             datasets: [{
-                                data: [
-                                    state.progress.module1 || 0,
-                                    state.progress.module2 || 0,
-                                    state.progress.module3 || 0,
-                                    state.progress.module4 || 0
-                                ],
-                                backgroundColor: [
-                                    accentColor,
-                                    '#3b82f6',
-                                    '#10b981',
-                                    '#f5a623'
-                                ],
+                                data: totalProg === 0 ? [1] : [m1, m2, m3, m4],
+                                backgroundColor: totalProg === 0 
+                                    ? ['rgba(255, 255, 255, 0.05)'] 
+                                    : [accentColor, '#3b82f6', '#10b981', '#f5a623'],
                                 borderWidth: 0,
-                                hoverOffset: 4
+                                hoverOffset: totalProg === 0 ? 0 : 4
                             }]
                         },
                         options: {
@@ -1075,12 +1084,17 @@ class App {
                         }
                     });
                 } else if (window.moduleChartInstance) {
-                    window.moduleChartInstance.data.datasets[0].data = [
-                        state.progress.module1 || 0,
-                        state.progress.module2 || 0,
-                        state.progress.module3 || 0,
-                        state.progress.module4 || 0
-                    ];
+                    const m1 = state.progress.module1 || 0;
+                    const m2 = state.progress.module2 || 0;
+                    const m3 = state.progress.module3 || 0;
+                    const m4 = state.progress.module4 || 0;
+                    const totalProg = m1 + m2 + m3 + m4;
+
+                    window.moduleChartInstance.data.labels = totalProg === 0 ? ['Not Started'] : ['Session 1', 'Session 2', 'Session 3', 'Session 4'];
+                    window.moduleChartInstance.data.datasets[0].data = totalProg === 0 ? [1] : [m1, m2, m3, m4];
+                    window.moduleChartInstance.data.datasets[0].backgroundColor = totalProg === 0 
+                        ? ['rgba(255, 255, 255, 0.05)'] 
+                        : [getComputedStyle(document.body).getPropertyValue('--accent').trim() || '#E4002B', '#3b82f6', '#10b981', '#f5a623'];
                     window.moduleChartInstance.update();
                 }
             }, 100);
