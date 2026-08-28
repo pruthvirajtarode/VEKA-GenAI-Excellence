@@ -760,7 +760,7 @@ and verify every output before it reaches a customer, a dealer or a colleague."<
 </div>
 
 <script>
-function toggle(el){el.parentElement.classList.toggle('open')}
+function toggle(el){document.querySelectorAll('.section').forEach(s => {if(s !== el.parentElement) s.classList.remove('open');}); el.parentElement.classList.toggle('open'); setTimeout(() => window.dispatchEvent(new Event('resize')), 50);}
 function tcs(el){if(el.classList.contains('cs'))el.classList.toggle('cso')}
 function cp(btn,ev){var t=btn.parentElement.textContent.replace('📋 Copy','').trim();
 if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(t).then(function(){btn.textContent='✓ Copied!';setTimeout(function(){btn.textContent='📋 Copy'},2000)})}
@@ -798,6 +798,8 @@ document.addEventListener('DOMContentLoaded', function() {
 </script>
 </body>
 </html>
+
+
 
 
 

@@ -1146,7 +1146,7 @@ you include specific items.</div>
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
-function toggle(el){el.parentElement.classList.toggle('open')}
+function toggle(el){document.querySelectorAll('.section').forEach(s => {if(s !== el.parentElement) s.classList.remove('open');}); el.parentElement.classList.toggle('open'); setTimeout(() => window.dispatchEvent(new Event('resize')), 50);}
 function toggleCS(el){if(el.classList.contains('case-study'))el.classList.toggle('cs-open')}
 function copyPrompt(btn,ev){var t=btn.parentElement.textContent.replace('📋 Copy','').trim();
 if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(t).then(function(){btn.textContent='✓ Copied!';setTimeout(function(){btn.textContent='📋 Copy'},2000)})}
@@ -1212,5 +1212,6 @@ document.addEventListener('DOMContentLoaded', function() {
 }
 </style>
 </body>
+
 
 
