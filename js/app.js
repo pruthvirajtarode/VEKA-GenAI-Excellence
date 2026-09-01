@@ -1490,6 +1490,7 @@ class App {
                                     <option>Production</option>
                                     <option>Maintenance</option>
                                     <option>Sales</option>
+                                    <option>Business Development</option>
                                     <option>HR</option>
                                 </select>
                             </div>

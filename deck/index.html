@@ -937,7 +937,7 @@ const timer={
 
 /* ---------- leaderboard ---------- */
 const board={
-  teams:[{n:'Extrusion',s:0},{n:'Finance',s:0},{n:'Sales',s:0},{n:'HR & Ops',s:0}],
+  teams:[{n:'Sales (Mgmt)',s:0},{n:'Finance',s:0},{n:'Business Dev',s:0},{n:'HR',s:0},{n:'Operations',s:0}],
   render(){
     const t=document.getElementById('lbTable');
     const sorted=[...this.teams].sort((a,b)=>b.s-a.s);
