@@ -763,7 +763,7 @@ class App {
                                 <span class="text-muted">${state.progress.module2}%</span>
                             </a>
                             <a href="#/module3" class="btn btn-secondary justify-between w-full">
-                                <span>3. Sales, HR & Safe AI</span>
+                                <span>3. HR & Safe AI</span>
                                 <span class="text-muted">${state.progress.module3}%</span>
                             </a>
                             <a href="#/module4" class="btn btn-secondary justify-between w-full">
