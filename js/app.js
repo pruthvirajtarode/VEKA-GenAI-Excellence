@@ -840,13 +840,18 @@ class App {
                     gradient.addColorStop(0, 'rgba(228, 0, 43, 0.5)'); // VEKA red transparent
                     gradient.addColorStop(1, 'rgba(228, 0, 43, 0.0)');
 
+                    const p1 = (state.progress.module1 || 0) / 100 * 1.5;
+                    const p2 = (state.progress.module2 || 0) / 100 * 3.2;
+                    const p3 = (state.progress.module3 || 0) / 100 * 5.8;
+                    const p4 = (state.progress.module4 || 0) / 100 * 10.5;
+
                     window.prodChartInstance = new Chart(ctxProd, {
                         type: 'line',
                         data: {
                             labels: ['Module 1', 'Module 2', 'Module 3', 'Module 4'],
                             datasets: [{
                                 label: 'Hours Saved / Week',
-                                data: [1.5, 3.2, 5.8, 10.5],
+                                data: [p1, p2, p3, p4],
                                 borderColor: accentColor,
                                 backgroundColor: gradient,
                                 borderWidth: 4,
@@ -900,13 +905,21 @@ class App {
                 const ctxSkills = document.getElementById('skillsChart');
                 if (ctxSkills) {
                     if (window.skillsChartInstance) window.skillsChartInstance.destroy();
+                    
+                    const overall = state.progress.overall || 0;
+                    const promptSkill = 10 + ((state.progress.module1 || 0) * 0.7); // max 80
+                    const dataSkill = 10 + ((state.progress.module2 || 0) * 0.55); // max 65
+                    const safeSkill = 10 + ((state.progress.module3 || 0) * 0.8); // max 90
+                    const workSkill = 10 + ((state.progress.module4 || 0) * 0.65); // max 75
+                    const stratSkill = 10 + (overall * 0.75); // max 85
+
                     window.skillsChartInstance = new Chart(ctxSkills, {
                         type: 'radar',
                         data: {
                             labels: ['Prompting', 'Data Analytics', 'Safe AI', 'Workflows', 'Strategy'],
                             datasets: [{
                                 label: 'Current Level',
-                                data: [80, 65, 90, 75, 85],
+                                data: [promptSkill, dataSkill, safeSkill, workSkill, stratSkill],
                                 backgroundColor: 'rgba(16, 185, 129, 0.35)',
                                 borderColor: '#10B981',
                                 borderWidth: 3,
