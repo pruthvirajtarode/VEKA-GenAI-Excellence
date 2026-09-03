@@ -832,7 +832,9 @@ class App {
                 Chart.defaults.font.family = "'Inter', sans-serif";
 
                 const ctxProd = document.getElementById('productivityChart');
-                if (ctxProd && !window.prodChartInstance) {
+                if (ctxProd) {
+                    if (window.prodChartInstance) window.prodChartInstance.destroy();
+                    
                     // Create a beautiful gradient for the line chart fill
                     const gradient = ctxProd.getContext('2d').createLinearGradient(0, 0, 0, 250);
                     gradient.addColorStop(0, 'rgba(228, 0, 43, 0.5)'); // VEKA red transparent
@@ -896,7 +898,8 @@ class App {
                 }
 
                 const ctxSkills = document.getElementById('skillsChart');
-                if (ctxSkills && !window.skillsChartInstance) {
+                if (ctxSkills) {
+                    if (window.skillsChartInstance) window.skillsChartInstance.destroy();
                     window.skillsChartInstance = new Chart(ctxSkills, {
                         type: 'radar',
                         data: {
@@ -1050,7 +1053,8 @@ class App {
             setTimeout(() => {
                 if (!window.Chart) return;
                 const ctx = document.getElementById('moduleProgressChart');
-                if (ctx && !window.moduleChartInstance) {
+                if (ctx) {
+                    if (window.moduleChartInstance) window.moduleChartInstance.destroy();
                     const style = getComputedStyle(document.body);
                     const textColor = style.getPropertyValue('--text-main').trim() || '#FFFFFF';
                     const accentColor = style.getPropertyValue('--accent').trim() || '#E4002B';
@@ -1087,19 +1091,6 @@ class App {
                             cutout: '70%'
                         }
                     });
-                } else if (window.moduleChartInstance) {
-                    const m1 = state.progress.module1 || 0;
-                    const m2 = state.progress.module2 || 0;
-                    const m3 = state.progress.module3 || 0;
-                    const m4 = state.progress.module4 || 0;
-                    const totalProg = m1 + m2 + m3 + m4;
-
-                    window.moduleChartInstance.data.labels = totalProg === 0 ? ['Not Started'] : ['Session 1', 'Session 2', 'Session 3', 'Session 4'];
-                    window.moduleChartInstance.data.datasets[0].data = totalProg === 0 ? [1] : [m1, m2, m3, m4];
-                    window.moduleChartInstance.data.datasets[0].backgroundColor = totalProg === 0 
-                        ? ['rgba(255, 255, 255, 0.05)'] 
-                        : [getComputedStyle(document.body).getPropertyValue('--accent').trim() || '#E4002B', '#3b82f6', '#10b981', '#f5a623'];
-                    window.moduleChartInstance.update();
                 }
             }, 100);
         },
