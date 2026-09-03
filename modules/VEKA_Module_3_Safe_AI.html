@@ -872,6 +872,29 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 });</script>
+<button id="back-to-top" title="Back to Top" style="position: fixed; bottom: 30px; right: 30px; z-index: 999; background: var(--accent, #E4002B); color: white; width: 45px; height: 45px; border: none; border-radius: 50%; display: none; align-items: center; justify-content: center; box-shadow: 0 4px 15px rgba(0,0,0,0.3); transition: opacity 0.3s, transform 0.3s; opacity: 0; transform: translateY(10px); cursor: pointer;">
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5M5 12l7-7 7 7"/></svg>
+</button>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    var backToTopBtn = document.getElementById('back-to-top');
+    if (backToTopBtn) {
+        window.addEventListener('scroll', function() {
+            if (window.scrollY > 300) {
+                backToTopBtn.style.display = 'flex';
+                setTimeout(function() { backToTopBtn.style.opacity = '1'; backToTopBtn.style.transform = 'translateY(0)'; }, 10);
+            } else {
+                backToTopBtn.style.opacity = '0';
+                backToTopBtn.style.transform = 'translateY(10px)';
+                setTimeout(function() { if (window.scrollY <= 300) backToTopBtn.style.display = 'none'; }, 300);
+            }
+        });
+        backToTopBtn.addEventListener('click', function() {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        });
+    }
+});
+</script>
 </body>
 
 
