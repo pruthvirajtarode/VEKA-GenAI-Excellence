@@ -1,1264 +1,768 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="description" content="VEKA GenAI Excellence Training Module. Interactive learning content for AI integration.">
-<meta name="keywords" content="VEKA, GenAI, Training, Module, AI, Artificial Intelligence">
-<title>M1: Prompting &amp; Docs — VEKA GenAI Excellence</title>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>M1: Prompting & Docs</title>
 <style>
-*{margin:0;padding:0;box-sizing:border-box}
-:root{--bg:#0a0a0a;--card:#1f1f1f;--card2:#141414;--border:rgba(255,255,255,0.08);--text:#e0e0e0;--accent:#E4002B;--blue:#2196F3;--green:#4CAF50;--red:#FF5252;--orange:#FF9800;--purple:#9C27B0}
-body{font-family:'Segoe UI',Roboto,sans-serif;background:var(--bg);color:var(--text);line-height:1.6;padding-bottom:60px}
-.module-header{background:linear-gradient(to right, rgba(10,10,10,0.95), rgba(10,10,10,0.4)), url('https://images.unsplash.com/photo-1620712943543-bcc4688e7485?q=80&w=1200&auto=format&fit=crop') center/cover no-repeat;padding:40px 30px;text-align:center;border-bottom:3px solid var(--accent)}
-.module-header .tag{display:inline-block;background:rgba(0,0,0,0.3);padding:4px 14px;border-radius:15px;font-size:12px;font-weight:600;margin-bottom:10px;letter-spacing:1px}
-.module-header h1{font-size:36px;font-weight:800;margin-bottom:8px}
-.module-header p{font-size:18px;opacity:0.85;max-width:750px;margin:0 auto}
-.container{max-width:1000px;margin:0 auto;padding:20px}
+:root{
+  --bg:#0a0a0a; --bg2:#111113; --card:#161617; --card2:#1c1c1e;
+  --line:#2a2a2c; --line2:#333336;
+  --ink:#f5f5f4; --ink-soft:#a8a8ac; --ink-dim:#77777c;
+  --red:#e2202f; --red2:#ff4655; --red-tint:rgba(226,32,47,.14); --red-tint2:rgba(226,32,47,.06);
+  --green:#22c55e; --green-tint:rgba(34,197,94,.14);
+  --sun:#f5b942; --sun-tint:rgba(245,185,66,.12);
+  --sans: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --mono: ui-monospace, "Cascadia Code", "SF Mono", Menlo, Consolas, monospace;
+}
+*{box-sizing:border-box}
+html{background:var(--bg)}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--sans);-webkit-font-smoothing:antialiased;line-height:1.5}
+h1,h2,h3{font-weight:800;letter-spacing:-.02em;margin:0 0 .5em}
+p{margin:0 0 1em;color:var(--ink-soft)}
+strong{color:var(--ink)}
+button{font-family:inherit}
+:focus-visible{outline:3px solid var(--red2);outline-offset:2px}
+img{max-width:100%}
 
-/* Sections */
-.section{background:var(--card);border:1px solid var(--border);border-radius:12px;margin:20px 0;overflow:hidden}
-.section-head{padding:18px 24px;cursor:pointer;display:flex;align-items:center;justify-content:space-between;transition:background 0.2s}
-.section-head:hover{background:rgba(255,255,255,0.03)}
-.section-head h2{font-size:20px;font-weight:700;display:flex;align-items:center;gap:10px}
-.section-head .arrow{font-size:18px;opacity:0.5;transition:transform 0.3s}
-.section-body{padding:0 24px 24px;display:none}
-.section.open .section-body{display:block}
-.section.open .arrow{transform:rotate(180deg)}
+.wrap{max-width:980px;margin:0 auto;padding:0 24px 90px}
 
-/* Cards */
-.card{background:var(--card2);border:1px solid var(--border);border-radius:12px;padding:24px;margin:16px 0;transition:transform 0.3s ease,box-shadow 0.3s ease;box-shadow:0 4px 6px rgba(0,0,0,0.3)}.card:hover{transform:translateY(-5px);box-shadow:0 12px 24px rgba(228,0,43,0.15);border-color:var(--accent)}
-.card h3{font-size:17px;font-weight:600;color:var(--accent);margin-bottom:8px}
-.card h4{font-size:15px;font-weight:600;color:var(--blue);margin-bottom:6px;margin-top:10px}
-.card p,.card li{font-size:14px;opacity:0.85;line-height:1.7}
-.card ul{list-style:none;margin:8px 0}
-.card ul li{padding:4px 0 4px 22px;position:relative}
-.card ul li:before{content:"▸";position:absolute;left:0;color:var(--accent);font-weight:bold}
+/* ---------- sticky HUD ---------- */
+#hud{position:sticky;top:0;z-index:50;background:rgba(10,10,10,.86);backdrop-filter:blur(10px);
+  border-bottom:1px solid var(--line);padding:10px 24px;display:flex;align-items:center;justify-content:space-between;gap:12px}
+#hud .brand{font-family:var(--mono);font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-dim);display:flex;align-items:center;gap:8px}
+#hud .brand b{color:var(--ink)}
+.xpbadge{font-family:var(--mono);font-weight:800;font-size:13px;background:var(--card2);border:1px solid var(--line2);
+  color:var(--ink);border-radius:99px;padding:.4em 1em;display:inline-flex;align-items:center;gap:.5em}
+.xpbadge b{color:var(--red2)}
+.badgemini{display:none;gap:.35em}
+@media (min-width:640px){.badgemini{display:inline-flex}}
+.badgemini span{opacity:.22;filter:grayscale(1);font-size:16px;transition:.25s}
+.badgemini span.on{opacity:1;filter:none;transform:scale(1.15)}
 
-/* Layout */
-.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:15px}
-.grid-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:15px}
-@media(max-width:768px){.grid-2,.grid-3{grid-template-columns:1fr}}
+/* ---------- hero ---------- */
+.hero{position:relative;padding:64px 24px 46px;text-align:center;overflow:hidden;
+  background:
+    radial-gradient(60vmin 40vmin at 15% 0%, rgba(226,32,47,.20), rgba(226,32,47,0) 60%),
+    radial-gradient(50vmin 34vmin at 90% 100%, rgba(226,32,47,.14), rgba(226,32,47,0) 65%),
+    linear-gradient(180deg,#141416,#0a0a0a 80%)}
+.hero::before{content:"";position:absolute;inset:0;opacity:.5;
+  background-image:linear-gradient(rgba(255,255,255,.045) 1px, transparent 1px),linear-gradient(90deg,rgba(255,255,255,.045) 1px, transparent 1px);
+  background-size:42px 42px;mask-image:radial-gradient(70% 70% at 50% 20%, #000 40%, transparent 100%)}
+.hero .in{position:relative;max-width:760px;margin:0 auto}
+.eyebrow{font-family:var(--mono);font-size:12px;letter-spacing:.28em;text-transform:uppercase;color:var(--red2);font-weight:800;margin-bottom:14px}
+.hero h1{font-size:clamp(30px,5.4vw,52px);line-height:1.02}
+.hero .sub{font-size:clamp(15px,2vw,19px);color:var(--ink-soft);max-width:640px;margin:14px auto 0}
+.hero .rule{height:3px;max-width:980px;margin:34px auto 0;background:linear-gradient(90deg,var(--red),var(--red2))}
 
-/* Stats */
-.stats{display:flex;gap:15px;flex-wrap:wrap;margin:15px 0}
-.stat{background:var(--card2);border:1px solid var(--border);border-radius:8px;padding:15px;text-align:center;flex:1;min-width:120px}
-.stat .n{font-size:28px;font-weight:800;color:var(--accent);display:block}
-.stat .l{font-size:12px;opacity:0.7}
+/* ---------- sections / accordion ---------- */
+.sec{margin-top:22px}
+details.card{background:var(--card);border:1px solid var(--line);border-radius:16px;overflow:hidden}
+details.card + details.card{margin-top:16px}
+summary.hd{list-style:none;cursor:pointer;padding:20px 22px;display:flex;align-items:center;gap:12px;user-select:none}
+summary.hd::-webkit-details-marker{display:none}
+summary.hd .ic{font-size:20px}
+summary.hd .tt{font-size:clamp(17px,2.4vw,21px);font-weight:800;flex:1}
+summary.hd .ct{font-family:var(--mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-dim)}
+summary.hd .chev{width:28px;height:28px;border-radius:8px;background:var(--card2);border:1px solid var(--line2);
+  display:flex;align-items:center;justify-content:center;transition:transform .22s ease;flex-shrink:0}
+summary.hd .chev svg{width:14px;height:14px;stroke:var(--ink-soft);fill:none;stroke-width:2.4;stroke-linecap:round}
+details[open] summary.hd .chev{transform:rotate(180deg)}
+details[open] summary.hd{border-bottom:1px solid var(--line)}
+.bd{padding:22px}
+.bd > p:last-child{margin-bottom:0}
 
-/* Tables */
-table{width:100%;border-collapse:collapse;margin:12px 0;font-size:13px}
-th{background:rgba(255,255,255,0.08);padding:10px 12px;text-align:left;font-weight:600;border-bottom:2px solid var(--border)}
-td{padding:8px 12px;border-bottom:1px solid var(--border)}
-tr:hover{background:rgba(255,255,255,0.02)}
+/* ---------- stat tiles ---------- */
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:20px}
+.stat{background:var(--card2);border:1px solid var(--line2);border-radius:12px;padding:16px 10px;text-align:center}
+.stat .n{font-family:var(--mono);font-weight:800;font-size:clamp(22px,4vw,30px);color:var(--red2)}
+.stat .l{font-size:12px;color:var(--ink-dim);margin-top:2px}
+@media (max-width:620px){.stats{grid-template-columns:repeat(2,1fr)}}
 
-/* Alerts */
-.tip{background:rgba(255,214,0,0.08);border-left:3px solid var(--accent);padding:12px 16px;margin:12px 0;border-radius:0 8px 8px 0;font-size:14px}
-.warning{background:rgba(255,82,82,0.08);border-left:3px solid var(--red);padding:12px 16px;margin:12px 0;border-radius:0 8px 8px 0;font-size:14px}
-.success{background:rgba(76,175,80,0.08);border-left:3px solid var(--green);padding:12px 16px;margin:12px 0;border-radius:0 8px 8px 0;font-size:14px}
-.info-box{background:rgba(33,150,243,0.08);border-left:3px solid var(--blue);padding:12px 16px;margin:12px 0;border-radius:0 8px 8px 0;font-size:14px}
+ul.obj{list-style:none;margin:0;padding:0}
+ul.obj li{display:flex;gap:10px;padding:8px 0;font-size:15px;color:var(--ink-soft)}
+ul.obj li::before{content:"▶";color:var(--red2);font-size:10px;margin-top:5px;flex-shrink:0}
 
-/* Prompts */
-.prompt{background:#1e1e2e;border:2px solid #69F0AE;border-radius:8px;padding:16px;margin:12px 0;font-family:'Courier New',monospace;font-size:13px;color:#a6e3a1;line-height:1.5;white-space:pre-wrap;position:relative;max-height:520px;overflow-y:auto}
-.prompt-label{display:inline-block;background:#69F0AE;color:#1e1e2e;padding:3px 12px;border-radius:15px;font-size:11px;font-weight:700;margin-bottom:8px;font-family:'Segoe UI',sans-serif}
-.copy-btn{position:absolute;top:10px;right:10px;background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.2);color:#69F0AE;padding:4px 12px;border-radius:5px;cursor:pointer;font-size:11px;font-family:'Segoe UI',sans-serif}
+/* ---------- grids / cards ---------- */
+.grid{display:grid;gap:14px}
+.g2{grid-template-columns:1fr 1fr}
+.g3{grid-template-columns:repeat(3,1fr)}
+@media (max-width:760px){.g2,.g3{grid-template-columns:1fr}}
 
-/* Bad vs Good comparison (from 1A, dark theme) */
-.comparison{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin:14px 0}
-@media(max-width:768px){.comparison{grid-template-columns:1fr}}
-.comparison-label{font-size:12px;font-weight:700;margin-bottom:6px;text-align:center;letter-spacing:0.5px}
-.bad-prompt{background:rgba(255,82,82,0.07);border-left:3px solid var(--red);padding:12px 14px;border-radius:0 6px 6px 0;font-size:13px;font-family:'Courier New',monospace;color:#ffcdd2;line-height:1.6;white-space:pre-wrap}
-.good-prompt{background:rgba(76,175,80,0.07);border-left:3px solid var(--green);padding:12px 14px;border-radius:0 6px 6px 0;font-size:13px;font-family:'Courier New',monospace;color:#c8e6c9;line-height:1.6;white-space:pre-wrap}
-.role-badge{display:inline-block;background:rgba(156,39,176,0.15);color:#CE93D8;font-size:11px;font-weight:700;padding:4px 10px;border-radius:12px;margin-bottom:10px;letter-spacing:0.4px}
-.key-tips{background:rgba(0,0,0,0.22);border-radius:8px;padding:14px;margin-top:14px;font-size:13px}
-.tip-item{display:flex;gap:10px;margin-bottom:8px;align-items:flex-start}
-.tip-item:last-child{margin-bottom:0}
-.tip-icon{font-size:15px;margin-top:1px;flex-shrink:0}
+/* ---------- flip cards (dark) ---------- */
+.flip{background:var(--card2);border:1px solid var(--line2);border-radius:14px;padding:18px 20px;cursor:pointer;
+  text-align:left;transition:.16s}
+.flip:hover{border-color:var(--red)}
+.flip .term{font-weight:800;font-size:16px;display:flex;align-items:center;gap:8px}
+.flip .hint{font-family:var(--mono);font-size:10.5px;color:var(--ink-dim);letter-spacing:.08em;text-transform:uppercase;margin-top:5px}
+.flip .def{display:none;font-size:14px;color:var(--ink-soft);line-height:1.5;margin-top:10px}
+.flip.open{border-color:var(--red);background:var(--red-tint2)}
+.flip.open .def{display:block}
+.flip.open .hint{display:none}
+.flip .eg{display:none;margin-top:8px;padding:8px 10px;background:var(--bg2);border-left:3px solid var(--red);border-radius:0 8px 8px 0;
+  font-family:var(--mono);font-size:12px;color:#d9d9db}
+.flip.open .eg{display:block}
 
-/* Exercise */
-.exercise{background:rgba(156,39,176,0.08);border:2px solid rgba(156,39,176,0.2);border-radius:8px;padding:18px;margin:12px 0}
-.exercise h3{color:#CE93D8;font-size:16px;margin-bottom:8px}
+/* ---------- role scenario cards ---------- */
+.role{background:var(--card2);border:1px solid var(--line2);border-radius:16px;padding:18px 20px;cursor:pointer;transition:.16s}
+.role:hover{border-color:var(--red)}
+.role .rt{font-weight:800;font-size:16px;display:flex;align-items:center;gap:10px}
+.role .rt .em{font-size:20px}
+.role .hint{font-family:var(--mono);font-size:10.5px;color:var(--ink-dim);letter-spacing:.08em;text-transform:uppercase;margin-top:6px}
+.role .compare{display:none;margin-top:12px;display:none}
+.role.open .compare{display:grid;gap:8px}
+.role.open .hint{display:none}
+.pex{border-radius:10px;padding:10px 12px;font-size:13px;line-height:1.45}
+.pex.bad{background:rgba(226,32,47,.08);border:1px solid rgba(226,32,47,.3);color:#f0b8bc}
+.pex.bad b{color:var(--red2);font-family:var(--mono);font-size:10px;letter-spacing:.1em;text-transform:uppercase;display:block;margin-bottom:4px}
+.pex.good{background:var(--green-tint);border:1px solid rgba(34,197,94,.35);color:#bdf0cf}
+.pex.good b{color:var(--green);font-family:var(--mono);font-size:10px;letter-spacing:.1em;text-transform:uppercase;display:block;margin-bottom:4px}
 
-/* Badges */
-.badge{display:inline-block;padding:3px 10px;border-radius:12px;font-size:11px;font-weight:700}
-.badge-safe{background:rgba(76,175,80,0.15);color:var(--green);border:1px solid rgba(76,175,80,0.3)}
-.badge-risky{background:rgba(255,82,82,0.15);color:var(--red);border:1px solid rgba(255,82,82,0.3)}
-.badge-warn{background:rgba(255,152,0,0.15);color:var(--orange);border:1px solid rgba(255,152,0,0.3)}
+/* ---------- do / don't ---------- */
+.dd{border-radius:14px;padding:16px 18px;border:1px solid var(--line2)}
+.dd.do{background:var(--green-tint);border-color:rgba(34,197,94,.3)}
+.dd.dont{background:var(--red-tint);border-color:rgba(226,32,47,.3)}
+.dd h3{font-size:14px;margin-bottom:10px}
+.dd.do h3{color:var(--green)}
+.dd.dont h3{color:var(--red2)}
+.dd ul{margin:0;padding-left:18px}
+.dd li{font-size:13.5px;color:var(--ink-soft);margin-bottom:6px}
 
-/* Case study / collapsible scenario */
-.case-study{background:var(--card2);border:1px solid var(--border);border-radius:10px;margin:16px 0;overflow:hidden}
-.case-study-header{padding:14px 18px;cursor:pointer;display:flex;align-items:center;justify-content:space-between}
-.case-study-header:hover{background:rgba(255,255,255,0.03)}
-.case-study-header h3{font-size:16px;font-weight:600;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
-.case-study-header .cs-arrow{font-size:14px;opacity:0.4;transition:transform 0.3s}
-.case-study-body{padding:0 18px 18px;display:none}
-.case-study.cs-open .case-study-body{display:block}
-.case-study.cs-open .cs-arrow{transform:rotate(180deg)}
-.cs-tag{font-size:11px;padding:2px 8px;border-radius:10px;font-weight:600}
-.cs-tag-sales{background:rgba(33,150,243,0.15);color:#64B5F6}
-.cs-tag-tech{background:rgba(255,214,0,0.15);color:#FFD600}
-.cs-tag-hr{background:rgba(156,39,176,0.15);color:#CE93D8}
-.cs-tag-plant{background:rgba(255,152,0,0.15);color:#FF9800}
-.cs-tag-mkt{background:rgba(76,175,80,0.15);color:#4CAF50}
+/* ---------- quiz ---------- */
+.qcard{background:var(--card2);border:1px solid var(--line2);border-radius:14px;padding:18px 20px;margin-bottom:14px}
+.qcard:last-child{margin-bottom:0}
+.qtag{font-family:var(--mono);font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--red2);font-weight:800;margin-bottom:8px}
+.qtxt{font-size:15.5px;font-weight:600;color:var(--ink);margin-bottom:12px}
+.opts{display:grid;gap:9px}
+.opt{display:flex;gap:10px;align-items:center;text-align:left;background:var(--bg2);border:1px solid var(--line2);
+  border-radius:11px;padding:11px 14px;font-size:14px;color:var(--ink);cursor:pointer;transition:.14s}
+.opt:hover{border-color:var(--red2)}
+.opt .k{font-family:var(--mono);font-weight:800;color:var(--ink-dim);flex-shrink:0}
+.opt.right{border-color:var(--green);background:var(--green-tint)}
+.opt.right .k{color:var(--green)}
+.opt.wrong{border-color:rgba(226,32,47,.5);background:var(--red-tint);opacity:.7}
+.said{display:none;margin-top:12px;border-left:3px solid var(--sun);background:var(--sun-tint);
+  border-radius:0 10px 10px 0;padding:10px 14px;color:var(--ink);font-size:13.5px}
+.said.on{display:block}
+.said b{font-family:var(--mono);font-size:.72em;letter-spacing:.1em;text-transform:uppercase;color:var(--sun);display:block;margin-bottom:4px}
 
-/* Step box */
-.step-box{background:rgba(0,0,0,0.25);border-radius:10px;padding:20px;margin:15px 0;border-left:4px solid var(--blue);position:relative}
-.step-num{position:absolute;top:-12px;left:15px;background:var(--blue);color:white;width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:14px}
-.step-box h3{color:white;margin-bottom:8px;margin-left:25px;font-size:16px}
-.step-box p{font-size:14px;opacity:0.85}
+/* ---------- prompt library ---------- */
+.pgroup{margin-bottom:22px}
+.pgroup:last-child{margin-bottom:0}
+.pgroup h3{font-size:14px;color:var(--red2);font-family:var(--mono);letter-spacing:.06em;text-transform:uppercase;margin-bottom:10px;
+  display:flex;align-items:center;gap:8px}
+.prompt{background:#0d0d0e;border:1px solid var(--line2);border-radius:14px;padding:16px 18px;position:relative;margin-bottom:10px}
+.prompt:last-child{margin-bottom:0}
+.prompt .lbl{font-family:var(--mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-dim);margin-bottom:6px;display:block}
+.prompt pre{font-family:var(--mono);font-size:12.6px;line-height:1.55;margin:0;white-space:pre-wrap;color:#e7e7ea;padding-right:70px}
+.prompt .cp{position:absolute;top:14px;right:14px;background:var(--card2);color:var(--ink-soft);border:1px solid var(--line2);
+  border-radius:99px;padding:.45em .95em;font-size:11px;font-weight:700;cursor:pointer;font-family:var(--mono)}
+.prompt .cp:hover{background:var(--red);color:#fff;border-color:var(--red)}
 
-/* Diagram */
-.diagram{background:rgba(0,0,0,0.3);border-radius:10px;padding:20px;margin:15px 0;text-align:center}
-.diagram .flow{display:flex;align-items:center;justify-content:center;gap:8px;flex-wrap:wrap;margin:10px 0}
-.diagram .node{background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.15);border-radius:8px;padding:10px 16px;font-size:13px;font-weight:600}
-.diagram .node-danger{border-color:rgba(255,82,82,0.4);color:#FF5252}
-.diagram .node-safe{border-color:rgba(76,175,80,0.4);color:#4CAF50}
-.diagram .arr{color:var(--accent);font-size:20px;font-weight:bold}
+/* ---------- badges / scoreboard ---------- */
+.badgerow{display:flex;gap:16px;justify-content:center;flex-wrap:wrap;margin:22px 0 6px}
+.badgecard{text-align:center;width:120px}
+.badgecard .em{font-size:44px;filter:grayscale(1);opacity:.28;transition:.3s}
+.badgecard.on .em{filter:none;opacity:1;transform:scale(1.06)}
+.badgecard .nm{font-family:var(--mono);font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-dim);margin-top:6px}
+.badgecard.on .nm{color:var(--ink);font-weight:800}
+.badgecard .rq{font-size:10.5px;color:#555559}
+.scorebig{font-family:var(--mono);font-weight:800;font-size:clamp(48px,9vw,84px);color:var(--red2);text-align:center;line-height:1;margin:6px 0}
+.stamp{display:inline-block;font-family:var(--mono);font-weight:800;letter-spacing:.12em;text-transform:uppercase;
+  font-size:14px;padding:.6em 1.2em;border:2px solid var(--green);color:var(--green);border-radius:.5em;
+  transform:rotate(-4deg);background:rgba(34,197,94,.08)}
+
+/* ---------- toast ---------- */
+#toastzone{position:fixed;top:64px;right:16px;z-index:90;display:flex;flex-direction:column;gap:8px;align-items:flex-end}
+.toast{background:var(--card2);border:1px solid var(--line2);color:#fff;font-family:var(--mono);font-weight:800;font-size:12.5px;
+  padding:.6em 1.1em;border-radius:99px;box-shadow:0 10px 24px -8px rgba(0,0,0,.6);animation:toastin .3s ease,toastout .4s ease 1.7s forwards}
+.toast b{color:var(--red2)}
+@keyframes toastin{0%{opacity:0;transform:translateY(-8px) scale(.92)}100%{opacity:1;transform:none}}
+@keyframes toastout{to{opacity:0;transform:translateY(-6px) scale(.96)}}
+
+/* ---------- footer ---------- */
+.foot{text-align:center;padding:40px 24px 10px;color:var(--ink-dim);font-size:12.5px}
+.foot .lg{font-family:var(--mono);font-weight:900;color:var(--ink);letter-spacing:-.01em;font-size:14px;margin-bottom:6px}
+
+.pill{display:inline-block;font-family:var(--mono);font-size:11px;letter-spacing:.06em;text-transform:uppercase;
+  padding:.4em .85em;border-radius:99px;background:var(--card2);border:1px solid var(--line2);color:var(--ink-soft)}
 </style>
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script></head>
+</head>
 <body>
 
-<div class="module-header">
-<div class="tag">SESSION 1</div>
-<h1>M1: Prompting &amp; Docs</h1>
-<p>How to ask AI for something you can actually use — prompt craft, document handling, photo analysis, and the copy-paste prompt library for every VEKA function</p>
+<div id="toastzone"></div>
+
+<div id="hud">
+  <span class="brand">🎯 <b>M1</b> · Prompting &amp; Docs <span class="badgemini" id="badgemini"><span title="Prompt Rookie">🔰</span><span title="Prompt Pro">⚡</span><span title="Prompt Architect">🧠</span><span title="Prompt Master">👑</span></span></span>
+  <span class="xpbadge">⚡ XP <b id="xpVal">0</b></span>
 </div>
 
-<div class="container">
+<header class="hero">
+  <div class="in">
+    <div class="eyebrow">Session 1</div>
+    <h1>M1: Prompting &amp; Docs</h1>
+    <p class="sub">How to ask AI for something you can actually use — prompt craft, document handling, photo analysis, and a copy-paste prompt library for every role in the room.</p>
+  </div>
+  <div class="rule"></div>
+</header>
 
-<!-- INTERACTIVE GAME / STUDIO LINK -->
-<div class="card" style="text-align: center; background: linear-gradient(135deg, rgba(228,0,43,0.1), rgba(0,0,0,0)); border-color: var(--accent); margin-bottom: 24px;">
-    <h3 style="font-size: 20px; display: flex; align-items: center; justify-content: center; gap: 8px;">🎮 Interactive Practice: Synthetic Data Studio</h3>
-    <p style="margin-bottom: 15px;">Practice generating and analyzing synthetic datasets for different VEKA functions in our interactive hub.</p>
-    <a href="../index.html#/synthetic-data" style="display: inline-block; padding: 12px 24px; background: var(--accent); color: white; text-decoration: none; border-radius: 8px; font-weight: 600; transition: 0.2s;">Launch Synthetic Data Studio</a>
-</div>
+<div class="wrap">
 
-<!-- OBJECTIVES -->
-<div class="section open">
-<div class="section-head" onclick="toggle(this)"><h2>🎯 Learning Objectives</h2><span class="arrow">▼</span></div>
-<div class="section-body">
-<div class="stats">
-<div class="stat"><span class="n">120</span><span class="l">Minutes</span></div>
-<div class="stat"><span class="n">6</span><span class="l">Role Scenarios</span></div>
-<div class="stat"><span class="n">12</span><span class="l">Ready Prompts</span></div>
-<div class="stat"><span class="n">0</span><span class="l">Prior Experience</span></div>
-</div>
-<div class="card"><p>By the end of this module, you will:</p><ul>
-<li>Know the 5 parts of a prompt that produces usable output</li>
-<li>See the difference between a vague prompt and a working one, in your own function</li>
-<li>Use 6 reusable prompt patterns instead of starting from a blank box every time</li>
-<li>Handle long documents — specifications, tender packs, brochures, meeting notes</li>
-<li>Use photo analysis for installation and defect assessment, and know its limits</li>
-<li>Fix a bad output by iterating, rather than giving up and doing it manually</li>
-<li>Leave with 12 prompts saved and one task you'll actually run this week</li>
-</ul></div>
-
-<div class="info-box"><strong>No prior AI experience assumed.</strong> If you've only ever typed one-line questions into ChatGPT, you are exactly the audience for this session. If you already use AI daily, the role scenarios in Part 3 and the iteration moves in Part 6 are where the new material is.</div>
-
-<div class="warning"><strong>⚠️ One rule for today, before we start.</strong> Use only synthetic or already-public information in every exercise. No real dealer names, no real quotations, no customer documents, no employee data. Session 3 covers why in detail — for now, treat it as the house rule. Every example on this page is invented for that reason.</div>
-
-<div class="card">
-<h3>Run of Show — 120 Minutes</h3>
-<table>
-<tr><th>Time</th><th>Block</th><th>Mode</th></tr>
-<tr><td>00:00 – 00:10</td><td>Part 1 — What AI is actually good at, and where it fails</td><td>Trainer</td></tr>
-<tr><td>00:10 – 00:25</td><td>Part 2 — The 5 parts of a working prompt, built live on screen</td><td>Trainer + room</td></tr>
-<tr><td>00:25 – 00:45</td><td>Part 3 — Role scenarios: everyone runs the one for their own function</td><td>Hands-on</td></tr>
-<tr><td>00:45 – 01:00</td><td>Part 4 — The 6 patterns, with one live run each</td><td>Hands-on</td></tr>
-<tr><td>01:00 – 01:10</td><td>Break</td><td>—</td></tr>
-<tr><td>01:10 – 01:28</td><td>Part 5 — Working with long documents</td><td>Hands-on</td></tr>
-<tr><td>01:28 – 01:43</td><td>Part 6 — Photo analysis demo, then everyone tries one</td><td>Demo + pairs</td></tr>
-<tr><td>01:43 – 01:55</td><td>Part 7 — Iteration: fixing a bad output in three moves</td><td>Hands-on</td></tr>
-<tr><td>01:55 – 02:00</td><td>Takeaways + pick the one task you'll run this week</td><td>Whole room</td></tr>
-</table>
-<div class="tip"><strong>💡 Trainer:</strong> Part 3 is where the room converts from watching to doing. If Parts 1 and 2 overrun, cut Part 1 — the theory lands better after people have felt a prompt fail.</div>
-
-<div style="margin-top: 25px; padding-top: 20px; border-top: 1px solid var(--border);">
-    <h4 style="margin-bottom: 15px; text-align: center; color: var(--text-muted);">Estimated Time Saved per Task</h4>
-    <div style="height: 200px; width: 100%;">
-        <canvas id="timeSavedChart"></canvas>
+  <!-- INTERACTIVE GAME / STUDIO LINK -->
+  <div class="sec">
+    <div class="card" style="text-align: center; background: var(--card2); border: 1px solid var(--red2); border-radius: 16px; padding: 22px; margin-bottom: 22px;">
+      <h3 style="font-size: 20px; color: var(--ink); display: flex; align-items: center; justify-content: center; gap: 8px; margin-top: 0;">🎮 Interactive Practice: Synthetic Data Studio</h3>
+      <p style="color: var(--ink-soft); margin-bottom: 18px;">Practice generating and analyzing synthetic datasets for different VEKA functions in our interactive hub.</p>
+      <a href="../index.html#/synthetic-data" style="display: inline-block; padding: 12px 24px; background: var(--red2); color: white; text-decoration: none; border-radius: 8px; font-weight: 600; font-family: var(--sans);">Launch Synthetic Data Studio</a>
     </div>
+  </div>
+
+  <!-- LEARNING OBJECTIVES -->
+  <div class="sec">
+    <details class="card" open>
+      <summary class="hd"><span class="ic">🎯</span><span class="tt">Learning Objectives</span><span class="chev"><svg viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></svg></span></summary>
+      <div class="bd">
+        <div class="stats" data-stats>
+          <div class="stat"><div class="n" data-count="120">0</div><div class="l">Minutes</div></div>
+          <div class="stat"><div class="n" data-count="6">0</div><div class="l">Role Scenarios</div></div>
+          <div class="stat"><div class="n" data-count="12">0</div><div class="l">Ready Prompts</div></div>
+          <div class="stat"><div class="n" data-count="0">0</div><div class="l">Prior Experience</div></div>
+        </div>
+        <p><strong>By the end of this module, you will:</strong></p>
+        <ul class="obj">
+          <li>Know the 5 parts of a prompt that produces usable output</li>
+          <li>See the difference between a vague prompt and a working one, in your own function</li>
+          <li>Use 6 reusable prompt patterns instead of starting from a blank box every time</li>
+          <li>Hand a document or photo to AI and get back exactly the structured thing you need</li>
+          <li>Walk away with a personal library of 12 ready-to-paste prompts for your role</li>
+        </ul>
+      </div>
+    </details>
+  </div>
+
+  <!-- 5-PART FRAMEWORK -->
+  <div class="sec">
+    <details class="card" open>
+      <summary class="hd"><span class="ic">🧩</span><span class="tt">The 5-Part Prompt</span><span class="ct">tap each card</span><span class="chev"><svg viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></svg></span></summary>
+      <div class="bd">
+        <p>Every prompt that actually works is built from the same five pieces. Miss one, and you get a generic, mushy answer you have to fix by hand.</p>
+        <div class="grid g3" style="grid-template-columns:repeat(5,1fr)">
+          <button class="flip" data-part><div class="term">1. Role</div><div class="hint">tap to reveal</div>
+            <div class="def">Who should the AI act as? This sets its judgment and vocabulary.</div>
+            <div class="eg">"Act as a senior ops manager reviewing this report..."</div></button>
+          <button class="flip" data-part><div class="term">2. Task</div><div class="hint">tap to reveal</div>
+            <div class="def">The exact deliverable — one clear verb, one clear output.</div>
+            <div class="eg">"...summarize the 3 biggest risks..."</div></button>
+          <button class="flip" data-part><div class="term">3. Context</div><div class="hint">tap to reveal</div>
+            <div class="def">The background it can't guess — audience, goal, what's already been tried.</div>
+            <div class="eg">"...this goes to the CFO who hasn't seen the raw data..."</div></button>
+          <button class="flip" data-part><div class="term">4. Format</div><div class="hint">tap to reveal</div>
+            <div class="def">How the output should look — table, bullets, word count, headings.</div>
+            <div class="eg">"...as 3 bullets, under 40 words each..."</div></button>
+          <button class="flip" data-part><div class="term">5. Constraints</div><div class="hint">tap to reveal</div>
+            <div class="def">Limits and tone — what to avoid, what to flag, how confident to sound.</div>
+            <div class="eg">"...flag anything you're not sure about, don't editorialize."</div></button>
+        </div>
+      </div>
+    </details>
+  </div>
+
+  <!-- GAME 1: PROMPT DOCTOR -->
+  <div class="sec">
+    <details class="card" open>
+      <summary class="hd"><span class="ic">🎮</span><span class="tt">Game 1 · Prompt Doctor</span><span class="ct">+10 XP each</span><span class="chev"><svg viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></svg></span></summary>
+      <div class="bd">
+        <p>Each of these prompts is missing exactly one of the 5 parts. Diagnose it.</p>
+
+        <div class="qcard">
+          <div class="qtag">Round 1 of 3</div>
+          <div class="qtxt">"Write me something about our Q3 numbers."</div>
+          <div class="opts" data-quiz>
+            <button class="opt"><span class="k">A</span> Missing Role</button>
+            <button class="opt" data-correct><span class="k">B</span> Missing Format &amp; Task specificity</button>
+            <button class="opt"><span class="k">C</span> Missing Constraints</button>
+          </div>
+          <div class="said"><b>Diagnosis</b>"Something" isn't a task, and there's no format. Fix: "Write a 3-bullet summary of our Q3 revenue numbers, one bullet per region."</div>
+        </div>
+
+        <div class="qcard">
+          <div class="qtag">Round 2 of 3</div>
+          <div class="qtxt">"Act as a recruiter and write a job description for a data analyst, as a clean 5-section doc with headings, under 400 words."</div>
+          <div class="opts" data-quiz>
+            <button class="opt" data-correct><span class="k">A</span> Missing Context</button>
+            <button class="opt"><span class="k">B</span> Missing Role</button>
+            <button class="opt"><span class="k">C</span> Missing Format</button>
+          </div>
+          <div class="said"><b>Diagnosis</b>Role, Task and Format are all there — but nothing about the actual team, seniority, or must-have skills. Without context it'll write a generic template.</div>
+        </div>
+
+        <div class="qcard">
+          <div class="qtag">Round 3 of 3</div>
+          <div class="qtxt">"Act as a finance analyst reviewing this vendor contract for hidden fees — flag anything you're not 100% sure about instead of guessing."</div>
+          <div class="opts" data-quiz>
+            <button class="opt"><span class="k">A</span> Missing Task</button>
+            <button class="opt"><span class="k">B</span> Missing Constraints</button>
+            <button class="opt" data-correct><span class="k">C</span> Missing Format — nothing says how to lay out the flagged fees</button>
+          </div>
+          <div class="said"><b>Diagnosis</b>Role, Task and Constraints are solid. Without a format, you'll get a wall of prose instead of something you can scan in ten seconds.</div>
+        </div>
+      </div>
+    </details>
+  </div>
+
+  <!-- 6 ROLE SCENARIOS -->
+  <div class="sec">
+    <details class="card" open>
+      <summary class="hd"><span class="ic">👥</span><span class="tt">6 Role Scenarios</span><span class="ct">tap to compare</span><span class="chev"><svg viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></svg></span></summary>
+      <div class="bd">
+        <p>Same weak habit shows up in every function — here's what "vague" vs "working" looks like in each one.</p>
+        <div class="grid g2">
+          <button class="role" data-role>
+            <div class="rt"><span class="em">📈</span>Sales / Business Dev</div>
+            <div class="hint">tap to compare</div>
+            <div class="compare">
+              <div class="pex bad"><b>Vague</b>"Write a follow-up email to this lead."</div>
+              <div class="pex good"><b>Working</b>"Act as an SDR. Write a 3-line follow-up to a lead who went quiet after a demo 8 days ago, reminding them of the ROI number we discussed, no pressure tone, one clear CTA to book 15 minutes."</div>
+            </div>
+          </button>
+          <button class="role" data-role>
+            <div class="rt"><span class="em">📣</span>Marketing / Content</div>
+            <div class="hint">tap to compare</div>
+            <div class="compare">
+              <div class="pex bad"><b>Vague</b>"Give me social post ideas."</div>
+              <div class="pex good"><b>Working</b>"Act as a B2B content strategist. Give me 5 LinkedIn post hooks (1 line each) for a SaaS audience of ops managers, about reducing manual reporting — no emojis, no hashtags, punchy not salesy."</div>
+            </div>
+          </button>
+          <button class="role" data-role>
+            <div class="rt"><span class="em">⚙️</span>Operations / PM</div>
+            <div class="hint">tap to compare</div>
+            <div class="compare">
+              <div class="pex bad"><b>Vague</b>"Summarize this project update."</div>
+              <div class="pex good"><b>Working</b>"Act as a PMO lead. Summarize this update as: Status (1 line), 3 risks with owner names, 2 decisions needed this week — for a director who has 90 seconds to read it."</div>
+            </div>
+          </button>
+          <button class="role" data-role>
+            <div class="rt"><span class="em">🧑‍🤝‍🧑</span>HR / People</div>
+            <div class="hint">tap to compare</div>
+            <div class="compare">
+              <div class="pex bad"><b>Vague</b>"Help me write feedback for this employee."</div>
+              <div class="pex good"><b>Working</b>"Act as a supportive manager. Draft written feedback covering 2 strengths and 1 growth area from these notes, warm but direct tone, under 150 words, no corporate jargon."</div>
+            </div>
+          </button>
+          <button class="role" data-role>
+            <div class="rt"><span class="em">💰</span>Finance / Analytics</div>
+            <div class="hint">tap to compare</div>
+            <div class="compare">
+              <div class="pex bad"><b>Vague</b>"Check these numbers for errors."</div>
+              <div class="pex good"><b>Working</b>"Act as a financial analyst. Compare this month's expense sheet against last month's, list every line item that moved more than 15%, as a table with the % change — flag anything that looks like a duplicate."</div>
+            </div>
+          </button>
+          <button class="role" data-role>
+            <div class="rt"><span class="em">🎧</span>Customer Support</div>
+            <div class="hint">tap to compare</div>
+            <div class="compare">
+              <div class="pex bad"><b>Vague</b>"Reply to this angry customer."</div>
+              <div class="pex good"><b>Working</b>"Act as a senior support agent. Write a reply that acknowledges the 3-day delay, offers the fix below, and does NOT over-apologize — under 100 words, calm and direct tone."</div>
+            </div>
+          </button>
+        </div>
+      </div>
+    </details>
+  </div>
+
+  <!-- DOC & PHOTO HANDLING -->
+  <div class="sec">
+    <details class="card">
+      <summary class="hd"><span class="ic">📎</span><span class="tt">Handling Docs &amp; Photos</span><span class="chev"><svg viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></svg></span></summary>
+      <div class="bd">
+        <p>Attaching a file doesn't replace a prompt — it just gives the prompt something real to point at.</p>
+        <div class="grid g2" style="margin-bottom:14px">
+          <div class="dd do"><h3>✅ Documents — do this</h3>
+            <ul>
+              <li>Name the doc type and exactly what to pull out</li>
+              <li>Ask for a specific output shape — table, list, JSON</li>
+              <li>Point at the section that matters in a long file</li>
+              <li>Ask it to quote or cite the line it's working from</li>
+            </ul>
+          </div>
+          <div class="dd dont"><h3>❌ Documents — avoid this</h3>
+            <ul>
+              <li>"Check this" with no definition of wrong</li>
+              <li>Dumping a 40-page doc with no pointer to what matters</li>
+              <li>Assuming it knows your company's specific terms</li>
+              <li>Skipping the format, then reformatting it yourself anyway</li>
+            </ul>
+          </div>
+        </div>
+        <div class="grid g2">
+          <div class="dd do"><h3>✅ Photos — do this</h3>
+            <ul>
+              <li>Say what's in frame that actually matters</li>
+              <li>Ask for structured output — a count, a list, yes/no</li>
+              <li>Give the business context a photo can't show</li>
+              <li>Ask it to flag anything it's unsure about</li>
+            </ul>
+          </div>
+          <div class="dd dont"><h3>❌ Photos — avoid this</h3>
+            <ul>
+              <li>"What's in this picture?" with no goal</li>
+              <li>Trusting a count with zero double-check</li>
+              <li>Skipping context ("this is our warehouse shelf 4B")</li>
+              <li>One photo when the comparison needs a before/after pair</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </details>
+  </div>
+
+  <!-- GAME 2: MATCH THE ROLE -->
+  <div class="sec">
+    <details class="card">
+      <summary class="hd"><span class="ic">🎮</span><span class="tt">Game 2 · Match the Role</span><span class="ct">+10 XP each</span><span class="chev"><svg viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></svg></span></summary>
+      <div class="bd">
+        <p>Given the task, which role's prompt pattern fits best?</p>
+
+        <div class="qcard">
+          <div class="qtag">Round 1 of 4</div>
+          <div class="qtxt">"I need to compare two months of expenses and catch anything that looks duplicated."</div>
+          <div class="opts" data-quiz>
+            <button class="opt"><span class="k">A</span> Marketing / Content</button>
+            <button class="opt" data-correct><span class="k">B</span> Finance / Analytics</button>
+            <button class="opt"><span class="k">C</span> Customer Support</button>
+          </div>
+          <div class="said"><b>Correct</b>Number comparison + anomaly flagging is squarely a Finance pattern.</div>
+        </div>
+
+        <div class="qcard">
+          <div class="qtag">Round 2 of 4</div>
+          <div class="qtxt">"I need 5 punchy hook lines for a LinkedIn campaign."</div>
+          <div class="opts" data-quiz>
+            <button class="opt" data-correct><span class="k">A</span> Marketing / Content</button>
+            <button class="opt"><span class="k">B</span> Operations / PM</button>
+            <button class="opt"><span class="k">C</span> HR / People</button>
+          </div>
+          <div class="said"><b>Correct</b>Short, punchy, audience-specific copy is a Marketing pattern.</div>
+        </div>
+
+        <div class="qcard">
+          <div class="qtag">Round 3 of 4</div>
+          <div class="qtxt">"A director needs my project status in 90 seconds, with risks and owners."</div>
+          <div class="opts" data-quiz>
+            <button class="opt"><span class="k">A</span> Sales / Business Dev</button>
+            <button class="opt" data-correct><span class="k">B</span> Operations / PM</button>
+            <button class="opt"><span class="k">C</span> Finance / Analytics</button>
+          </div>
+          <div class="said"><b>Correct</b>Status + risk + owner in a tight format is a classic PMO/Ops pattern.</div>
+        </div>
+
+        <div class="qcard">
+          <div class="qtag">Round 4 of 4</div>
+          <div class="qtxt">"A customer is upset about a 3-day delay and I need to reply without over-apologizing."</div>
+          <div class="opts" data-quiz>
+            <button class="opt"><span class="k">A</span> HR / People</button>
+            <button class="opt"><span class="k">B</span> Sales / Business Dev</button>
+            <button class="opt" data-correct><span class="k">C</span> Customer Support</button>
+          </div>
+          <div class="said"><b>Correct</b>Tone-controlled, acknowledge-and-resolve replies are the Support pattern.</div>
+        </div>
+      </div>
+    </details>
+  </div>
+
+  <!-- 12 READY PROMPTS -->
+  <div class="sec">
+    <details class="card">
+      <summary class="hd"><span class="ic">📚</span><span class="tt">12 Ready-to-Paste Prompts</span><span class="ct">your library</span><span class="chev"><svg viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></svg></span></summary>
+      <div class="bd">
+        <p>Two per role. Copy, swap the bracketed bits, go.</p>
+
+        <div class="pgroup"><h3>📈 Sales / Business Dev</h3>
+          <div class="prompt"><span class="lbl">Follow-up after silence</span><button class="cp">Copy</button>
+<pre>Act as an SDR. Write a 3-line follow-up email
+to a lead who went quiet [X] days after a demo.
+Remind them of [the specific value point we
+discussed], no pressure tone, one clear CTA to
+book 15 minutes. Keep it under 60 words.</pre></div>
+          <div class="prompt"><span class="lbl">Deal-risk summary</span><button class="cp">Copy</button>
+<pre>Act as a sales manager. Read this deal thread
+and tell me: (1) the single biggest risk to this
+deal closing, (2) one question I should ask the
+client this week, (3) a confidence score 1-10
+with your reasoning in one sentence.</pre></div>
+        </div>
+
+        <div class="pgroup"><h3>📣 Marketing / Content</h3>
+          <div class="prompt"><span class="lbl">Hook lines</span><button class="cp">Copy</button>
+<pre>Act as a B2B content strategist. Give me 5
+LinkedIn post hooks (1 line each) for [audience]
+about [topic]. No emojis, no hashtags, punchy
+not salesy. Rank them best to worst and say why
+the top one works.</pre></div>
+          <div class="prompt"><span class="lbl">Repurpose long-form</span><button class="cp">Copy</button>
+<pre>Act as an editor. Take this [blog post /
+transcript] and pull out 3 standalone social
+posts, each under 280 characters, that could
+run without any extra context. Keep our voice:
+direct, no buzzwords.</pre></div>
+        </div>
+
+        <div class="pgroup"><h3>⚙️ Operations / PM</h3>
+          <div class="prompt"><span class="lbl">90-second status</span><button class="cp">Copy</button>
+<pre>Act as a PMO lead. Summarize this project update
+for a director with 90 seconds to read it:
+- Status in 1 line
+- 3 risks, each with an owner name
+- 2 decisions needed this week
+No fluff, no restating the obvious.</pre></div>
+          <div class="prompt"><span class="lbl">Meeting notes → actions</span><button class="cp">Copy</button>
+<pre>Act as an ops coordinator. Turn these raw
+meeting notes into an action list: owner, task,
+due date. Flag anything mentioned but never
+assigned to a person.</pre></div>
+        </div>
+
+        <div class="pgroup"><h3>🧑‍🤝‍🧑 HR / People</h3>
+          <div class="prompt"><span class="lbl">Feedback draft</span><button class="cp">Copy</button>
+<pre>Act as a supportive manager. From these notes,
+draft written feedback: 2 strengths, 1 growth
+area. Warm but direct tone, under 150 words,
+no corporate jargon like "synergy" or "leverage."</pre></div>
+          <div class="prompt"><span class="lbl">Job description</span><button class="cp">Copy</button>
+<pre>Act as a recruiter. Write a job description for
+a [role] on a [team size]-person team, [seniority]
+level, must-have skills: [list]. Format as 5
+sections with headings, under 400 words.</pre></div>
+        </div>
+
+        <div class="pgroup"><h3>💰 Finance / Analytics</h3>
+          <div class="prompt"><span class="lbl">Anomaly check</span><button class="cp">Copy</button>
+<pre>Act as a financial analyst. Compare [this
+month's] expense sheet against [last month's].
+List every line item that moved more than 15%,
+as a table with % change. Flag anything that
+looks like a possible duplicate.</pre></div>
+          <div class="prompt"><span class="lbl">Contract fee scan</span><button class="cp">Copy</button>
+<pre>Act as a finance analyst reviewing a vendor
+contract for hidden fees. List every fee found,
+where in the doc it appears, and flag anything
+you're not 100% sure about instead of guessing.
+Format as a table.</pre></div>
+        </div>
+
+        <div class="pgroup"><h3>🎧 Customer Support</h3>
+          <div class="prompt"><span class="lbl">De-escalation reply</span><button class="cp">Copy</button>
+<pre>Act as a senior support agent. Write a reply
+that acknowledges [the specific issue], offers
+[the fix], and does NOT over-apologize. Under
+100 words, calm and direct tone.</pre></div>
+          <div class="prompt"><span class="lbl">Ticket pattern check</span><button class="cp">Copy</button>
+<pre>Act as a support lead. Read these 10 tickets
+and tell me: the single most common root cause,
+how many tickets it explains, and one process
+fix that would prevent it next time.</pre></div>
+        </div>
+      </div>
+    </details>
+  </div>
+
+  <!-- BOSS QUIZ -->
+  <div class="sec">
+    <details class="card">
+      <summary class="hd"><span class="ic">🏁</span><span class="tt">Final Check · 5 Questions</span><span class="ct">+10 XP each</span><span class="chev"><svg viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></svg></span></summary>
+      <div class="bd">
+        <div class="qcard"><div class="qtag">Q1 of 5</div><div class="qtxt">Which part of a prompt tells the AI how the output should look?</div>
+          <div class="opts" data-quiz>
+            <button class="opt"><span class="k">A</span> Role</button>
+            <button class="opt" data-correct><span class="k">B</span> Format</button>
+            <button class="opt"><span class="k">C</span> Context</button>
+          </div>
+          <div class="said"><b>Correct</b>Format is the shape of the output — table, bullets, word count.</div>
+        </div>
+        <div class="qcard"><div class="qtag">Q2 of 5</div><div class="qtxt">What's the biggest risk of dumping a 40-page doc with no pointer to what matters?</div>
+          <div class="opts" data-quiz>
+            <button class="opt"><span class="k">A</span> The AI refuses to read it</button>
+            <button class="opt" data-correct><span class="k">B</span> It answers something technically true but not what you needed</button>
+            <button class="opt"><span class="k">C</span> Nothing — more context is always better</button>
+          </div>
+          <div class="said"><b>Correct</b>Without a pointer, it guesses what matters — and it usually guesses wrong.</div>
+        </div>
+        <div class="qcard"><div class="qtag">Q3 of 5</div><div class="qtxt">When analyzing a photo, what should you always ask for?</div>
+          <div class="opts" data-quiz>
+            <button class="opt"><span class="k">A</span> A poetic description</button>
+            <button class="opt" data-correct><span class="k">B</span> Structured output, and a flag when it's unsure</button>
+            <button class="opt"><span class="k">C</span> Nothing extra — just "what's in this picture"</button>
+          </div>
+          <div class="said"><b>Correct</b>Structured output plus an uncertainty flag is what makes a photo answer usable.</div>
+        </div>
+        <div class="qcard"><div class="qtag">Q4 of 5</div><div class="qtxt">"Write a job description" with a role, seniority, and must-have skills — but no format — is missing what?</div>
+          <div class="opts" data-quiz>
+            <button class="opt"><span class="k">A</span> Task</button>
+            <button class="opt"><span class="k">B</span> Context</button>
+            <button class="opt" data-correct><span class="k">C</span> Format</button>
+          </div>
+          <div class="said"><b>Correct</b>Everything else is there — without a format you'll get a wall of prose you have to restructure yourself.</div>
+        </div>
+        <div class="qcard"><div class="qtag">Q5 of 5</div><div class="qtxt">Why give the AI a Role at all?</div>
+          <div class="opts" data-quiz>
+            <button class="opt" data-correct><span class="k">A</span> It sets the judgment and vocabulary the answer will use</button>
+            <button class="opt"><span class="k">B</span> It's required by every AI tool to function</button>
+            <button class="opt"><span class="k">C</span> It makes the answer longer</button>
+          </div>
+          <div class="said"><b>Correct</b>"Act as a finance analyst" vs "act as a marketer" reading the same doc produce genuinely different, useful answers.</div>
+        </div>
+      </div>
+    </details>
+  </div>
+
+  <!-- SCOREBOARD -->
+  <div class="sec">
+    <div class="card" style="padding:30px 22px;text-align:center">
+      <div class="pill">Your scoreboard</div>
+      <div class="scorebig" id="scoreBig">0</div>
+      <p style="color:var(--ink-dim);margin-bottom:0">total XP earned across both games and the final check</p>
+      <div class="badgerow" id="badgerow">
+        <div class="badgecard" data-min="20"><div class="em">🔰</div><div class="nm">Prompt Rookie</div><div class="rq">20 XP</div></div>
+        <div class="badgecard" data-min="50"><div class="em">⚡</div><div class="nm">Prompt Pro</div><div class="rq">50 XP</div></div>
+        <div class="badgecard" data-min="85"><div class="em">🧠</div><div class="nm">Prompt Architect</div><div class="rq">85 XP</div></div>
+        <div class="badgecard" data-min="120"><div class="em">👑</div><div class="nm">Prompt Master</div><div class="rq">120 XP</div></div>
+      </div>
+      <div style="margin-top:18px"><span class="stamp">Module 1 complete ✅</span></div>
+    </div>
+  </div>
+
+</div>
+
+<div class="foot">
+  <div class="lg">HOUSE OF EDTECH</div>
+  M1 · Prompting &amp; Docs — bring your own prompts and try them live.
 </div>
-</div>
-</div>
-</div>
-
-<!-- ============================================================ -->
-<!-- PART 1 -->
-<!-- ============================================================ -->
-<div class="section open">
-<div class="section-head" onclick="toggle(this)"><h2>🧠 Part 1: What AI Is Good At — and Where It Fails</h2><span class="arrow">▼</span></div>
-<div class="section-body">
-
-<div class="card">
-<h3>The One-Sentence Version</h3>
-<p>AI is very good at <strong>transforming text you give it</strong>. It is unreliable at <strong>supplying facts you didn't give it</strong>. Almost every good use and every disaster in this programme comes from that one distinction.</p>
-<div class="diagram">
-<div class="flow">
-<div class="node node-safe" onclick="toggleNodeInfo('node1')" style="cursor:pointer; transition:transform 0.2s;">You supply the facts<br/><span style="font-size:11px;opacity:0.7">AI structures, drafts, reformats</span></div>
-<div class="arr">vs</div>
-<div class="node node-danger" onclick="toggleNodeInfo('node2')" style="cursor:pointer; transition:transform 0.2s;">AI supplies the facts<br/><span style="font-size:11px;opacity:0.7">it invents, confidently</span></div>
-</div>
-<div id="node1-info" style="display:none; background:rgba(76,175,80,0.1); border-left:3px solid var(--green); padding:15px; margin-top:15px; text-align:left; border-radius:4px; font-size:14px; animation:fadeIn 0.3s ease;">
-    <strong>✅ Best Practice:</strong> When you provide the exact context (dealer history, specific data points), the AI acts strictly as an intelligent formatter and editor. This eliminates hallucinations.
-</div>
-<div id="node2-info" style="display:none; background:rgba(228,0,43,0.1); border-left:3px solid var(--accent); padding:15px; margin-top:15px; text-align:left; border-radius:4px; font-size:14px; animation:fadeIn 0.3s ease;">
-    <strong>❌ High Risk:</strong> If you ask the AI to "write a sales pitch for a generic uPVC window," it will invent facts, numbers, and features that may not apply to VEKA products at all.
-</div>
-<p style="font-size:13px;opacity:0.7;margin-top:12px">Every prompt you write should push the work towards the green side. <em>(Click nodes for details)</em></p>
-</div>
-</div>
-
-<div class="card">
-<h3>Where It Genuinely Helps at VEKA</h3>
-<div class="grid-2">
-<div>
-<h4>✅ Strong use cases</h4>
-<ul>
-<li><strong>Rewriting</strong> — a rough note into a professional email</li>
-<li><strong>Restructuring</strong> — messy meeting notes into minutes with owners</li>
-<li><strong>Extracting</strong> — pulling requirements out of a long specification</li>
-<li><strong>Explaining</strong> — a technical concept translated for a homeowner or a new joiner</li>
-<li><strong>Comparing</strong> — two options laid out side by side on stated criteria</li>
-<li><strong>Drafting the boring 80%</strong> — the structure of a report you then fill in</li>
-<li><strong>Critiquing your own draft</strong> — finding what you missed before your manager does</li>
-</ul>
-</div>
-<div>
-<h4>❌ Where it fails, predictably</h4>
-<ul>
-<li><strong>Any performance figure</strong> — thermal, acoustic, wind load, water tightness</li>
-<li><strong>Standard and clause references</strong> — it will invent clause numbers that look real</li>
-<li><strong>Arithmetic across many rows</strong> — quotation totals go wrong quietly</li>
-<li><strong>Facts about real companies</strong> — dealer track records get fabricated wholesale</li>
-<li><strong>Lead times, prices, warranty terms</strong> — invented to make a draft sound better</li>
-<li><strong>Anything requiring judgement it can't have</strong> — is this configuration suitable, is this person right for the role</li>
-</ul>
-</div>
-</div>
-<div class="warning"><strong>⚠️ Note the pattern in the right-hand column.</strong> These are not random errors. They are the specific things a fluent writer would add to make a document more persuasive. AI adds them for the same reason — and that is why the failures cluster in exactly the places where being wrong is expensive.</div>
-</div>
-
-<div class="card">
-<h3>The Mental Model to Carry Into Every Prompt</h3>
-<p>Treat AI as a fast, capable, extremely well-read new joiner on their first day — one who has never seen a VEKA document, has no access to your systems, will never admit they don't know something, and writes beautifully.</p>
-<p style="margin-top:8px">That framing tells you what to do. You brief them properly. You give them the source material. You tell them what good looks like. And you read what they produce before it goes anywhere, because their name isn't on it — yours is.</p>
-</div>
-
-</div>
-</div>
-
-<!-- ============================================================ -->
-<!-- PART 2 -->
-<!-- ============================================================ -->
-<div class="section">
-<div class="section-head" onclick="toggle(this)"><h2>🔧 Part 2: The 5 Parts of a Working Prompt</h2><span class="arrow">▼</span></div>
-<div class="section-body">
-
-<div class="card">
-<h3>Anatomy — and What Happens When You Skip One</h3>
-<table>
-<tr><th>Part</th><th>What it does</th><th>What happens if you leave it out</th></tr>
-<tr><td style="color:var(--accent);font-weight:700">1. ROLE</td><td>Tells it whose expertise and vocabulary to use</td><td>Generic tone; explains things your audience already knows</td></tr>
-<tr><td style="color:var(--accent);font-weight:700">2. CONTEXT</td><td>The actual facts — the source material it works from</td><td>It invents context. This is where most damage happens.</td></tr>
-<tr><td style="color:var(--accent);font-weight:700">3. TASK</td><td>The one thing you want done, as a verb</td><td>You get a description of the problem instead of a solution</td></tr>
-<tr><td style="color:var(--accent);font-weight:700">4. CONSTRAINTS</td><td>Length, tone, audience, and what it must not do</td><td>Six paragraphs where you needed four lines; invented figures</td></tr>
-<tr><td style="color:var(--accent);font-weight:700">5. FORMAT</td><td>The shape of the output — email, table, checklist, minutes</td><td>Prose you then have to reformat by hand</td></tr>
-</table>
-<div class="tip"><strong>💡 If you only remember one:</strong> remember CONTEXT. A prompt with weak role and no format still produces something workable. A prompt with no context produces confident fiction.</div>
-</div>
-
-<div class="card">
-<h3>Built Live — the Same Task, Five Times</h3>
-<p>Trainer builds this on screen, adding one part at a time, running it after each addition. The room watches the output improve.</p>
-
-<div class="step-box"><div class="step-num">1</div>
-<h3>Task only</h3>
-<p style="font-family:'Courier New',monospace;color:#ffcdd2">"Write a follow-up email about a quote."</p>
-<p style="margin-top:6px">Result: a generic template with square brackets everywhere. Useless, but harmless.</p>
-</div>
-
-<div class="step-box"><div class="step-num">2</div>
-<h3>Add ROLE</h3>
-<p style="font-family:'Courier New',monospace;color:#c8e6c9">"You are a technical sales manager at a uPVC window systems company. Write a follow-up email about a quote."</p>
-<p style="margin-top:6px">Result: better vocabulary, right register. Still no substance — and now it starts inventing substance.</p>
-</div>
-
-<div class="step-box"><div class="step-num">3</div>
-<h3>Add CONTEXT — the big jump</h3>
-<p style="font-family:'Courier New',monospace;color:#c8e6c9">"...Quote sent 21 days ago to Dealer A: 42 window units, 70mm system. Last call: their site handover slipped by a month. Their client is comparing against a local aluminium fabricator."</p>
-<p style="margin-top:6px">Result: suddenly specific and usable. This single addition does more than the other four combined.</p>
-</div>
-
-<div class="step-box"><div class="step-num">4</div>
-<h3>Add CONSTRAINTS</h3>
-<p style="font-family:'Courier New',monospace;color:#c8e6c9">"...Under 140 words. Open by referencing their timeline slip, not 'just checking in'. Do not state any price, delivery date, warranty term or performance figure — write [confirm: ...] instead. One question at the end that can be answered in a line."</p>
-<p style="margin-top:6px">Result: tight, honest, and the gaps are now visible instead of filled in silently.</p>
-</div>
-
-<div class="step-box"><div class="step-num">5</div>
-<h3>Add FORMAT</h3>
-<p style="font-family:'Courier New',monospace;color:#c8e6c9">"Output: subject line, email body, then a bullet list of every [confirm] you used."</p>
-<p style="margin-top:6px">Result: ready to paste, plus a to-do list of what you must verify. This is the finished shape.</p>
-</div>
-
-<span class="prompt-label">THE FINISHED PROMPT — COPY-PASTE</span>
-<div class="prompt"><button class="copy-btn" onclick="copyPrompt(this,event)">📋 Copy</button>ROLE: You are a technical sales manager at a uPVC window systems
-company that supplies profile systems to fabricators and dealers.
-
-CONTEXT (synthetic — treat as the only source of truth):
-- Dealer A, West region
-- Quote sent 21 days ago: 42 window units, 70mm system
-- Last call: their site handover slipped by about a month
-- Their client is also evaluating a local aluminium fabricator
-
-TASK: Draft a follow-up email.
-
-CONSTRAINTS:
-- Maximum 140 words
-- Open by referencing their timeline slip, not "just checking in"
-- Do NOT state any price, discount, delivery date, lead time,
-  warranty term or performance figure. Where one would help, write
-  [confirm: what is needed and who supplies it] instead.
-- Mark any inference about their situation as [assumption: ...]
-- Give one concrete reason to reply this week that is not a discount
-- End with a single question answerable in one line
-
-FORMAT: subject line, then email body, then a bullet list of every
-[confirm] and [assumption] you used and why.</div>
-
-<div class="success"><strong>✅ The teaching point:</strong> nobody needs to memorise five labels. What they need to notice is that the output got dramatically better at step 3, and got <em>safe</em> at step 4. Context makes it useful; constraints make it trustworthy.</div>
-</div>
-
-<div class="card">
-<h3>The Pocket Template</h3>
-<p>For anyone who wants one line to remember:</p>
-<div class="prompt" style="border-color:var(--accent);color:#fff59d"><button class="copy-btn" onclick="copyPrompt(this,event)" style="color:var(--accent)">📋 Copy</button>You are [role]. Here is what I have: [paste your facts].
-[Verb] a [output type] for [audience].
-Keep it [length and tone]. Do not invent figures — write
-[confirm: ...] for anything you don't have.
-Format as [shape].</div>
-</div>
-
-</div>
-</div>
-
-<!-- ============================================================ -->
-<!-- PART 3: ROLE SCENARIOS -->
-<!-- ============================================================ -->
-<div class="section">
-<div class="section-head" onclick="toggle(this)"><h2>👥 Part 3: Bad vs Good — Six VEKA Role Scenarios</h2><span class="arrow">▼</span></div>
-<div class="section-body">
-
-<p style="margin-bottom:15px;opacity:0.8">Everyone opens the scenario for their own function and runs both prompts. Compare the two outputs side by side on your screen. Click each to expand.</p>
-
-<!-- SCENARIO 1 -->
-<div class="case-study" onclick="toggleCS(this)">
-<div class="case-study-header"><h3><span class="cs-tag cs-tag-sales">PROJECT SALES</span> Turning a site meeting into a follow-up the customer replies to</h3><span class="cs-arrow">▼</span></div>
-<div class="case-study-body">
-<div class="role-badge">PROJECT SALES EXECUTIVE</div>
-<p style="font-size:14px;opacity:0.85"><strong>Context:</strong> You've come back from a meeting with a developer's project team. You have half a page of notes on your phone. You need a follow-up email out today that keeps the conversation moving.</p>
-
-<div class="comparison">
-<div>
-<div class="comparison-label" style="color:var(--red)">❌ VAGUE PROMPT</div>
-<div class="bad-prompt">Write a follow-up email after my
-site meeting today. Make it
-professional and persuasive.</div>
-</div>
-<div>
-<div class="comparison-label" style="color:var(--green)">✓ WORKING PROMPT</div>
-<div class="good-prompt">You are a project sales manager at a
-uPVC window systems company.
-
-My raw notes from today (synthetic):
-"Met project team, Tower B and C.
-Architect wants slim sightlines. PM
-worried about installation sequencing
-with facade contractor. Asked about
-acoustic performance - highway side.
-Handover target Q1. They've shortlisted
-two other suppliers. Next step: they
-send us the window schedule."
-
-Draft a follow-up email, max 150 words:
-- Confirm the three things they raised
-- Confirm the next step and who owns it
-- Do NOT state any acoustic, thermal or
-  delivery figure. Write [confirm: ...]
-- One question that moves it forward
-
-Then list separately: everything I need
-to chase internally before I reply.</div>
-</div>
-</div>
-
-<div class="key-tips">
-<div class="tip-item"><span class="tip-icon">📝</span><span><strong>Paste the raw notes.</strong> Ugly, half-finished notes are perfect input. The messier your notes, the more value you get.</span></div>
-<div class="tip-item"><span class="tip-icon">🎯</span><span><strong>Ask it to confirm what they raised.</strong> This is the move that makes a follow-up feel like you were listening.</span></div>
-<div class="tip-item"><span class="tip-icon">🚫</span><span><strong>Block the acoustic figure explicitly.</strong> Otherwise it will supply one, because it makes the email stronger.</span></div>
-<div class="tip-item"><span class="tip-icon">✅</span><span><strong>Ask for the internal chase list.</strong> The second output is often more useful than the email.</span></div>
-</div>
-</div>
-</div>
-
-<!-- SCENARIO 2 -->
-<div class="case-study" onclick="toggleCS(this)">
-<div class="case-study-header"><h3><span class="cs-tag cs-tag-tech">TECHNICAL</span> Reading an architect's specification properly</h3><span class="cs-arrow">▼</span></div>
-<div class="case-study-body">
-<div class="role-badge">APPLICATION ENGINEER</div>
-<p style="font-size:14px;opacity:0.85"><strong>Context:</strong> A specification has arrived. It's vague in the places that matter and precise in places that don't. You need to know what it actually commits you to and what you must ask before anyone quotes.</p>
-
-<div class="comparison">
-<div>
-<div class="comparison-label" style="color:var(--red)">❌ VAGUE PROMPT</div>
-<div class="bad-prompt">Is this specification okay for our
-system? [pastes spec]</div>
-</div>
-<div>
-<div class="comparison-label" style="color:var(--green)">✓ WORKING PROMPT</div>
-<div class="good-prompt">You are a senior application engineer
-for uPVC window systems.
-
-SPECIFICATION EXTRACT (synthetic):
-"uPVC windows with multi-chamber
-profile, thermal break, reinforced
-sections. 5-year warranty. Suitable for
-coastal exposure. Hardware to be
-European. Colour: white."
-
-Produce three things:
-
-1. WHAT THIS ACTUALLY SPECIFIES
-   - listed plainly, no interpretation
-
-2. WHAT IT DOES NOT SPECIFY but must,
-   before anyone can quote or commit
-   - as a numbered query list I can
-     send back to the architect
-
-3. WHERE IT IS INTERNALLY VAGUE OR
-   POTENTIALLY CONTRADICTORY
-
-RULES:
-- Never state a performance value,
-  standard clause or warranty term.
-- Never say this "is compliant" with
-  anything.
-- Anything requiring engineer sign-off:
-  mark [escalate: ...]</div>
-</div>
-</div>
-
-<div class="key-tips">
-<div class="tip-item"><span class="tip-icon">🔍</span><span><strong>Ask what's missing, not whether it's okay.</strong> "Is this okay?" invites a yes. "What does this not specify?" produces the query list you actually needed.</span></div>
-<div class="tip-item"><span class="tip-icon">⛔</span><span><strong>Ban the word "compliant".</strong> AI will use it, and it is not AI's call to make.</span></div>
-<div class="tip-item"><span class="tip-icon">📤</span><span><strong>Output 2 is a deliverable.</strong> A numbered query list to the architect is the fastest way to look like the supplier who knows what they're doing.</span></div>
-<div class="tip-item"><span class="tip-icon">🚩</span><span><strong>Add [escalate].</strong> Trains the habit before Session 3 formalises it.</span></div>
-</div>
-</div>
-</div>
-
-<!-- SCENARIO 3 -->
-<div class="case-study" onclick="toggleCS(this)">
-<div class="case-study-header"><h3><span class="cs-tag cs-tag-sales">CHANNEL</span> The objection you hear every single week</h3><span class="cs-arrow">▼</span></div>
-<div class="case-study-body">
-<div class="role-badge">DEALER / CHANNEL MANAGER</div>
-<p style="font-size:14px;opacity:0.85"><strong>Context:</strong> "You're more expensive than the local fabricator." You've answered this a hundred times, differently each time. You want a response you can rely on that doesn't over-promise.</p>
-
-<div class="comparison">
-<div>
-<div class="comparison-label" style="color:var(--red)">❌ VAGUE PROMPT</div>
-<div class="bad-prompt">How do I answer when a dealer says
-we're too expensive?</div>
-</div>
-<div>
-<div class="comparison-label" style="color:var(--green)">✓ WORKING PROMPT</div>
-<div class="good-prompt">You are a channel sales trainer for a
-uPVC profile systems company in India.
-
-Build me an objection response with four
-parts:
-
-1. REFRAME — one line that changes the
-   frame. No numbers.
-2. EVIDENCE NEEDED — the specific
-   document or reference project I must
-   have in hand before I say anything
-   quantitative. Phrase each as
-   [confirm: ...].
-3. NEVER CLAIM — statements someone
-   might be tempted to make here that
-   would be a performance, warranty or
-   compliance commitment we cannot
-   verify.
-4. FOLLOW-UP QUESTION — one question
-   that moves the conversation on.
-
-OBJECTION: "You're 20% more expensive
-than the local fabricator."
-
-Do not state any figure, percentage,
-standard or warranty term anywhere. If a
-figure feels necessary, it belongs in
-EVIDENCE NEEDED.</div>
-</div>
-</div>
-
-<div class="key-tips">
-<div class="tip-item"><span class="tip-icon">🛑</span><span><strong>The "NEVER CLAIM" column is the whole point.</strong> Nobody builds it, and it's the one that keeps you out of trouble. Read yours aloud to a colleague.</span></div>
-<div class="tip-item"><span class="tip-icon">📄</span><span><strong>Force evidence into its own column.</strong> Stops the reframe becoming a claim.</span></div>
-<div class="tip-item"><span class="tip-icon">♻️</span><span><strong>Build this once for your top five objections.</strong> It's a bank you'll use for a year, not a one-off answer.</span></div>
-<div class="tip-item"><span class="tip-icon">🚫</span><span><strong>Never let it discuss a competitor's product.</strong> Keep it on what our own documents say about our own systems.</span></div>
-</div>
-</div>
-</div>
-
-<!-- SCENARIO 4 -->
-<div class="case-study" onclick="toggleCS(this)">
-<div class="case-study-header"><h3><span class="cs-tag cs-tag-hr">HR</span> A job description you can actually interview against</h3><span class="cs-arrow">▼</span></div>
-<div class="case-study-body">
-<div class="role-badge">HUMAN RESOURCES</div>
-<p style="font-size:14px;opacity:0.85"><strong>Context:</strong> Most JDs get copied from a competitor's careers page, which means you end up interviewing against someone else's idea of the role. Write the JD and the scorecard from the same brief and the questions actually test what you said you wanted.</p>
-
-<div class="comparison">
-<div>
-<div class="comparison-label" style="color:var(--red)">❌ VAGUE PROMPT</div>
-<div class="bad-prompt">Write a job description for a technical
-sales engineer.</div>
-</div>
-<div>
-<div class="comparison-label" style="color:var(--green)">✓ WORKING PROMPT</div>
-<div class="good-prompt">You are an experienced HR business
-partner in Indian manufacturing.
-
-BRIEF (synthetic):
-Role: Technical Sales Engineer, one
-region. Reports to Regional Sales
-Manager. Territory: 3 cities, roughly 25
-active fabricator relationships. Hard
-part of the job: translating architect
-specifications into system
-recommendations, and coaching dealers'
-teams on installation quality.
-Non-negotiable: comfortable on a live
-construction site.
-
-PART A - JOB DESCRIPTION, max 300 words
-- Lead with the 3 outcomes this person
-  owns in year one, not a duty list
-- Separate "must have" from "will
-  teach". Max 4 must-haves.
-- No salary, band, or headcount
-- Anything not in the BRIEF:
-  [confirm: ...]. Do not guess years of
-  experience or qualifications.
-
-PART B - INTERVIEW SCORECARD
-One row per must-have. Columns: what
-we're testing, the question to ask, what
-a strong answer contains, what a weak
-answer contains. Behavioural or
-scenario-based questions only.
-
-PART C - BIAS AND EXCLUSION CHECK
-Review your own PART A. List wording
-that could unnecessarily narrow the
-pool: gendered language, age or marital
-proxies, unnecessary degree
-requirements, "culture fit" phrasing,
-physical requirements not genuinely
-essential. Suggest a replacement for
-each.</div>
-</div>
-</div>
-
-<div class="key-tips">
-<div class="tip-item"><span class="tip-icon">🎯</span><span><strong>Outcomes, not duties.</strong> "Owns dealer conversion in three cities" beats "responsible for sales activities".</span></div>
-<div class="tip-item"><span class="tip-icon">🔗</span><span><strong>JD and scorecard from one brief.</strong> That's what makes the interview test the thing you advertised.</span></div>
-<div class="tip-item"><span class="tip-icon">⚖️</span><span><strong>Part C is the one to read carefully.</strong> Ask yourself how many of your current JDs would survive it.</span></div>
-<div class="tip-item"><span class="tip-icon">🔒</span><span><strong>Never paste a real CV, salary or candidate detail.</strong> Not today, not ever. Session 3 explains the legal side.</span></div>
-</div>
-</div>
-</div>
-
-<!-- SCENARIO 5 -->
-<div class="case-study" onclick="toggleCS(this)">
-<div class="case-study-header"><h3><span class="cs-tag cs-tag-plant">PLANT</span> Shift notes into a handover anyone can act on</h3><span class="cs-arrow">▼</span></div>
-<div class="case-study-body">
-<div class="role-badge">PRODUCTION / PLANT</div>
-<p style="font-size:14px;opacity:0.85"><strong>Context:</strong> Shift handover happens verbally and half of it gets lost. You want a written note in a consistent shape that the next shift and the plant head can both use.</p>
-
-<div class="comparison">
-<div>
-<div class="comparison-label" style="color:var(--red)">❌ VAGUE PROMPT</div>
-<div class="bad-prompt">Make this into a proper shift report:
-"line 2 down for die change, output was
-low, one first aid case"</div>
-</div>
-<div>
-<div class="comparison-label" style="color:var(--green)">✓ WORKING PROMPT</div>
-<div class="good-prompt">You are a production supervisor writing
-a shift handover note for a PVC profile
-extrusion plant.
-
-RAW NOTES (synthetic):
-"Shift B. Line 2 down 3 hrs for die
-change, started late because tooling
-wasn't pre-heated. Output 88% of plan.
-Line 1 and 3 normal. One minor first-aid
-case - operator cut hand on trim edge,
-treated, back on shift. Scrap up on line
-2 first hour after restart. Raw material
-delivery expected tomorrow morning."
-
-FORMAT as a shift handover with these
-headings:
-Shift | Lines status | Output vs plan |
-Downtime and cause | Quality notes |
-Safety | Open items for next shift |
-Escalations
-
-RULES:
-- Use only what's in the notes. Anything
-  missing: [missing - not stated].
-- Do NOT suggest a root cause for the
-  scrap or the injury. Record what was
-  observed only.
-- Anything needing a decision above
-  supervisor level: [escalate: ...]
-- Under one page.</div>
-</div>
-</div>
-
-<div class="key-tips">
-<div class="tip-item"><span class="tip-icon">🚫</span><span><strong>Block root-cause guessing.</strong> AI will confidently attribute the scrap to the die change. Recording observations and diagnosing are two different jobs.</span></div>
-<div class="tip-item"><span class="tip-icon">📋</span><span><strong>Fix the headings.</strong> Same shape every shift is what makes the notes comparable over a month.</span></div>
-<div class="tip-item"><span class="tip-icon">🩹</span><span><strong>Safety entries record facts, not conclusions.</strong> No names, no fault, no speculation.</span></div>
-<div class="tip-item"><span class="tip-icon">🕳️</span><span><strong>[missing] is a feature.</strong> It tells the next shift what nobody wrote down.</span></div>
-</div>
-</div>
-</div>
-
-<!-- SCENARIO 6 -->
-<div class="case-study" onclick="toggleCS(this)">
-<div class="case-study-header"><h3><span class="cs-tag cs-tag-mkt">MARKETING</span> Explaining the product to someone who isn't technical</h3><span class="cs-arrow">▼</span></div>
-<div class="case-study-body">
-<div class="role-badge">MARKETING / CUSTOMER CARE</div>
-<p style="font-size:14px;opacity:0.85"><strong>Context:</strong> A homeowner asks why uPVC and not aluminium. Your technical literature answers it for an engineer. You need the version a homeowner understands, without knocking the competition or promising anything.</p>
-
-<div class="comparison">
-<div>
-<div class="comparison-label" style="color:var(--red)">❌ VAGUE PROMPT</div>
-<div class="bad-prompt">Write marketing copy explaining why uPVC
-windows are better than aluminium.</div>
-</div>
-<div>
-<div class="comparison-label" style="color:var(--green)">✓ WORKING PROMPT</div>
-<div class="good-prompt">You are writing for a homeowner in
-India, no technical background, choosing
-windows for a flat.
-
-TASK: Explain in plain language what
-questions they should ask when choosing
-a window system, and what each one
-affects in daily life (comfort, noise,
-maintenance, monsoon).
-
-CONSTRAINTS:
-- Do NOT compare materials or brands, and
-  do not criticise any alternative.
-- Do NOT state any performance figure,
-  certification, warranty or lifespan.
-  Write [confirm: ...] if one seems
-  needed.
-- Do NOT make any environmental or
-  recycled-content claim.
-- Max 250 words. Short sentences. No
-  jargon - if a technical term is
-  unavoidable, explain it in the same
-  sentence.
-
-FORMAT: 5 questions, each with a
-one-line "why this matters to you".</div>
-</div>
-</div>
-
-<div class="key-tips">
-<div class="tip-item"><span class="tip-icon">🙋</span><span><strong>Teach, don't sell.</strong> "Questions to ask" outperforms "why we're better", and it's far safer.</span></div>
-<div class="tip-item"><span class="tip-icon">🌱</span><span><strong>Block environmental claims explicitly.</strong> AI generates recycled-content percentages readily, and unsupported green claims are a regulatory risk, not just an error.</span></div>
-<div class="tip-item"><span class="tip-icon">⚔️</span><span><strong>Never let it write comparative copy.</strong> Competitor comparisons in marketing material need legal review, always.</span></div>
-<div class="tip-item"><span class="tip-icon">🗣️</span><span><strong>Name the reader.</strong> "A homeowner choosing windows for a flat" produces completely different copy than "a customer".</span></div>
-</div>
-</div>
-</div>
-
-<div class="exercise">
-<h3>🏋️ Your Turn — 20 Minutes</h3>
-<p>Run the scenario for your own function. Then do the three things that make it stick:</p>
-<ul style="list-style:none;padding:0;margin-top:10px">
-<li style="padding:4px 0 4px 22px;position:relative"><span style="position:absolute;left:0;color:var(--accent)">▸</span> Run <strong>both</strong> prompts. Put the two outputs side by side. Notice specifically what the vague one invented.</li>
-<li style="padding:4px 0 4px 22px;position:relative"><span style="position:absolute;left:0;color:var(--accent)">▸</span> Swap the synthetic context for your own — still synthetic, but your kind of task.</li>
-<li style="padding:4px 0 4px 22px;position:relative"><span style="position:absolute;left:0;color:var(--accent)">▸</span> Count the <strong>[confirm]</strong> tags. Zero tags on a real task means something got filled in silently. Go find it.</li>
-</ul>
-<div class="tip" style="margin-top:12px"><strong>💡 Facilitator:</strong> ask two or three people to read only their subject line or first sentence. The room hears instantly which prompt produced which. That comparison teaches more than the slide does.</div>
-</div>
-
-</div>
-</div>
-
-<!-- ============================================================ -->
-<!-- PART 4: SIX PATTERNS -->
-<!-- ============================================================ -->
-<div class="section">
-<div class="section-head" onclick="toggle(this)"><h2>♻️ Part 4: The 6 Patterns That Cover Most of Your Work</h2><span class="arrow">▼</span></div>
-<div class="section-body">
-
-<p style="margin-bottom:15px;opacity:0.8">You do not need a new prompt for every task. Six shapes cover the large majority of writing and thinking work at VEKA. Learn the shapes; change the content.</p>
-
-<div class="card">
-<h3>Pattern 1 — REWRITE</h3>
-<p>You already have the content. You want it in a different voice, length or register. The safest pattern there is, because you supplied every fact.</p>
-<span class="prompt-label">PATTERN</span>
-<div class="prompt"><button class="copy-btn" onclick="copyPrompt(this,event)">📋 Copy</button>Rewrite the text below for [audience], in [tone], under [length].
-
-TEXT: [paste]
-
-Change wording and structure only. Do not add any fact, figure or
-claim that is not already in the text. If something is unclear,
-list it separately at the end rather than guessing.</div>
-</div>
-
-<div class="card">
-<h3>Pattern 2 — EXTRACT</h3>
-<p>A long document, and you need the four things in it that matter to you. Turns 40 pages into a table.</p>
-<span class="prompt-label">PATTERN</span>
-<div class="prompt"><button class="copy-btn" onclick="copyPrompt(this,event)">📋 Copy</button>From the document below, extract only the following:
-- [thing 1]
-- [thing 2]
-- [thing 3]
-
-DOCUMENT: [paste]
-
-Output as a table. One row per item found. Include a column giving
-the section or page it came from.
-
-If something on my list is not in the document, say so explicitly
-rather than inferring it. Do not summarise anything I did not ask for.</div>
-</div>
-
-<div class="card">
-<h3>Pattern 3 — COMPARE</h3>
-<p>Two options, and you want them laid out on the same criteria instead of two paragraphs of prose.</p>
-<span class="prompt-label">PATTERN</span>
-<div class="prompt"><button class="copy-btn" onclick="copyPrompt(this,event)">📋 Copy</button>Compare [option A] and [option B] on exactly these criteria:
-[criterion 1], [criterion 2], [criterion 3].
-
-WHAT I KNOW: [paste everything you have]
-
-Output as a table, criteria as rows, options as columns.
-
-Where you do not have information for a cell, write
-[confirm: what is needed] — do not fill it with a general
-assumption. At the end, state which criteria the decision
-actually turns on.</div>
-<div class="tip"><strong>💡 The last line is the useful one.</strong> Asking which criteria the decision turns on often reveals that four of your six criteria don't matter.</div>
-</div>
-
-<div class="card">
-<h3>Pattern 4 — TRANSLATE FOR AN AUDIENCE</h3>
-<p>The same information, pitched at a fabricator's owner, a site engineer, an architect and a homeowner. Four different documents.</p>
-<span class="prompt-label">PATTERN</span>
-<div class="prompt"><button class="copy-btn" onclick="copyPrompt(this,event)">📋 Copy</button>Explain the content below to [specific audience: e.g. "a homeowner
-with no technical background", "a site engineer who knows
-construction but not fenestration"].
-
-CONTENT: [paste]
-
-Rules:
-- Assume they know [what they know] and do not know [what they
-  don't]
-- Explain any unavoidable technical term in the same sentence
-- Do not add any figure or claim not in the CONTENT
-- [length]
-
-Then tell me which parts I should expect them to push back on.</div>
-</div>
-
-<div class="card">
-<h3>Pattern 5 — BUILD A CHECKLIST</h3>
-<p>Turns a process that lives in someone's head into something repeatable that a colleague could run.</p>
-<span class="prompt-label">PATTERN</span>
-<div class="prompt"><button class="copy-btn" onclick="copyPrompt(this,event)">📋 Copy</button>Build a checklist for [task], for someone doing it for the first
-time.
-
-WHAT I KNOW ABOUT THE TASK: [paste, however rough]
-
-Rules:
-- Every item must be checkable — someone can say done or not done
-- Order matters: sequence the items as they actually happen
-- Mark any item that needs someone else's approval [sign-off: who]
-- Maximum [n] items. If you need more, tell me what you cut.
-
-Then list what you were unsure about, so I can fill the gaps.</div>
-</div>
-
-<div class="card">
-<h3>Pattern 6 — CRITIQUE MY DRAFT</h3>
-<p>The most underused pattern, and often the highest value. You write it; AI finds what you missed.</p>
-<span class="prompt-label">PATTERN</span>
-<div class="prompt"><button class="copy-btn" onclick="copyPrompt(this,event)">📋 Copy</button>Review my draft below as a hostile reader whose job is to find
-where it would embarrass me.
-
-DRAFT: [paste]
-
-WHAT I ACTUALLY KNOW: [paste your source facts]
-
-List every sentence that:
-(a) states or implies a technical performance claim
-(b) states or implies a commercial commitment — price, discount,
-    delivery, warranty
-(c) asserts something I did not tell you
-
-For each: quote it, and say what evidence would be needed to keep
-it. Then tell me which single one is most likely to cause a real
-problem, and why.</div>
-<div class="success"><strong>✅ Run this on anything customer-facing.</strong> It catches the invented lead time, the accidental warranty, and the claim you didn't notice you'd made. Five seconds of work, and it is the single highest-return prompt on this page.</div>
-</div>
-
-<div class="exercise">
-<h3>🏋️ Live Round — 15 Minutes, One Pattern Each</h3>
-<p>Facilitator calls out a pattern; everyone runs it on their own task; two people read out results. Move fast — 2 minutes per pattern. The goal is recognising the shapes, not perfecting the output.</p>
-<div class="tip" style="margin-top:10px"><strong>💡 Finish on Pattern 6.</strong> Have everyone critique whatever they produced in the earlier rounds. The room discovering their own inventions is the moment Session 3 gets easy to teach.</div>
-</div>
-
-</div>
-</div>
-
-<!-- ============================================================ -->
-<!-- PART 5: DOCUMENTS -->
-<!-- ============================================================ -->
-<div class="section">
-<div class="section-head" onclick="toggle(this)"><h2>📄 Part 5: Working With Long Documents</h2><span class="arrow">▼</span></div>
-<div class="section-body">
-
-<div class="warning"><strong>⚠️ Before any document goes near an AI tool, ask one question: where did it come from?</strong> A document that arrived from a developer, an architect, a customer or a supplier is usually covered by an agreement that restricts sharing it with third parties. Your own internal draft is a different matter. Session 3 covers this properly — for today, use only synthetic or published documents.</div>
-
-<div class="card">
-<h3>The Three Document Jobs You Actually Have</h3>
-<table>
-<tr><th>Job</th><th>What you want</th><th>Pattern to use</th></tr>
-<tr><td><strong>Find one thing</strong></td><td>The clause about penalties. The window schedule. The one number.</td><td>Don't use AI — search the PDF. It takes ten seconds and carries no risk.</td></tr>
-<tr><td><strong>Find several specific things</strong></td><td>All fenestration requirements, all commercial conditions, all dates</td><td>EXTRACT (Pattern 2), with your list defined up front</td></tr>
-<tr><td><strong>Understand what it commits you to</strong></td><td>What's specified, what's missing, what's contradictory</td><td>The specification prompt from Part 3, Scenario 2</td></tr>
-</table>
-<div class="tip"><strong>💡 The first row matters more than it looks.</strong> A large share of document uploads exist because someone didn't want to read 40 pages. Ctrl+F solves that without sending anything anywhere.</div>
-</div>
-
-<div class="card">
-<h3>Why Documents Go Wrong — and What To Do</h3>
-<ul>
-<li><strong>Scanned PDFs are invisible.</strong> If the text isn't selectable, the AI is looking at a picture. Either run OCR first, or accept that it can only comment on what it can see in the image. This is the single most common cause of vague, useless output on document tasks.</li>
-<li><strong>Long documents lose the middle.</strong> On a very long document, instructions and content near the middle get less attention than the start and end. Split it, or ask about one section at a time.</li>
-<li><strong>Tables in PDFs scramble.</strong> A window schedule that looks fine to you can arrive as jumbled text. Check the extraction before trusting any analysis built on it.</li>
-<li><strong>It answers questions you didn't ask.</strong> Add "do not summarise anything I did not ask for". Unrequested summary is where invention creeps in.</li>
-<li><strong>It fills gaps rather than reporting them.</strong> Always ask for an explicit list of what was <em>not</em> found.</li>
-</ul>
-</div>
-
-<div class="card">
-<h3>The Document Workhorse Prompt</h3>
-<span class="prompt-label">COPY-PASTE</span>
-<div class="prompt"><button class="copy-btn" onclick="copyPrompt(this,event)">📋 Copy</button>I am going to give you a document. Work only from what is in it.
-
-DOCUMENT: [paste or attach]
-
-Produce, in this order:
-
-1. WHAT THIS DOCUMENT IS — two lines. Type, purpose, who wrote it
-   for whom.
-
-2. THE ITEMS I ASKED FOR — as a table with a source column:
-   [your list of 3-6 things]
-
-3. NOT FOUND — anything on my list that is genuinely not in the
-   document. Be explicit. Do not infer it from context.
-
-4. WHAT I SHOULD HAVE ASKED FOR — anything in this document that
-   looks important for my purpose but wasn't on my list.
-
-RULES:
-- Quote or cite the section for every item in part 2
-- Do not summarise sections I did not ask about
-- Do not resolve ambiguity — flag it as [ambiguous: ...]
-- If the document appears to be a scan or the text extraction looks
-  incomplete, say so before answering</div>
-<div class="success"><strong>✅ Part 4 is the one people don't expect.</strong> "What should I have asked for" regularly surfaces the commercial condition or the exclusion that nobody was looking for.</div>
-</div>
-
-<div class="exercise">
-<h3>🏋️ Exercise — 18 Minutes</h3>
-<p>Use a published VEKA brochure or the synthetic specification extract from Part 3. Run the workhorse prompt. Then:</p>
-<ul style="list-style:none;padding:0;margin-top:8px">
-<li style="padding:4px 0 4px 22px;position:relative"><span style="position:absolute;left:0;color:var(--accent)">▸</span> Check every citation in part 2. Does the section it names actually say that?</li>
-<li style="padding:4px 0 4px 22px;position:relative"><span style="position:absolute;left:0;color:var(--accent)">▸</span> Read part 3. Did it honestly report gaps, or quietly fill them?</li>
-<li style="padding:4px 0 4px 22px;position:relative"><span style="position:absolute;left:0;color:var(--accent)">▸</span> Read part 4. Did it find something you'd have missed?</li>
-</ul>
-</div>
-
-</div>
-</div>
-
-<!-- ============================================================ -->
-<!-- PART 6: PHOTOS -->
-<!-- ============================================================ -->
-<div class="section">
-<div class="section-head" onclick="toggle(this)"><h2>📷 Part 6: Photo Analysis — Useful, With Real Limits</h2><span class="arrow">▼</span></div>
-<div class="section-body">
-
-<div class="card">
-<h3>What It Is Actually For</h3>
-<p>You can attach a photograph and ask questions about it. For a business whose product gets installed by third parties on sites you don't control, this has obvious appeal: a fabricator sends a photo, and you want to know what to ask them.</p>
-<div class="grid-2">
-<div>
-<h4>✅ Reasonable uses</h4>
-<ul>
-<li><strong>Structuring an observation</strong> — "what should I be asking about this installation?"</li>
-<li><strong>Building a checklist</strong> — turning a photo into an inspection list someone verifies on site</li>
-<li><strong>Describing for a report</strong> — converting a photo into written observations you then confirm</li>
-<li><strong>Training material</strong> — explaining what good and poor installation practice looks like, generally</li>
-<li><strong>First-pass triage</strong> — deciding whether a complaint photo needs a site visit</li>
-</ul>
-</div>
-<div>
-<h4>❌ What it cannot do</h4>
-<ul>
-<li><strong>Diagnose a cause</strong> — a photo of a defect cannot tell you why it happened</li>
-<li><strong>Judge dimensional accuracy</strong> — no scale, no reliable angle, no measurement</li>
-<li><strong>Confirm anything is correct</strong> — it will say a joint looks fine. It cannot know.</li>
-<li><strong>Assess structural adequacy</strong> — anchoring, reinforcement, wind load: all invisible in a photo</li>
-<li><strong>Assign fault</strong> — between profile, fabrication, glazing and installation. That needs a site visit.</li>
-</ul>
-</div>
-</div>
-<div class="warning"><strong>⚠️ Two hard rules for photos.</strong> First: no people's faces, no identifiable signage, no logos, no documents visible in frame — crop or don't upload. Second: a photo assessment is never a conclusion. It produces a question list for a human on site, not a verdict.</div>
-</div>
-
-<div class="card">
-<h3>Prompt 1 — Installation Observation</h3>
-<span class="prompt-label">COPY-PASTE</span>
-<div class="prompt"><button class="copy-btn" onclick="copyPrompt(this,event)">📋 Copy</button>I am attaching a photograph of an installed window. You are helping
-a technical services engineer prepare questions for a site visit.
-
-Describe what is visible, then produce a question list.
-
-RULES:
-- Describe only what you can actually see. If something is unclear,
-  out of frame, or at a bad angle, say so.
-- Do NOT diagnose a cause for anything.
-- Do NOT state that anything is correct, compliant or acceptable.
-- Do NOT estimate any dimension, gap, or tolerance.
-- Do not comment on anything that would need measurement,
-  disassembly or a moisture reading to assess.
-
-OUTPUT:
-1. WHAT IS VISIBLE — plain observations
-2. WHAT I CANNOT ASSESS FROM THIS PHOTO — and why
-3. QUESTIONS FOR THE SITE VISIT — specific, ordered by priority
-4. WHAT ADDITIONAL PHOTOS WOULD HELP — angle and subject</div>
-<div class="tip"><strong>💡 Output 4 is quietly the most useful.</strong> Most fabricator photos are useless because of the angle. Getting a specific list of what else to photograph saves a whole round trip.</div>
-</div>
-
-<div class="card">
-<h3>Prompt 2 — Complaint Photo Triage</h3>
-<span class="prompt-label">COPY-PASTE</span>
-<div class="prompt"><button class="copy-btn" onclick="copyPrompt(this,event)">📋 Copy</button>I am attaching a photograph sent by a fabricator with a complaint.
-Help me structure the complaint record — not resolve it.
-
-COMPLAINT AS REPORTED (synthetic): [paste what they said]
-
-RULES:
-- Do NOT assign a cause or a responsible party.
-- Do NOT state whether this is a product issue, a fabrication issue
-  or an installation issue. That is exactly what the investigation
-  determines.
-- Do NOT comment on warranty applicability.
-- Describe only what is visible.
-
-OUTPUT:
-1. OBSERVED — what the photo shows
-2. REPORTED — what the fabricator says, separated from the above
-3. INFORMATION STILL NEEDED to investigate — as a numbered list
-4. QUESTIONS TO ASK THE FABRICATOR — plainly worded, non-accusatory
-5. DOES THIS NEED A SITE VISIT — and what makes you say so
-
-End with: "This is a structured record, not an assessment.
-Investigation and any conclusion must be carried out by a
-qualified person."</div>
-<div class="warning"><strong>⚠️ Why the "no cause" rule is absolute here.</strong> A complaint record that contains an AI-generated opinion about fault becomes a document in a commercial dispute. Keep observation and diagnosis strictly separate, and keep the diagnosis human.</div>
-</div>
-
-<div class="card">
-<h3>Prompt 3 — Turning a Photo Into an Inspection Checklist</h3>
-<span class="prompt-label">COPY-PASTE</span>
-<div class="prompt"><button class="copy-btn" onclick="copyPrompt(this,event)">📋 Copy</button>Using the attached photograph as context, build an installation
-inspection checklist a technical services engineer would run on
-site for this type of window and opening.
-
-RULES:
-- Every item must be checkable on site by a person, physically
-- Do not include any item requiring a figure or tolerance I have
-  not supplied — instead write [confirm: which document gives the
-  acceptance criterion]
-- Sequence the items in the order someone would actually work
-- Mark items that require a measurement, and say which instrument
-- Mark items that require the fabricator or installer present
-
-OUTPUT: the checklist, then a short list of what in the photo made
-you include specific items.</div>
-</div>
-
-<div class="exercise">
-<h3>🏋️ Demo, Then Pairs — 15 Minutes</h3>
-<p><strong>Facilitator demo (6 min):</strong> run Prompt 1 on a photo of a window installation on screen. Read output 2 aloud — "what I cannot assess from this photo". That list is the honest core of the whole exercise.</p>
-<p style="margin-top:8px"><strong>Pairs (9 min):</strong> each pair runs Prompt 1 on a photo of their choosing — a window in this room is fine. Then answer one question between you: <em>which single statement in this output would you not be willing to put in a report?</em> Every pair usually finds one.</p>
-<div class="tip" style="margin-top:10px"><strong>💡 Facilitator note:</strong> if the model does slip and diagnose a cause despite being told not to, do not skip past it. That is the most valuable thing that will happen in this block. Fluency is not compliance, and seeing it live is worth more than being warned about it.</div>
-</div>
-
-</div>
-</div>
-
-<!-- ============================================================ -->
-<!-- PART 7: ITERATION -->
-<!-- ============================================================ -->
-<div class="section">
-<div class="section-head" onclick="toggle(this)"><h2>🔁 Part 7: Fixing a Bad Output in Three Moves</h2><span class="arrow">▼</span></div>
-<div class="section-body">
-
-<div class="card">
-<h3>Most People Give Up After One Try</h3>
-<p>The first output is a draft of a draft. People read it, decide AI isn't useful for their work, and go back to doing it manually. The gap between a disappointing first output and a genuinely useful third one is usually one sentence of feedback.</p>
-<div class="diagram">
-<div class="flow">
-<div class="node">First output</div>
-<div class="arr">→</div>
-<div class="node">Name what's wrong</div>
-<div class="arr">→</div>
-<div class="node">Constrain harder</div>
-<div class="arr">→</div>
-<div class="node node-safe">Usable</div>
-</div>
-</div>
-</div>
-
-<div class="card">
-<h3>The Diagnosis Table — Find Your Symptom</h3>
-<table>
-<tr><th>Symptom</th><th>Real cause</th><th>What to say next</th></tr>
-<tr><td>Too generic, could be any company</td><td>No context supplied</td><td>"Here are the actual facts: [paste]. Redo using only these."</td></tr>
-<tr><td>Too long, too many words</td><td>No length constraint</td><td>"Cut to 120 words. Remove anything that isn't load-bearing."</td></tr>
-<tr><td>Contains figures you never gave it</td><td>No invention rule</td><td>"You stated [X]. I never told you that. Remove every unsupported figure and replace with [confirm: ...]."</td></tr>
-<tr><td>Wrong tone for the reader</td><td>Audience not named</td><td>"This is for a fabricator's owner reading on a phone, on site. Rewrite for them."</td></tr>
-<tr><td>Answered a different question</td><td>Task verb was vague</td><td>Restate as one verb: "Extract", "Compare", "Draft", "Critique"</td></tr>
-<tr><td>Right content, wrong shape</td><td>No format given</td><td>"Same content. Output as a table with these columns: [...]"</td></tr>
-<tr><td>Confidently wrong on something you know</td><td>It doesn't have the source</td><td>Correct it explicitly, give the real fact, ask what else was built on the wrong assumption</td></tr>
-<tr><td>Bland and hedged everywhere</td><td>Over-constrained, or genuinely lacks information</td><td>Ask: "What information would you need from me to answer this properly?"</td></tr>
-</table>
-<div class="tip"><strong>💡 The last row is the escape hatch.</strong> "What would you need from me to answer this properly?" turns a stuck conversation into a checklist. Use it whenever you're not sure why the output is weak.</div>
-</div>
-
-<div class="card">
-<h3>The Three Moves, In Order</h3>
-<div class="step-box"><div class="step-num">1</div>
-<h3>Name the specific fault, quoting it</h3>
-<p>Not "this isn't good". Say: "The second paragraph states a four-week delivery. I never gave you that." Vague feedback produces a differently-wrong output; a quoted fault produces a fix.</p>
-</div>
-<div class="step-box"><div class="step-num">2</div>
-<h3>Add the constraint you forgot</h3>
-<p>Nearly every disappointing output is missing one of length, audience, format, or the no-invention rule. Add it explicitly and ask for a redo rather than patching by hand.</p>
-</div>
-<div class="step-box"><div class="step-num">3</div>
-<h3>Ask it to check its own work</h3>
-<p>Finish with Pattern 6 from Part 4. "Review what you just wrote. List anything not supported by what I gave you." Catches what your own reading missed, especially on a long output.</p>
-</div>
-<div class="warning"><strong>⚠️ Know when to stop.</strong> If three rounds haven't produced something usable, the task probably needs information the model doesn't have — or it's a decision, not a writing job. Both are signals to stop prompting and go find a person.</div>
-</div>
-
-<div class="exercise">
-<h3>🏋️ Exercise — 12 Minutes</h3>
-<p>Take the worst output you've produced today. Run the three moves on it. Then tell your neighbour which single sentence of feedback made the biggest difference — collect three or four of these from the room and put them on the whiteboard. That list is more useful than any slide on iteration.</p>
-</div>
-
-</div>
-</div>
-
-<!-- ============================================================ -->
-<!-- PART 8: COMMON MISTAKES -->
-<!-- ============================================================ -->
-<div class="section">
-<div class="section-head" onclick="toggle(this)"><h2>⚠️ Part 8: The 8 Mistakes Everyone Makes First</h2><span class="arrow">▼</span></div>
-<div class="section-body">
-<table>
-<tr><th>#</th><th>Mistake</th><th>Why it hurts</th><th>Fix</th></tr>
-<tr><td>1</td><td>Asking a question instead of giving a task</td><td>You get an essay when you wanted a document</td><td>Start with a verb: draft, extract, compare, critique</td></tr>
-<tr><td>2</td><td>Withholding context to "keep it short"</td><td>It fills the gap with invention. This is the big one.</td><td>Paste your rough notes. Messy input is fine.</td></tr>
-<tr><td>3</td><td>Accepting the first output</td><td>You conclude AI is useless, when the prompt was thin</td><td>Three moves, Part 7</td></tr>
-<tr><td>4</td><td>Not saying who will read it</td><td>Register is wrong for everyone</td><td>Name the reader specifically, not "a customer"</td></tr>
-<tr><td>5</td><td>Not banning invention</td><td>Figures, dates and warranty terms appear from nowhere</td><td>Add the no-invention rule and the [confirm] tag</td></tr>
-<tr><td>6</td><td>Reading the output as a reader, not a reviewer</td><td>Good formatting suppresses scrutiny</td><td>Run Pattern 6 on anything that leaves the building</td></tr>
-<tr><td>7</td><td>Using it for arithmetic</td><td>Totals go wrong quietly, and quotations carry the error</td><td>Structure with AI, calculate in Excel</td></tr>
-<tr><td>8</td><td>Pasting whatever's on your screen</td><td>Real customer, dealer or personal data leaves your control</td><td>Synthetic or public only. Session 3 covers this fully.</td></tr>
-</table>
-<div class="tip"><strong>💡 Mistakes 2 and 5 are the same mistake seen from two sides.</strong> Not giving it enough, and not telling it what to do when it doesn't have enough. Fix both and most of your output problems disappear.</div>
-</div>
-</div>
-
-<!-- ============================================================ -->
-<!-- KEY TAKEAWAYS -->
-<!-- ============================================================ -->
-<div class="section">
-<div class="section-head" onclick="toggle(this)"><h2>🎯 Key Takeaways — 6 Rules to Remember</h2><span class="arrow">▼</span></div>
-<div class="section-body">
-<div class="card">
-<table>
-<tr><th>#</th><th>Rule</th><th>Why It Matters at VEKA</th></tr>
-<tr><td style="font-size:20px;font-weight:800;color:#FFD600">1</td><td><strong>You supply the facts</strong></td><td>AI transforms text well and invents facts confidently. Keep the work on the safe side of that line.</td></tr>
-<tr><td style="font-size:20px;font-weight:800;color:#FFD600">2</td><td><strong>Context beats cleverness</strong></td><td>Pasting your rough notes improves output more than any prompt technique</td></tr>
-<tr><td style="font-size:20px;font-weight:800;color:#FFD600">3</td><td><strong>Name the reader</strong></td><td>A fabricator's owner, an architect and a homeowner need three different documents</td></tr>
-<tr><td style="font-size:20px;font-weight:800;color:#FFD600">4</td><td><strong>Ban invention explicitly</strong></td><td>Performance figures, lead times and warranty terms are the expensive failures here</td></tr>
-<tr><td style="font-size:20px;font-weight:800;color:#FFD600">5</td><td><strong>Iterate three times</strong></td><td>The gap between a bad first output and a useful third is one sentence of feedback</td></tr>
-<tr><td style="font-size:20px;font-weight:800;color:#FFD600">6</td><td><strong>Critique before you send</strong></td><td>Pattern 6 catches what your own reading missed. Five seconds, highest return on this page.</td></tr>
-</table>
-</div>
-
-<div class="card">
-<h3>Before You Leave This Room</h3>
-<ul>
-<li>Save your best prompt from today to the <strong>Prompt Library</strong>, named so a colleague could find it</li>
-<li>Write down <strong>one task you will run this week</strong> — a real, recurring, boring one</li>
-<li>Note roughly <strong>how long that task takes you today</strong>. You will want the "before" number in Session 4.</li>
-</ul>
-</div>
-
-<div class="stats">
-<div class="stat"><span class="n">6</span><span class="l">Role Scenarios</span></div>
-<div class="stat"><span class="n">6</span><span class="l">Reusable Patterns</span></div>
-<div class="stat"><span class="n">12</span><span class="l">Ready Prompts</span></div>
-<div class="stat"><span class="n">1</span><span class="l">Task to Run This Week</span></div>
-</div>
-
-<div class="info-box"><strong>Next:</strong> Session 2 takes these patterns and applies them to spreadsheets and operational data. Session 3 covers what may and may not go into a prompt. Session 4 turns your best workflow into an agent your whole team can use.</div>
-</div>
-</div>
-
-</div>
 
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
-function toggle(el){document.querySelectorAll('.section').forEach(s => {if(s !== el.parentElement) s.classList.remove('open');}); el.parentElement.classList.toggle('open'); setTimeout(() => window.dispatchEvent(new Event('resize')), 50);}
-function toggleCS(el){if(el.classList.contains('case-study'))el.classList.toggle('cs-open')}
-function copyPrompt(btn,ev){var t=btn.parentElement.textContent.replace('📋 Copy','').trim();
-if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(t).then(function(){btn.textContent='✓ Copied!';setTimeout(function(){btn.textContent='📋 Copy'},2000)})}
-else{var ta=document.createElement('textarea');ta.value=t;ta.style.position='fixed';ta.style.opacity='0';document.body.appendChild(ta);ta.select();try{document.execCommand('copy')}catch(e){}document.body.removeChild(ta);btn.textContent='✓ Copied!';setTimeout(function(){btn.textContent='📋 Copy'},2000)}
-if(ev&&ev.stopPropagation)ev.stopPropagation()}
+(function(){
+  "use strict";
+  var xp = 0;
+  var BADGES = [20, 50, 85, 120];
 
-function toggleNodeInfo(id) {
-    const info = document.getElementById(id + '-info');
-    if (info.style.display === 'none') {
-        document.getElementById('node1-info').style.display = 'none';
-        document.getElementById('node2-info').style.display = 'none';
-        document.getElementById('node3-info').style.display = 'none';
-        info.style.display = 'block';
-    } else {
-        info.style.display = 'none';
-    }
-}
+  function toast(msg){
+    var t = document.createElement('div');
+    t.className = 'toast';
+    t.innerHTML = msg;
+    document.getElementById('toastzone').appendChild(t);
+    setTimeout(function(){ t.remove(); }, 2100);
+  }
 
-document.addEventListener('DOMContentLoaded', function() {
-    const ctx = document.getElementById('timeSavedChart');
-    if(ctx) {
-        new Chart(ctx, {
-            type: 'bar',
-            data: {
-                labels: ['Email Drafting', 'Data Summarization', 'Meeting Notes', 'Proposal Structuring'],
-                datasets: [
-                    {
-                        label: 'Manual (Minutes)',
-                        data: [15, 45, 30, 60],
-                        backgroundColor: 'rgba(255, 255, 255, 0.2)',
-                        borderColor: 'rgba(255, 255, 255, 0.4)',
-                        borderWidth: 1
-                    },
-                    {
-                        label: 'With AI (Minutes)',
-                        data: [3, 5, 8, 12],
-                        backgroundColor: 'rgba(228, 0, 43, 0.8)',
-                        borderColor: 'rgba(228, 0, 43, 1)',
-                        borderWidth: 1
-                    }
-                ]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: {
-                    legend: { labels: { color: '#F8FAFC' } }
-                },
-                scales: {
-                    y: { beginAtZero: true, grid: { color: 'rgba(255, 255, 255, 0.1)' }, ticks: { color: '#94A3B8' } },
-                    x: { grid: { display: false }, ticks: { color: '#94A3B8' } }
-                }
-            }
-        });
-    }
-});
+  function addXP(n, label){
+    xp += n;
+    document.getElementById('xpVal').textContent = xp;
+    var sb = document.getElementById('scoreBig'); if(sb) sb.textContent = xp;
+    toast('+' + n + ' XP <span style="opacity:.7">· ' + (label||'') + '</span>');
+    updateBadges();
+  }
 
-document.addEventListener('DOMContentLoaded', function() {
-    // Progressive Disclosure for Flow Diagrams
-    document.querySelectorAll('.flow').forEach(flow => {
-        if(flow.textContent.includes('vs') && flow.children.length === 3) return;
-        const children = Array.from(flow.children);
-        for(let i = 1; i < children.length; i++) {
-            children[i].style.opacity = '0.15';
-            children[i].style.pointerEvents = 'none';
-            children[i].style.transition = 'all 0.4s ease';
-            children[i].style.transform = 'translateX(-10px)';
-        }
-        children[0].style.cursor = 'pointer';
-        children[0].style.transition = 'all 0.3s ease';
-        children[0].title = 'Click to reveal next step';
-        children.forEach((child, index) => {
-            if(child.classList.contains('node')) {
-                child.addEventListener('click', () => {
-                    child.style.borderColor = 'var(--accent)';
-                    child.style.background = 'rgba(228, 0, 43, 0.1)';
-                    child.style.boxShadow = '0 0 15px rgba(228, 0, 43, 0.2)';
-                    if(index + 1 < children.length) {
-                        children[index + 1].style.opacity = '1';
-                        children[index + 1].style.transform = 'translateX(0)';
-                    }
-                    if(index + 2 < children.length) {
-                        children[index + 2].style.opacity = '1';
-                        children[index + 2].style.pointerEvents = 'auto';
-                        children[index + 2].style.cursor = 'pointer';
-                        children[index + 2].style.transform = 'translateX(0)';
-                        children[index + 2].title = 'Click to reveal next step';
-                    }
-                });
-            }
-        });
+  function updateBadges(){
+    var mini = document.querySelectorAll('#badgemini span');
+    BADGES.forEach(function(min, i){
+      if(mini[i]) mini[i].classList.toggle('on', xp >= min);
     });
-});</script>
-<style>
-.node:hover {
-    cursor: pointer;
-    transform: scale(1.05);
-    box-shadow: 0 4px 12px rgba(228, 0, 43, 0.3);
-}
-</style>
+    document.querySelectorAll('.badgecard').forEach(function(card){
+      var min = parseFloat(card.getAttribute('data-min'));
+      card.classList.toggle('on', xp >= min);
+    });
+  }
+
+  function copyText(txt, btn){
+    var ok = false;
+    try{
+      var ta = document.createElement('textarea');
+      ta.value = txt;
+      ta.setAttribute('readonly','');
+      ta.style.cssText = 'position:fixed;top:0;left:-9999px;opacity:0';
+      document.body.appendChild(ta);
+      ta.focus(); ta.select(); ta.setSelectionRange(0, ta.value.length);
+      ok = document.execCommand('copy');
+      document.body.removeChild(ta);
+    }catch(err){ ok = false; }
+    if(ok){ flash(btn, 'Copied'); return; }
+    if(navigator.clipboard && navigator.clipboard.writeText){
+      navigator.clipboard.writeText(txt).then(function(){ flash(btn,'Copied'); },
+                                             function(){ selectFallback(btn); });
+      return;
+    }
+    selectFallback(btn);
+  }
+  function flash(btn, msg){
+    var old = btn.textContent; btn.textContent = msg;
+    setTimeout(function(){ btn.textContent = old === msg ? 'Copy' : old; }, 1500);
+  }
+  function selectFallback(btn){
+    var pre = btn.parentNode.querySelector('pre');
+    var r = document.createRange(); r.selectNodeContents(pre);
+    var s = window.getSelection(); s.removeAllRanges(); s.addRange(r);
+    flash(btn, 'Press Ctrl+C');
+  }
+
+  document.addEventListener('click', function(e){
+
+    var f = e.target.closest('.flip, .role');
+    if(f){ f.classList.toggle('open'); return; }
+
+    var o = e.target.closest('.opt');
+    if(o){
+      var box = o.closest('[data-quiz]');
+      if(box.classList.contains('done')) return;
+      var right = o.hasAttribute('data-correct');
+      o.classList.add(right ? 'right' : 'wrong');
+      if(right){
+        box.classList.add('done');
+        box.querySelectorAll('.opt').forEach(function(b){ if(!b.hasAttribute('data-correct')) b.classList.add('wrong'); });
+        var said = box.parentNode.querySelector('.said');
+        if(said) said.classList.add('on');
+        addXP(10, 'correct!');
+      }
+      return;
+    }
+
+    var cp = e.target.closest('.cp');
+    if(cp){ copyText(cp.parentNode.querySelector('pre').innerText, cp); return; }
+  });
+
+  // count-up stat tiles + section reveal animation via IntersectionObserver
+  function countUp(el){
+    var target = parseFloat(el.getAttribute('data-count'));
+    var t0 = null, dur = 900;
+    if(target === 0){ el.textContent = '0'; return; }
+    function step(ts){
+      if(!t0) t0 = ts;
+      var p = Math.min(1, (ts - t0) / dur);
+      el.textContent = Math.round(target * (1 - Math.pow(1 - p, 3)));
+      if(p < 1) requestAnimationFrame(step);
+    }
+    requestAnimationFrame(step);
+  }
+  var counted = new WeakSet();
+  var io = new IntersectionObserver(function(entries){
+    entries.forEach(function(en){
+      if(en.isIntersecting){
+        en.target.querySelectorAll('[data-count]').forEach(function(el){
+          if(!counted.has(el)){ counted.add(el); countUp(el); }
+        });
+      }
+    });
+  }, {threshold:.3});
+  document.querySelectorAll('[data-stats]').forEach(function(el){ io.observe(el); });
+  // objectives panel is open by default, so also fire immediately in case it's already in view
+  setTimeout(function(){
+    document.querySelectorAll('[data-stats] [data-count]').forEach(function(el){
+      if(!counted.has(el)){
+        var r = el.getBoundingClientRect();
+        if(r.top < window.innerHeight){ counted.add(el); countUp(el); }
+      }
+    });
+  }, 200);
+
+  updateBadges();
+})();
+</script>
 </body>
-
-
-
-
-
+</html>
