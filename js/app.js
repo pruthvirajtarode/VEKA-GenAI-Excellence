@@ -779,7 +779,7 @@ class App {
                         
                         
                         <!-- QR Code Section -->
-                        <div class="text-center hide-on-mobile" style="display: flex; flex-direction: column; align-items: center; margin-right: 1rem; margin-bottom: 1rem;">
+                        <div class="text-center" style="display: flex; flex-direction: column; align-items: center; margin-right: 1rem; margin-bottom: 1rem;">
                             <p style="color: white; font-size: 0.75rem; margin-bottom: 0.5rem; text-transform: uppercase; letter-spacing: 0.05em; font-weight: 600;">Scan to open on phone</p>
                             <img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=https://veka-gen-ai-excellence.vercel.app/" 
                                  alt="QR Code" 
