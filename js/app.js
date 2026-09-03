@@ -166,7 +166,9 @@ class App {
                         amount = "999999.99"; // Anomaly
                         status = "REJECTED";
                     }
-                    data.push([`INV-${1000 + i}`, `Vendor ${String.fromCharCode(65+(i%26))}`, `$${amount}`, `2024-0${Math.floor(Math.random()*9)+1}-15`, status]);
+                    let month = Math.floor(Math.random() * 9) + 1;
+                    let dateStr = `0${month}/15/24`;
+                    data.push([`INV-${1000 + i}`, `Vendor ${String.fromCharCode(65+(i%26))}`, `$${amount}`, dateStr, status]);
                 }
             } else if (func === 'Production' || func === 'Operations') {
                 headers = ['Batch ID', 'Machine', 'Yield (%)', 'Defect Rate', 'QA Status'];
