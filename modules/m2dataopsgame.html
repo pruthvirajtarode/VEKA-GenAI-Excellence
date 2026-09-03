@@ -1,0 +1,898 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>M2: Data & Ops</title>
+<style>
+:root{
+  --bg:#0a0a0a; --bg2:#111113; --card:#161617; --card2:#1c1c1e;
+  --line:#2a2a2c; --line2:#333336;
+  --ink:#f5f5f4; --ink-soft:#a8a8ac; --ink-dim:#77777c;
+  --red:#e2202f; --red2:#ff4655; --red-tint:rgba(226,32,47,.14); --red-tint2:rgba(226,32,47,.06);
+  --green:#22c55e; --green-tint:rgba(34,197,94,.14);
+  --sun:#f5b942; --sun-tint:rgba(245,185,66,.12);
+  --blue:#3b82f6; --blue-tint:rgba(59,130,246,.14);
+  --sans: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --mono: ui-monospace, "Cascadia Code", "SF Mono", Menlo, Consolas, monospace;
+}
+*{box-sizing:border-box}
+html{background:var(--bg)}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--sans);-webkit-font-smoothing:antialiased;line-height:1.5}
+h1,h2,h3{font-weight:800;letter-spacing:-.02em;margin:0 0 .5em}
+p{margin:0 0 1em;color:var(--ink-soft)}
+strong{color:var(--ink)}
+button{font-family:inherit}
+:focus-visible{outline:3px solid var(--red2);outline-offset:2px}
+img{max-width:100%}
+
+.wrap{max-width:980px;margin:0 auto;padding:0 24px 90px}
+
+/* ---------- sticky HUD ---------- */
+#hud{position:sticky;top:0;z-index:50;background:rgba(10,10,10,.86);backdrop-filter:blur(10px);
+  border-bottom:1px solid var(--line);padding:10px 24px;display:flex;align-items:center;justify-content:space-between;gap:12px}
+#hud .brand{font-family:var(--mono);font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-dim);display:flex;align-items:center;gap:8px}
+#hud .brand b{color:var(--ink)}
+.xpbadge{font-family:var(--mono);font-weight:800;font-size:13px;background:var(--card2);border:1px solid var(--line2);
+  color:var(--ink);border-radius:99px;padding:.4em 1em;display:inline-flex;align-items:center;gap:.5em}
+.xpbadge b{color:var(--red2)}
+.badgemini{display:none;gap:.35em}
+@media (min-width:640px){.badgemini{display:inline-flex}}
+.badgemini span{opacity:.22;filter:grayscale(1);font-size:16px;transition:.25s}
+.badgemini span.on{opacity:1;filter:none;transform:scale(1.15)}
+
+/* ---------- hero ---------- */
+.hero{position:relative;padding:64px 24px 46px;text-align:center;overflow:hidden;
+  background:
+    radial-gradient(60vmin 40vmin at 15% 0%, rgba(226,32,47,.20), rgba(226,32,47,0) 60%),
+    radial-gradient(50vmin 34vmin at 90% 100%, rgba(226,32,47,.14), rgba(226,32,47,0) 65%),
+    linear-gradient(180deg,#141416,#0a0a0a 80%)}
+.hero::before{content:"";position:absolute;inset:0;opacity:.5;
+  background-image:linear-gradient(rgba(255,255,255,.045) 1px, transparent 1px),linear-gradient(90deg,rgba(255,255,255,.045) 1px, transparent 1px);
+  background-size:42px 42px;mask-image:radial-gradient(70% 70% at 50% 20%, #000 40%, transparent 100%)}
+.hero .in{position:relative;max-width:760px;margin:0 auto}
+.eyebrow{font-family:var(--mono);font-size:12px;letter-spacing:.28em;text-transform:uppercase;color:var(--red2);font-weight:800;margin-bottom:14px}
+.hero h1{font-size:clamp(30px,5.4vw,52px);line-height:1.02}
+.hero .sub{font-size:clamp(15px,2vw,19px);color:var(--ink-soft);max-width:640px;margin:14px auto 0}
+.hero .rule{height:3px;max-width:980px;margin:34px auto 0;background:linear-gradient(90deg,var(--red),var(--red2))}
+
+/* ---------- sections / accordion ---------- */
+.sec{margin-top:22px}
+details.card{background:var(--card);border:1px solid var(--line);border-radius:16px;overflow:hidden}
+details.card + details.card{margin-top:16px}
+summary.hd{list-style:none;cursor:pointer;padding:20px 22px;display:flex;align-items:center;gap:12px;user-select:none}
+summary.hd::-webkit-details-marker{display:none}
+summary.hd .ic{font-size:20px}
+summary.hd .tt{font-size:clamp(17px,2.4vw,21px);font-weight:800;flex:1}
+summary.hd .ct{font-family:var(--mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-dim)}
+summary.hd .chev{width:28px;height:28px;border-radius:8px;background:var(--card2);border:1px solid var(--line2);
+  display:flex;align-items:center;justify-content:center;transition:transform .22s ease;flex-shrink:0}
+summary.hd .chev svg{width:14px;height:14px;stroke:var(--ink-soft);fill:none;stroke-width:2.4;stroke-linecap:round}
+details[open] summary.hd .chev{transform:rotate(180deg)}
+details[open] summary.hd{border-bottom:1px solid var(--line)}
+.bd{padding:22px}
+.bd > p:last-child{margin-bottom:0}
+
+/* ---------- stat tiles ---------- */
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:20px}
+.stat{background:var(--card2);border:1px solid var(--line2);border-radius:12px;padding:16px 10px;text-align:center}
+.stat .n{font-family:var(--mono);font-weight:800;font-size:clamp(22px,4vw,30px);color:var(--red2)}
+.stat .l{font-size:12px;color:var(--ink-dim);margin-top:2px}
+@media (max-width:620px){.stats{grid-template-columns:repeat(2,1fr)}}
+
+ul.obj{list-style:none;margin:0;padding:0}
+ul.obj li{display:flex;gap:10px;padding:8px 0;font-size:15px;color:var(--ink-soft)}
+ul.obj li::before{content:"▶";color:var(--red2);font-size:10px;margin-top:5px;flex-shrink:0}
+
+/* ---------- grids ---------- */
+.grid{display:grid;gap:14px}
+.g2{grid-template-columns:1fr 1fr}
+.g3{grid-template-columns:repeat(3,1fr)}
+.g4{grid-template-columns:repeat(4,1fr)}
+@media (max-width:760px){.g2,.g3{grid-template-columns:1fr}}
+@media (max-width:620px){.g4{grid-template-columns:repeat(2,1fr)}}
+
+/* ---------- dataset preview table ---------- */
+.tblwrap{overflow-x:auto;border:1px solid var(--line2);border-radius:12px}
+table.ds{width:100%;border-collapse:collapse;font-size:13px;min-width:560px}
+table.ds th,table.ds td{padding:9px 12px;text-align:left;border-bottom:1px solid var(--line2);white-space:nowrap}
+table.ds th{font-family:var(--mono);font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-dim);background:var(--card2)}
+table.ds td{color:var(--ink-soft)}
+table.ds tr:last-child td{border-bottom:0}
+table.ds td.num{font-family:var(--mono);color:var(--ink)}
+
+/* ---------- do / don't (reused) ---------- */
+.dd{border-radius:14px;padding:16px 18px;border:1px solid var(--line2)}
+.dd.do{background:var(--green-tint);border-color:rgba(34,197,94,.3)}
+.dd.dont{background:var(--red-tint);border-color:rgba(226,32,47,.3)}
+.dd h3{font-size:14px;margin-bottom:10px}
+.dd.do h3{color:var(--green)}
+.dd.dont h3{color:var(--red2)}
+.dd ul{margin:0;padding-left:18px}
+.dd li{font-size:13.5px;color:var(--ink-soft);margin-bottom:6px}
+
+/* ---------- flip cards (reused, for "3 things AI gets wrong") ---------- */
+.flip{background:var(--card2);border:1px solid var(--line2);border-radius:14px;padding:18px 20px;cursor:pointer;
+  text-align:left;transition:.16s}
+.flip:hover{border-color:var(--red)}
+.flip .term{font-weight:800;font-size:15.5px;display:flex;align-items:center;gap:8px}
+.flip .hint{font-family:var(--mono);font-size:10.5px;color:var(--ink-dim);letter-spacing:.08em;text-transform:uppercase;margin-top:5px}
+.flip .def{display:none;font-size:13.5px;color:var(--ink-soft);line-height:1.5;margin-top:10px}
+.flip.open{border-color:var(--red);background:var(--red-tint2)}
+.flip.open .def{display:block}
+.flip.open .hint{display:none}
+.flip .eg{display:none;margin-top:8px;padding:8px 10px;background:var(--bg2);border-left:3px solid var(--green);border-radius:0 8px 8px 0;
+  font-family:var(--mono);font-size:11.5px;color:#bdf0cf}
+.flip.open .eg{display:block}
+
+/* ---------- GAME: sparkline decliner cards ---------- */
+.sparkgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+@media (max-width:760px){.sparkgrid{grid-template-columns:repeat(2,1fr)}}
+@media (max-width:480px){.sparkgrid{grid-template-columns:1fr}}
+.sparkcard{background:var(--card2);border:1px solid var(--line2);border-radius:14px;padding:14px 16px;cursor:pointer;transition:.15s;text-align:left}
+.sparkcard:hover{border-color:var(--red)}
+.sparkcard .nm{font-weight:800;font-size:13.5px}
+.sparkcard .rg{font-family:var(--mono);font-size:10px;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-dim);margin-bottom:8px}
+.spark{display:flex;align-items:flex-end;gap:2px;height:46px;background:var(--bg2);border-radius:8px;padding:4px 5px}
+.spark i{display:block;flex:1;background:var(--ink-dim);border-radius:2px 2px 0 0;opacity:.55}
+.sparkcard.done{cursor:default}
+.sparkcard.done.correct{border-color:var(--green);background:var(--green-tint)}
+.sparkcard.done.correct .spark i{background:var(--green);opacity:.9}
+.sparkcard.done.wrong{border-color:rgba(226,32,47,.5);background:var(--red-tint);opacity:.65}
+.sparkcard .verdict{display:none;font-family:var(--mono);font-size:10.5px;margin-top:8px;letter-spacing:.04em}
+.sparkcard.done .verdict{display:block}
+.sparkcard.done.correct .verdict{color:var(--green)}
+.sparkcard.done.wrong .verdict{color:var(--red2)}
+
+/* ---------- product-mix bars ---------- */
+.mixrow{display:flex;align-items:center;gap:12px;margin-bottom:10px}
+.mixrow:last-child{margin-bottom:0}
+.mixrow .mlbl{font-size:12.5px;color:var(--ink-soft);width:74px;flex-shrink:0;font-family:var(--mono)}
+.mixbar{flex:1;height:20px;border-radius:6px;overflow:hidden;display:flex;background:var(--bg2)}
+.mixbar span{height:100%}
+.mixbar .prem{background:var(--blue)}
+.mixbar .econ{background:var(--sun)}
+.mixcard{background:var(--card2);border:1px solid var(--line2);border-radius:14px;padding:16px 18px}
+.mixcard h3{font-size:14px;margin-bottom:4px}
+.mixcard .tot{font-family:var(--mono);font-size:11px;color:var(--ink-dim);margin-bottom:12px}
+.legend{display:flex;gap:16px;font-size:11.5px;color:var(--ink-dim);margin-top:10px}
+.legend span{display:inline-flex;align-items:center;gap:6px}
+.legend i{width:10px;height:10px;border-radius:3px;display:inline-block}
+
+/* ---------- quiz (reused) ---------- */
+.qcard{background:var(--card2);border:1px solid var(--line2);border-radius:14px;padding:18px 20px;margin-bottom:14px}
+.qcard:last-child{margin-bottom:0}
+.qtag{font-family:var(--mono);font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--red2);font-weight:800;margin-bottom:8px}
+.qtxt{font-size:15px;font-weight:600;color:var(--ink);margin-bottom:12px}
+.opts{display:grid;gap:9px}
+.opts.tf{grid-template-columns:1fr 1fr}
+.opts.tf .opt{justify-content:center;font-weight:800}
+.opt{display:flex;gap:10px;align-items:center;text-align:left;background:var(--bg2);border:1px solid var(--line2);
+  border-radius:11px;padding:11px 14px;font-size:14px;color:var(--ink);cursor:pointer;transition:.14s}
+.opt:hover{border-color:var(--red2)}
+.opt .k{font-family:var(--mono);font-weight:800;color:var(--ink-dim);flex-shrink:0}
+.opt.right{border-color:var(--green);background:var(--green-tint)}
+.opt.right .k{color:var(--green)}
+.opt.wrong{border-color:rgba(226,32,47,.5);background:var(--red-tint);opacity:.7}
+.said{display:none;margin-top:12px;border-left:3px solid var(--sun);background:var(--sun-tint);
+  border-radius:0 10px 10px 0;padding:10px 14px;color:var(--ink);font-size:13.5px}
+.said.on{display:block}
+.said b{font-family:var(--mono);font-size:.72em;letter-spacing:.1em;text-transform:uppercase;color:var(--sun);display:block;margin-bottom:4px}
+
+/* ---------- RAG dashboard ---------- */
+.dashgrid{display:grid;grid-template-columns:repeat(5,1fr);gap:8px}
+@media (max-width:700px){.dashgrid{grid-template-columns:repeat(3,1fr)}}
+@media (max-width:460px){.dashgrid{grid-template-columns:repeat(2,1fr)}}
+.dashtile{border-radius:10px;padding:9px 10px;font-size:11px;border:1px solid var(--line2);background:var(--card2)}
+.dashtile .dn{font-weight:800;color:var(--ink);font-size:11.5px;line-height:1.25}
+.dashtile .dr{font-family:var(--mono);color:var(--ink-dim);font-size:9.5px;margin-top:2px}
+.dashtile .dot{width:8px;height:8px;border-radius:99px;display:inline-block;margin-top:6px}
+.dashtile.g .dot{background:var(--green)} .dashtile.g{border-color:rgba(34,197,94,.35)}
+.dashtile.y .dot{background:var(--sun)} .dashtile.y{border-color:rgba(245,185,66,.35)}
+.dashtile.r .dot{background:var(--red2)} .dashtile.r{border-color:rgba(226,32,47,.4);background:var(--red-tint)}
+
+/* ---------- prompt library (reused) ---------- */
+.pgroup{margin-bottom:22px}
+.pgroup:last-child{margin-bottom:0}
+.pgroup h3{font-size:14px;color:var(--red2);font-family:var(--mono);letter-spacing:.06em;text-transform:uppercase;margin-bottom:10px;
+  display:flex;align-items:center;gap:8px}
+.prompt{background:#0d0d0e;border:1px solid var(--line2);border-radius:14px;padding:16px 18px;position:relative;margin-bottom:10px}
+.prompt:last-child{margin-bottom:0}
+.prompt .lbl{font-family:var(--mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-dim);margin-bottom:6px;display:block}
+.prompt pre{font-family:var(--mono);font-size:12.6px;line-height:1.55;margin:0;white-space:pre-wrap;color:#e7e7ea;padding-right:70px}
+.prompt .cp{position:absolute;top:14px;right:14px;background:var(--card2);color:var(--ink-soft);border:1px solid var(--line2);
+  border-radius:99px;padding:.45em .95em;font-size:11px;font-weight:700;cursor:pointer;font-family:var(--mono)}
+.prompt .cp:hover{background:var(--red);color:#fff;border-color:var(--red)}
+
+/* ---------- badges / scoreboard (reused) ---------- */
+.badgerow{display:flex;gap:16px;justify-content:center;flex-wrap:wrap;margin:22px 0 6px}
+.badgecard{text-align:center;width:120px}
+.badgecard .em{font-size:44px;filter:grayscale(1);opacity:.28;transition:.3s}
+.badgecard.on .em{filter:none;opacity:1;transform:scale(1.06)}
+.badgecard .nm{font-family:var(--mono);font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-dim);margin-top:6px}
+.badgecard.on .nm{color:var(--ink);font-weight:800}
+.badgecard .rq{font-size:10.5px;color:#555559}
+.scorebig{font-family:var(--mono);font-weight:800;font-size:clamp(48px,9vw,84px);color:var(--red2);text-align:center;line-height:1;margin:6px 0}
+.stamp{display:inline-block;font-family:var(--mono);font-weight:800;letter-spacing:.12em;text-transform:uppercase;
+  font-size:14px;padding:.6em 1.2em;border:2px solid var(--green);color:var(--green);border-radius:.5em;
+  transform:rotate(-4deg);background:rgba(34,197,94,.08)}
+
+/* ---------- toast (reused) ---------- */
+#toastzone{position:fixed;top:64px;right:16px;z-index:90;display:flex;flex-direction:column;gap:8px;align-items:flex-end}
+.toast{background:var(--card2);border:1px solid var(--line2);color:#fff;font-family:var(--mono);font-weight:800;font-size:12.5px;
+  padding:.6em 1.1em;border-radius:99px;box-shadow:0 10px 24px -8px rgba(0,0,0,.6);animation:toastin .3s ease,toastout .4s ease 1.7s forwards}
+.toast b{color:var(--red2)}
+@keyframes toastin{0%{opacity:0;transform:translateY(-8px) scale(.92)}100%{opacity:1;transform:none}}
+@keyframes toastout{to{opacity:0;transform:translateY(-6px) scale(.96)}}
+
+/* ---------- footer ---------- */
+.foot{text-align:center;padding:40px 24px 10px;color:var(--ink-dim);font-size:12.5px}
+.foot .lg{font-family:var(--mono);font-weight:900;color:var(--ink);letter-spacing:-.01em;font-size:14px;margin-bottom:6px}
+
+.pill{display:inline-block;font-family:var(--mono);font-size:11px;letter-spacing:.06em;text-transform:uppercase;
+  padding:.4em .85em;border-radius:99px;background:var(--card2);border:1px solid var(--line2);color:var(--ink-soft)}
+</style>
+</head>
+<body>
+
+<div id="toastzone"></div>
+
+<div id="hud">
+  <span class="brand">📊 <b>M2</b> · Data &amp; Ops <span class="badgemini" id="badgemini"><span title="Pattern Spotter">🔍</span><span title="Data Analyst">📊</span><span title="Ops Strategist">🧭</span><span title="Data Whisperer">👑</span></span></span>
+  <span class="xpbadge">⚡ XP <b id="xpVal">0</b></span>
+</div>
+
+<header class="hero">
+  <div class="in">
+    <div class="eyebrow">Session 2</div>
+    <h1>M2: Data &amp; Ops</h1>
+    <p class="sub">Hand AI a messy dealer-network spreadsheet and get back the three things that actually matter — the quiet decliner, the hidden mix problem, and the regional root cause nobody spotted yet.</p>
+  </div>
+  <div class="rule"></div>
+</header>
+
+<div class="wrap">
+
+  <!-- LEARNING OBJECTIVES -->
+  <div class="sec">
+    <details class="card" open>
+      <summary class="hd"><span class="ic">🎯</span><span class="tt">Learning Objectives</span><span class="chev"><svg viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></svg></span></summary>
+      <div class="bd">
+        <div class="stats" data-stats>
+          <div class="stat"><div class="n" data-count="120">0</div><div class="l">Minutes</div></div>
+          <div class="stat"><div class="n" data-count="8">0</div><div class="l">Prompts</div></div>
+          <div class="stat"><div class="n" data-count="240">0</div><div class="l">Row Dataset</div></div>
+          <div class="stat"><div class="n" data-count="20">0</div><div class="l">Dealers · 12 Months</div></div>
+        </div>
+        <p><strong>By the end of this module, you will:</strong></p>
+        <ul class="obj">
+          <li>Upload any Excel or CSV to an AI tool and get a usable analysis in two minutes</li>
+          <li>Scan 20 dealers across 12 months and 4 regions in a single pass</li>
+          <li>Find the three dealers quietly losing a third of their volume — without a single dramatic month</li>
+          <li>Detect product mix erosion that volume reporting completely hides</li>
+          <li>Spot a regional dispatch problem, and separate it from the dealers affected by it</li>
+          <li>Generate a management dashboard with 🟢🟡🔴 status automatically</li>
+          <li>Index and anonymise data before uploading (full treatment in Session 3)</li>
+          <li>Know the three things AI gets wrong on data, and how to catch them</li>
+        </ul>
+      </div>
+    </details>
+  </div>
+
+  <!-- WARM-UP: TRUE OR FALSE -->
+  <div class="sec">
+    <details class="card" open>
+      <summary class="hd"><span class="ic">⚡</span><span class="tt">Warm-Up · True or False</span><span class="ct">+5 XP each · quick tap</span><span class="chev"><svg viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></svg></span></summary>
+      <div class="bd">
+        <p>Five quick statements to get everyone clicking. No dataset needed yet — just tap True or False.</p>
+        <div class="qcard"><div class="qtag">1 of 5</div><div class="qtxt">AI can scan a spreadsheet with hundreds of rows in seconds.</div>
+          <div class="opts tf" data-quiz data-xp="5">
+            <button class="opt" data-correct><span class="k">True</span></button>
+            <button class="opt"><span class="k">False</span></button>
+          </div>
+          <div class="said"><b>Correct</b>That's the whole point — speed on volume a human would take hours to skim by hand.</div>
+        </div>
+        <div class="qcard"><div class="qtag">2 of 5</div><div class="qtxt">AI always double-checks its own math before answering.</div>
+          <div class="opts tf" data-quiz data-xp="5">
+            <button class="opt"><span class="k">True</span></button>
+            <button class="opt" data-correct><span class="k">False</span></button>
+          </div>
+          <div class="said"><b>Correct</b>Not always — it can guess a plausible-looking number. Ask it to show its working.</div>
+        </div>
+        <div class="qcard"><div class="qtag">3 of 5</div><div class="qtxt">A slow, steady decline is harder to spot than one bad month.</div>
+          <div class="opts tf" data-quiz data-xp="5">
+            <button class="opt" data-correct><span class="k">True</span></button>
+            <button class="opt"><span class="k">False</span></button>
+          </div>
+          <div class="said"><b>Correct</b>A single crash jumps out. A steady slide hides in plain sight — that's a "quiet" decliner.</div>
+        </div>
+        <div class="qcard"><div class="qtag">4 of 5</div><div class="qtxt">Rising total sales always means every product is doing well.</div>
+          <div class="opts tf" data-quiz data-xp="5">
+            <button class="opt"><span class="k">True</span></button>
+            <button class="opt" data-correct><span class="k">False</span></button>
+          </div>
+          <div class="said"><b>Correct</b>Totals can hide a shrinking mix underneath — more on that in a minute.</div>
+        </div>
+        <div class="qcard"><div class="qtag">5 of 5</div><div class="qtxt">You should remove names/IDs before uploading real customer data to a public AI tool.</div>
+          <div class="opts tf" data-quiz data-xp="5">
+            <button class="opt" data-correct><span class="k">True</span></button>
+            <button class="opt"><span class="k">False</span></button>
+          </div>
+          <div class="said"><b>Correct</b>Always anonymise first — the full workflow is Session 3.</div>
+        </div>
+      </div>
+    </details>
+  </div>
+
+  <!-- THE DATASET -->
+  <div class="sec">
+    <details class="card" open>
+      <summary class="hd"><span class="ic">🗂️</span><span class="tt">The Dataset</span><span class="ct">Northwind Auto Group</span><span class="chev"><svg viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></svg></span></summary>
+      <div class="bd">
+        <p>One fictional dealer network, built to feel real: <strong>20 dealers</strong> across <strong>4 regions</strong> (North, South, East, West), <strong>12 months</strong> of unit sales and product mix each. 240 rows total — small enough to sanity-check by eye, big enough that you can't just eyeball the answer.</p>
+        <div class="tblwrap">
+          <table class="ds">
+            <tr><th>Dealer</th><th>Region</th><th>Month</th><th>Units</th><th>Premium %</th></tr>
+            <tr><td>Pune Motors</td><td>West</td><td>Jun</td><td class="num">108</td><td class="num">38%</td></tr>
+            <tr><td>Pune Motors</td><td>West</td><td>Nov</td><td class="num">82</td><td class="num">31%</td></tr>
+            <tr><td>Chennai Motors</td><td>South</td><td>Jan</td><td class="num">100</td><td class="num">40%</td></tr>
+            <tr><td>Chennai Motors</td><td>South</td><td>Dec</td><td class="num">100</td><td class="num">15%</td></tr>
+            <tr><td>Jaipur Motors</td><td>North</td><td>May</td><td class="num">55</td><td class="num">22%</td></tr>
+            <tr><td>Bengaluru Motors</td><td>South</td><td>Dec</td><td class="num">188</td><td class="num">44%</td></tr>
+          </table>
+        </div>
+        <p class="pill" style="margin-top:14px">6 of 240 rows shown</p>
+      </div>
+    </details>
+  </div>
+
+  <!-- GAME 1: QUIET DECLINER -->
+  <div class="sec">
+    <details class="card" open>
+      <summary class="hd"><span class="ic">🎮</span><span class="tt">Game 1 · Spot the Quiet Decliner</span><span class="ct">+15 XP each · find 3</span><span class="chev"><svg viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></svg></span></summary>
+      <div class="bd">
+        <p>Six dealers, 12 months each (Jan → Dec). Three are <strong>quietly</strong> losing a third of their volume — a steady slide, no single dramatic month. The other three are decoys: one is just stable, one crashes hard for a single month then recovers, one is actually growing. Tap the 3 real decliners.</p>
+        <div class="sparkgrid" data-sparkgrid>
+          <button class="sparkcard" data-spark data-correct data-vals="120,118,121,119,115,108,100,95,90,86,82,80"><div class="nm">Pune Motors</div><div class="rg">West</div><div class="spark"></div><div class="verdict"></div></button>
+          <button class="sparkcard" data-spark data-vals="95,96,94,97,95,96,94,95,97,96,95,96"><div class="nm">Coimbatore Wheels</div><div class="rg">South</div><div class="spark"></div><div class="verdict"></div></button>
+          <button class="sparkcard" data-spark data-vals="100,102,98,101,99,40,103,100,99,101,98,100"><div class="nm">Ranchi Auto</div><div class="rg">East</div><div class="spark"></div><div class="verdict"></div></button>
+          <button class="sparkcard" data-spark data-correct data-vals="110,112,109,111,108,102,96,91,86,82,78,75"><div class="nm">Ahmedabad Wheels</div><div class="rg">West</div><div class="spark"></div><div class="verdict"></div></button>
+          <button class="sparkcard" data-spark data-vals="80,84,88,92,96,100,104,108,112,116,120,124"><div class="nm">Guwahati Auto</div><div class="rg">East</div><div class="spark"></div><div class="verdict"></div></button>
+          <button class="sparkcard" data-spark data-correct data-vals="130,128,131,129,126,119,112,106,100,95,90,88"><div class="nm">Nagpur Motors</div><div class="rg">West</div><div class="spark"></div><div class="verdict"></div></button>
+        </div>
+        <div class="said" id="spark-said"><b>Pattern found</b>All three real decliners are in the <strong>West</strong> region, and all three start sliding around the same month. That's not three separate stories — hold that thought for the regional game below.</div>
+      </div>
+    </details>
+  </div>
+
+  <!-- PRODUCT MIX EROSION -->
+  <div class="sec">
+    <details class="card">
+      <summary class="hd"><span class="ic">🧬</span><span class="tt">Product Mix Erosion</span><span class="chev"><svg viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></svg></span></summary>
+      <div class="bd">
+        <p>Total volume can look perfectly flat while the <em>mix</em> quietly rots underneath it — more low-margin units, fewer premium ones. Pure volume reporting never shows this. Look at these two South-region dealers, both flat at ~100 units/month all year:</p>
+        <div class="grid g2">
+          <div class="mixcard">
+            <h3>Chennai Motors</h3>
+            <div class="tot">100 units/mo, Jan → Dec — flat</div>
+            <div class="mixrow"><span class="mlbl">Jan mix</span><div class="mixbar"><span class="prem" style="width:40%"></span><span class="econ" style="width:60%"></span></div></div>
+            <div class="mixrow"><span class="mlbl">Dec mix</span><div class="mixbar"><span class="prem" style="width:15%"></span><span class="econ" style="width:85%"></span></div></div>
+          </div>
+          <div class="mixcard">
+            <h3>Kochi Auto</h3>
+            <div class="tot">98 units/mo, Jan → Dec — flat</div>
+            <div class="mixrow"><span class="mlbl">Jan mix</span><div class="mixbar"><span class="prem" style="width:36%"></span><span class="econ" style="width:64%"></span></div></div>
+            <div class="mixrow"><span class="mlbl">Dec mix</span><div class="mixbar"><span class="prem" style="width:34%"></span><span class="econ" style="width:66%"></span></div></div>
+          </div>
+        </div>
+        <div class="legend"><span><i style="background:var(--blue)"></i>Premium</span><span><i style="background:var(--sun)"></i>Economy</span></div>
+      </div>
+    </details>
+  </div>
+
+  <!-- GAME 2: MIX QUIZ -->
+  <div class="sec">
+    <details class="card">
+      <summary class="hd"><span class="ic">🎮</span><span class="tt">Game 2 · Find the Hidden Problem</span><span class="ct">+10 XP each</span><span class="chev"><svg viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></svg></span></summary>
+      <div class="bd">
+        <div class="qcard"><div class="qtag">Round 1 of 3</div><div class="qtxt">What is "product mix erosion"?</div>
+          <div class="opts" data-quiz>
+            <button class="opt" data-correct><span class="k">A</span> Same total units, but fewer premium and more low-margin sales</button>
+            <button class="opt"><span class="k">B</span> Total units sold dropping every month</button>
+            <button class="opt"><span class="k">C</span> A dealer closing down</button>
+          </div>
+          <div class="said"><b>Correct</b>Same unit count, but the mix quietly shifts toward cheaper products.</div>
+        </div>
+        <div class="qcard"><div class="qtag">Round 2 of 3</div><div class="qtxt">Which single number can hide a mix problem completely?</div>
+          <div class="opts" data-quiz>
+            <button class="opt" data-correct><span class="k">A</span> Total units sold</button>
+            <button class="opt"><span class="k">B</span> Premium %</button>
+            <button class="opt"><span class="k">C</span> Region name</button>
+          </div>
+          <div class="said"><b>Correct</b>Total volume can stay flat while premium % quietly collapses underneath it.</div>
+        </div>
+        <div class="qcard"><div class="qtag">Round 3 of 3</div><div class="qtxt">What should you compare to catch mix erosion?</div>
+          <div class="opts" data-quiz>
+            <button class="opt"><span class="k">A</span> Total units this month vs last month</button>
+            <button class="opt" data-correct><span class="k">B</span> Premium % this month vs a few months ago</button>
+            <button class="opt"><span class="k">C</span> Nothing — mix erosion can't be measured</button>
+          </div>
+          <div class="said"><b>Correct</b>Watching the % over time is what surfaces the shift that totals hide.</div>
+        </div>
+      </div>
+    </details>
+  </div>
+
+  <!-- REGIONAL VS DEALER-SPECIFIC -->
+  <div class="sec">
+    <details class="card">
+      <summary class="hd"><span class="ic">🧭</span><span class="tt">Regional Problem, or Just One Dealer?</span><span class="chev"><svg viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></svg></span></summary>
+      <div class="bd">
+        <p>Before you escalate, you need to know <em>who</em> to escalate to. A dip that hits several dealers in the same region, in the same month, usually points at something systemic — a dispatch or logistics change. A dip in just one dealer, with the rest of the region untouched, is a dealer-specific issue.</p>
+        <div class="grid g2">
+          <div class="dd dont"><h3>⚠️ Systemic (West, this dataset)</h3>
+            <ul><li>3 of 5 West dealers start sliding the same month</li><li>The other 2 West dealers are untouched</li><li>→ points at something regional, e.g. dispatch delays</li></ul>
+          </div>
+          <div class="dd do"><h3>✅ Dealer-specific (North, this dataset)</h3>
+            <ul><li>Jaipur Motors has one bad month, then fully recovers</li><li>The other 4 North dealers never move</li><li>→ isolated to one dealer, one month</li></ul>
+          </div>
+        </div>
+      </div>
+    </details>
+  </div>
+
+  <!-- GAME 3: REGIONAL QUIZ -->
+  <div class="sec">
+    <details class="card">
+      <summary class="hd"><span class="ic">🎮</span><span class="tt">Game 3 · Root Cause or Coincidence?</span><span class="ct">+10 XP each</span><span class="chev"><svg viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></svg></span></summary>
+      <div class="bd">
+        <div class="qcard"><div class="qtag">Round 1 of 3</div><div class="qtxt">3 dealers in the same region dip in the same month. Is that more likely a regional problem or 3 coincidences?</div>
+          <div class="opts" data-quiz>
+            <button class="opt" data-correct><span class="k">A</span> A regional problem — something shared is causing it</button>
+            <button class="opt"><span class="k">B</span> 3 separate coincidences</button>
+            <button class="opt"><span class="k">C</span> Normal seasonal noise, ignore it</button>
+          </div>
+          <div class="said"><b>Correct</b>Same region, same month, multiple dealers — that's the signature of a shared cause, not chance.</div>
+        </div>
+        <div class="qcard"><div class="qtag">Round 2 of 3</div><div class="qtxt">One dealer dips for a single month, then fully recovers. The rest of the region is fine. Is this regional or dealer-specific?</div>
+          <div class="opts" data-quiz>
+            <button class="opt"><span class="k">A</span> Regional — the whole area is affected</button>
+            <button class="opt" data-correct><span class="k">B</span> Dealer-specific — a one-off issue at that dealer</button>
+            <button class="opt"><span class="k">C</span> Neither — it's random</button>
+          </div>
+          <div class="said"><b>Correct</b>If the rest of the region is untouched, the cause lives with that one dealer.</div>
+        </div>
+        <div class="qcard"><div class="qtag">Round 3 of 3</div><div class="qtxt">What's the biggest clue that a problem is regional, not dealer-specific?</div>
+          <div class="opts" data-quiz>
+            <button class="opt" data-correct><span class="k">A</span> Multiple dealers in the same region move together</button>
+            <button class="opt"><span class="k">B</span> One dealer emailed to complain</button>
+            <button class="opt"><span class="k">C</span> Total company-wide revenue changed</button>
+          </div>
+          <div class="said"><b>Correct</b>Correlated movement across dealers in one region is the tell — exactly what turned up in the West.</div>
+        </div>
+      </div>
+    </details>
+  </div>
+
+  <!-- RAG DASHBOARD -->
+  <div class="sec">
+    <details class="card">
+      <summary class="hd"><span class="ic">🚦</span><span class="tt">The RAG Dashboard</span><span class="ct">all 20 dealers</span><span class="chev"><svg viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></svg></span></summary>
+      <div class="bd">
+        <p>This is the actual output you'd ask AI to generate from the raw 240 rows — one glance, whole network. Notice the 3 reds are exactly the West dealers from Game 1, and the yellows are the two "recovered, but worth watching" dealers from the sections above.</p>
+        <div class="dashgrid">
+          <div class="dashtile g"><div class="dn">Delhi Motors</div><div class="dr">North</div><span class="dot"></span></div>
+          <div class="dashtile g"><div class="dn">Chandigarh Auto</div><div class="dr">North</div><span class="dot"></span></div>
+          <div class="dashtile g"><div class="dn">Lucknow Wheels</div><div class="dr">North</div><span class="dot"></span></div>
+          <div class="dashtile y"><div class="dn">Jaipur Motors</div><div class="dr">North</div><span class="dot"></span></div>
+          <div class="dashtile g"><div class="dn">Dehradun Auto</div><div class="dr">North</div><span class="dot"></span></div>
+
+          <div class="dashtile g"><div class="dn">Bengaluru Motors</div><div class="dr">South</div><span class="dot"></span></div>
+          <div class="dashtile y"><div class="dn">Chennai Motors</div><div class="dr">South</div><span class="dot"></span></div>
+          <div class="dashtile g"><div class="dn">Hyderabad Wheels</div><div class="dr">South</div><span class="dot"></span></div>
+          <div class="dashtile g"><div class="dn">Coimbatore Wheels</div><div class="dr">South</div><span class="dot"></span></div>
+          <div class="dashtile g"><div class="dn">Kochi Auto</div><div class="dr">South</div><span class="dot"></span></div>
+
+          <div class="dashtile g"><div class="dn">Kolkata Motors</div><div class="dr">East</div><span class="dot"></span></div>
+          <div class="dashtile g"><div class="dn">Bhubaneswar Auto</div><div class="dr">East</div><span class="dot"></span></div>
+          <div class="dashtile g"><div class="dn">Patna Wheels</div><div class="dr">East</div><span class="dot"></span></div>
+          <div class="dashtile g"><div class="dn">Guwahati Auto</div><div class="dr">East</div><span class="dot"></span></div>
+          <div class="dashtile y"><div class="dn">Ranchi Auto</div><div class="dr">East</div><span class="dot"></span></div>
+
+          <div class="dashtile g"><div class="dn">Mumbai Motors</div><div class="dr">West</div><span class="dot"></span></div>
+          <div class="dashtile r"><div class="dn">Pune Motors</div><div class="dr">West</div><span class="dot"></span></div>
+          <div class="dashtile r"><div class="dn">Ahmedabad Wheels</div><div class="dr">West</div><span class="dot"></span></div>
+          <div class="dashtile g"><div class="dn">Surat Auto</div><div class="dr">West</div><span class="dot"></span></div>
+          <div class="dashtile r"><div class="dn">Nagpur Motors</div><div class="dr">West</div><span class="dot"></span></div>
+        </div>
+        <div class="legend" style="margin-top:14px">
+          <span><i style="background:var(--green)"></i>On track</span>
+          <span><i style="background:var(--sun)"></i>Recovered, watch</span>
+          <span><i style="background:var(--red2)"></i>Active decline</span>
+        </div>
+      </div>
+    </details>
+  </div>
+
+  <!-- DATA HYGIENE TEASER -->
+  <div class="sec">
+    <details class="card">
+      <summary class="hd"><span class="ic">🔒</span><span class="tt">Before You Upload</span><span class="ct">full version in Session 3</span><span class="chev"><svg viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></svg></span></summary>
+      <div class="bd">
+        <p>Quick version now — the full indexing-and-anonymising workflow is Session 3's whole topic.</p>
+        <div class="grid g2">
+          <div class="dd do"><h3>✅ Do</h3><ul>
+            <li>Swap real names for IDs (Dealer-07) if you're just exploring patterns</li>
+            <li>Strip phone, PAN, GST and other identifiers before it leaves your machine</li>
+            <li>Check your org's data policy on what's allowed to leave the building</li>
+          </ul></div>
+          <div class="dd dont"><h3>❌ Don't</h3><ul>
+            <li>Upload a raw export "just to try it" and clean up later</li>
+            <li>Assume a public AI tool's privacy settings cover you</li>
+            <li>Wait for Session 3 to start thinking about this — start now</li>
+          </ul></div>
+        </div>
+      </div>
+    </details>
+  </div>
+
+  <!-- 3 THINGS AI GETS WRONG -->
+  <div class="sec">
+    <details class="card">
+      <summary class="hd"><span class="ic">🧠</span><span class="tt">3 Things AI Gets Wrong on Data</span><span class="ct">tap each card</span><span class="chev"><svg viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></svg></span></summary>
+      <div class="bd">
+        <div class="grid g3">
+          <button class="flip"><div class="term">1. It can guess a number</div><div class="hint">tap to reveal</div>
+            <div class="def">Instead of literally summing every row, it can produce a plausible-looking total that's simply wrong.</div>
+            <div class="eg">Fix: ask it to show the formula or a row-by-row check, not just the answer.</div></button>
+          <button class="flip"><div class="term">2. It can silently drop rows</div><div class="hint">tap to reveal</div>
+            <div class="def">On a big file it may sample or truncate instead of reading everything — and won't always tell you.</div>
+            <div class="eg">Fix: ask it to confirm the row count it actually used matches your file.</div></button>
+          <button class="flip"><div class="term">3. It can invent a cause</div><div class="hint">tap to reveal</div>
+            <div class="def">It'll happily turn a correlation into a confident "because" story you never asked it to prove.</div>
+            <div class="eg">Fix: treat any causal claim as a hypothesis to verify, not a finding.</div></button>
+        </div>
+      </div>
+    </details>
+  </div>
+
+  <!-- GAME 4: CATCH THE MISTAKE -->
+  <div class="sec">
+    <details class="card">
+      <summary class="hd"><span class="ic">🎮</span><span class="tt">Game 4 · Catch the AI Mistake</span><span class="ct">+10 XP each</span><span class="chev"><svg viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></svg></span></summary>
+      <div class="bd">
+        <div class="qcard"><div class="qtag">Round 1 of 3</div><div class="qtxt">AI gives you a total instantly, with no working shown. What should you do?</div>
+          <div class="opts" data-quiz>
+            <button class="opt" data-correct><span class="k">A</span> Ask it to show the row-by-row calculation</button>
+            <button class="opt"><span class="k">B</span> Trust it — AI never makes arithmetic mistakes</button>
+            <button class="opt"><span class="k">C</span> Nothing, speed means it's correct</button>
+          </div>
+          <div class="said"><b>Correct</b>Showing the working is how you catch a guessed number before it goes in a report.</div>
+        </div>
+        <div class="qcard"><div class="qtag">Round 2 of 3</div><div class="qtxt">You upload a 20-dealer file, but the AI's answer only covers 15 dealers. What most likely happened?</div>
+          <div class="opts" data-quiz>
+            <button class="opt"><span class="k">A</span> 5 dealers genuinely had zero sales all year</button>
+            <button class="opt" data-correct><span class="k">B</span> It silently skipped some rows instead of reading the whole file</button>
+            <button class="opt"><span class="k">C</span> Nothing to worry about</button>
+          </div>
+          <div class="said"><b>Correct</b>Always check the row/dealer count it worked from matches what you actually uploaded.</div>
+        </div>
+        <div class="qcard"><div class="qtag">Round 3 of 3</div><div class="qtxt">AI says: "Sales dropped because dealers lost interest" — but "lost interest" isn't in your data anywhere. What's the problem?</div>
+          <div class="opts" data-quiz>
+            <button class="opt"><span class="k">A</span> Nothing, that's a reasonable summary</button>
+            <button class="opt" data-correct><span class="k">B</span> It invented a cause — a guess dressed up as a fact</button>
+            <button class="opt"><span class="k">C</span> It should have blamed the customers instead</button>
+          </div>
+          <div class="said"><b>Correct</b>A causal story that isn't in the data is a guess, not a finding — always verify it.</div>
+        </div>
+      </div>
+    </details>
+  </div>
+
+  <!-- 8 READY PROMPTS -->
+  <div class="sec">
+    <details class="card">
+      <summary class="hd"><span class="ic">📚</span><span class="tt">8 Ready-to-Paste Prompts</span><span class="ct">your library</span><span class="chev"><svg viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></svg></span></summary>
+      <div class="bd">
+        <div class="pgroup"><h3>🔍 Find the quiet decliners</h3>
+          <div class="prompt"><span class="lbl">Trend scan</span><button class="cp">Copy</button>
+<pre>Using this dataset (dealer, region, month, units),
+find every dealer whose units fell steadily over
+the period with no single dramatic month. Rank by
+% decline. Show the month each decline started.</pre></div>
+        </div>
+        <div class="pgroup"><h3>🧬 Catch mix erosion</h3>
+          <div class="prompt"><span class="lbl">Mix-over-time check</span><button class="cp">Copy</button>
+<pre>For each dealer, compare product-category share
+(% premium vs % economy) in the first 3 months vs
+the last 3 months. Flag any dealer where total
+volume is flat but premium share dropped by more
+than 10 points.</pre></div>
+        </div>
+        <div class="pgroup"><h3>🧭 Regional vs dealer-specific</h3>
+          <div class="prompt"><span class="lbl">Root-cause split</span><button class="cp">Copy</button>
+<pre>Group declines by region and month. Tell me which
+regions have 2+ dealers declining in the same
+month (likely a shared cause) versus which declines
+are isolated to a single dealer. List both groups
+separately.</pre></div>
+        </div>
+        <div class="pgroup"><h3>🚦 Build the dashboard</h3>
+          <div class="prompt"><span class="lbl">RAG status generator</span><button class="cp">Copy</button>
+<pre>Build a table: one row per dealer, with a status
+of Green / Yellow / Red. Red = declining 3+ months
+in a row. Yellow = declined then recovered within
+2 months. Green = everything else. Include the
+region and the reason for the status.</pre></div>
+        </div>
+        <div class="pgroup"><h3>🔒 Anonymise before upload</h3>
+          <div class="prompt"><span class="lbl">Strip identifiers</span><button class="cp">Copy</button>
+<pre>Replace every dealer name in this file with an ID
+like Dealer-01, Dealer-02, keeping a separate
+mapping table only I can see. Remove any phone,
+email, PAN or GST columns entirely before showing
+me the working data.</pre></div>
+        </div>
+        <div class="pgroup"><h3>🧮 Verify AI's own math</h3>
+          <div class="prompt"><span class="lbl">Show the working</span><button class="cp">Copy</button>
+<pre>Recalculate the total units for [region] and show
+your row-by-row working, not just the final number.
+Confirm how many rows you actually used and whether
+that matches the full dataset.</pre></div>
+        </div>
+        <div class="pgroup"><h3>📝 Brief a regional head</h3>
+          <div class="prompt"><span class="lbl">12-month summary</span><button class="cp">Copy</button>
+<pre>Summarize 12 months of performance for [region] in
+under 150 words for a regional head with 90 seconds
+to read it: 1 headline, top 2 risks with dealer
+names, 1 recommended action.</pre></div>
+        </div>
+        <div class="pgroup"><h3>📋 Weekly ops brief</h3>
+          <div class="prompt"><span class="lbl">One-page brief</span><button class="cp">Copy</button>
+<pre>Turn this month's raw sales data into a one-page
+ops brief: 3 bullets on what changed, 1 dealer to
+watch, 1 open question you couldn't answer from
+this data alone. Flag anything you're unsure about.</pre></div>
+        </div>
+      </div>
+    </details>
+  </div>
+
+  <!-- BOSS QUIZ -->
+  <div class="sec">
+    <details class="card">
+      <summary class="hd"><span class="ic">🏁</span><span class="tt">Final Check · 5 Questions</span><span class="ct">+10 XP each</span><span class="chev"><svg viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></svg></span></summary>
+      <div class="bd">
+        <div class="qcard"><div class="qtag">Q1 of 5</div><div class="qtxt">What is a "quiet decliner"?</div>
+          <div class="opts" data-quiz>
+            <button class="opt"><span class="k">A</span> A dealer with one sharp bad month that recovers</button>
+            <button class="opt" data-correct><span class="k">B</span> A dealer whose sales slide slowly over many months</button>
+            <button class="opt"><span class="k">C</span> A dealer whose sales stay perfectly flat</button>
+          </div>
+          <div class="said"><b>Correct</b>Steady and gradual is exactly what month-to-month reporting is bad at catching.</div>
+        </div>
+        <div class="qcard"><div class="qtag">Q2 of 5</div><div class="qtxt">Two dealers sell the exact same total volume. Can they still have different problems?</div>
+          <div class="opts" data-quiz>
+            <button class="opt"><span class="k">A</span> No — same volume always means the same situation</button>
+            <button class="opt" data-correct><span class="k">B</span> Yes — their product mix can be shifting in opposite directions</button>
+            <button class="opt"><span class="k">C</span> No — volume is always the full picture</button>
+          </div>
+          <div class="said"><b>Correct</b>Mix erosion hides completely behind a flat volume number.</div>
+        </div>
+        <div class="qcard"><div class="qtag">Q3 of 5</div><div class="qtxt">Multiple dealers in the same region decline in the same month. What does this most likely point to?</div>
+          <div class="opts" data-quiz>
+            <button class="opt"><span class="k">A</span> Coincidence — ignore it</button>
+            <button class="opt" data-correct><span class="k">B</span> A shared regional cause, like a dispatch problem</button>
+            <button class="opt"><span class="k">C</span> Nothing — decline is always seasonal</button>
+          </div>
+          <div class="said"><b>Correct</b>Correlated timing across dealers in one region is the signature of a shared cause.</div>
+        </div>
+        <div class="qcard"><div class="qtag">Q4 of 5</div><div class="qtxt">AI gives you a total instantly with zero working shown. What's the safest move?</div>
+          <div class="opts" data-quiz>
+            <button class="opt"><span class="k">A</span> Trust it — AI doesn't make arithmetic errors</button>
+            <button class="opt" data-correct><span class="k">B</span> Ask it to show the row-by-row calculation</button>
+            <button class="opt"><span class="k">C</span> Round the number to be safe</button>
+          </div>
+          <div class="said"><b>Correct</b>Showing the working is how you catch a guessed number before it goes in a report.</div>
+        </div>
+        <div class="qcard"><div class="qtag">Q5 of 5</div><div class="qtxt">Before uploading a real dealer file to a public AI tool, what should you do first?</div>
+          <div class="opts" data-quiz>
+            <button class="opt"><span class="k">A</span> Nothing, upload it as-is to save time</button>
+            <button class="opt" data-correct><span class="k">B</span> Strip identifying info or swap names for IDs first</button>
+            <button class="opt"><span class="k">C</span> Only worry about it if a customer complains</button>
+          </div>
+          <div class="said"><b>Correct</b>Anonymise before it leaves your machine — the full workflow is Session 3, but the habit starts now.</div>
+        </div>
+      </div>
+    </details>
+  </div>
+
+  <!-- SCOREBOARD -->
+  <div class="sec">
+    <div class="card" style="padding:30px 22px;text-align:center">
+      <div class="pill">Your scoreboard</div>
+      <div class="scorebig" id="scoreBig">0</div>
+      <p style="color:var(--ink-dim);margin-bottom:0">total XP earned across all 4 games and the final check</p>
+      <div class="badgerow" id="badgerow">
+        <div class="badgecard" data-min="40"><div class="em">🔍</div><div class="nm">Pattern Spotter</div><div class="rq">40 XP</div></div>
+        <div class="badgecard" data-min="100"><div class="em">📊</div><div class="nm">Data Analyst</div><div class="rq">100 XP</div></div>
+        <div class="badgecard" data-min="160"><div class="em">🧭</div><div class="nm">Ops Strategist</div><div class="rq">160 XP</div></div>
+        <div class="badgecard" data-min="210"><div class="em">👑</div><div class="nm">Data Whisperer</div><div class="rq">210 XP</div></div>
+      </div>
+      <div style="margin-top:18px"><span class="stamp">Module 2 complete ✅</span></div>
+    </div>
+  </div>
+
+</div>
+
+<div class="foot">
+  <div class="lg">HOUSE OF EDTECH</div>
+  M2 · Data &amp; Ops — bring your own spreadsheet and try it live.
+</div>
+
+<script>
+(function(){
+  "use strict";
+  var xp = 0;
+  var BADGES = [40, 100, 160, 210];
+
+  function toast(msg){
+    var t = document.createElement('div');
+    t.className = 'toast';
+    t.innerHTML = msg;
+    document.getElementById('toastzone').appendChild(t);
+    setTimeout(function(){ t.remove(); }, 2100);
+  }
+
+  function addXP(n, label){
+    xp += n;
+    document.getElementById('xpVal').textContent = xp;
+    var sb = document.getElementById('scoreBig'); if(sb) sb.textContent = xp;
+    toast('+' + n + ' XP <span style="opacity:.7">· ' + (label||'') + '</span>');
+    updateBadges();
+  }
+
+  function updateBadges(){
+    var mini = document.querySelectorAll('#badgemini span');
+    BADGES.forEach(function(min, i){
+      if(mini[i]) mini[i].classList.toggle('on', xp >= min);
+    });
+    document.querySelectorAll('.badgecard').forEach(function(card){
+      var min = parseFloat(card.getAttribute('data-min'));
+      card.classList.toggle('on', xp >= min);
+    });
+  }
+
+  function copyText(txt, btn){
+    var ok = false;
+    try{
+      var ta = document.createElement('textarea');
+      ta.value = txt;
+      ta.setAttribute('readonly','');
+      ta.style.cssText = 'position:fixed;top:0;left:-9999px;opacity:0';
+      document.body.appendChild(ta);
+      ta.focus(); ta.select(); ta.setSelectionRange(0, ta.value.length);
+      ok = document.execCommand('copy');
+      document.body.removeChild(ta);
+    }catch(err){ ok = false; }
+    if(ok){ flash(btn, 'Copied'); return; }
+    if(navigator.clipboard && navigator.clipboard.writeText){
+      navigator.clipboard.writeText(txt).then(function(){ flash(btn,'Copied'); },
+                                             function(){ selectFallback(btn); });
+      return;
+    }
+    selectFallback(btn);
+  }
+  function flash(btn, msg){
+    var old = btn.textContent; btn.textContent = msg;
+    setTimeout(function(){ btn.textContent = old === msg ? 'Copy' : old; }, 1500);
+  }
+  function selectFallback(btn){
+    var pre = btn.parentNode.querySelector('pre');
+    var r = document.createRange(); r.selectNodeContents(pre);
+    var s = window.getSelection(); s.removeAllRanges(); s.addRange(r);
+    flash(btn, 'Press Ctrl+C');
+  }
+
+  // render sparkline bars from data-vals
+  function renderSparks(){
+    document.querySelectorAll('[data-spark]').forEach(function(card){
+      var vals = card.getAttribute('data-vals').split(',').map(Number);
+      var max = Math.max.apply(null, vals);
+      var min = Math.min.apply(null, vals);
+      var range = Math.max(1, max - min);
+      var el = card.querySelector('.spark');
+      el.innerHTML = vals.map(function(v){
+        var h = 12 + Math.round(((v - min) / range) * 88); // 12%-100%
+        return '<i style="height:' + h + '%"></i>';
+      }).join('');
+    });
+  }
+  renderSparks();
+
+  document.addEventListener('click', function(e){
+
+    var f = e.target.closest('.flip');
+    if(f){ f.classList.toggle('open'); return; }
+
+    var sp = e.target.closest('[data-spark]');
+    if(sp){
+      if(sp.classList.contains('done')) return;
+      sp.classList.add('done');
+      var v = sp.querySelector('.verdict');
+      if(sp.hasAttribute('data-correct')){
+        sp.classList.add('correct');
+        v.textContent = '✓ Quiet decliner — correct';
+        addXP(15, 'quiet decliner found');
+        var grid = sp.closest('[data-sparkgrid]');
+        var allCorrect = grid.querySelectorAll('[data-spark][data-correct]');
+        var foundCorrect = grid.querySelectorAll('[data-spark][data-correct].correct');
+        if(foundCorrect.length === allCorrect.length){
+          var said = document.getElementById('spark-said');
+          if(said) said.classList.add('on');
+        }
+      } else {
+        sp.classList.add('wrong');
+        v.textContent = '✕ not a quiet decline';
+      }
+      return;
+    }
+
+    var o = e.target.closest('.opt');
+    if(o){
+      var box = o.closest('[data-quiz]');
+      if(box.classList.contains('done')) return;
+      var right = o.hasAttribute('data-correct');
+      o.classList.add(right ? 'right' : 'wrong');
+      if(right){
+        box.classList.add('done');
+        box.querySelectorAll('.opt').forEach(function(b){ if(!b.hasAttribute('data-correct')) b.classList.add('wrong'); });
+        var said2 = box.parentNode.querySelector('.said');
+        if(said2) said2.classList.add('on');
+        var xpAmt = parseInt(box.getAttribute('data-xp'), 10) || 10;
+        addXP(xpAmt, 'correct!');
+      }
+      return;
+    }
+
+    var cp = e.target.closest('.cp');
+    if(cp){ copyText(cp.parentNode.querySelector('pre').innerText, cp); return; }
+  });
+
+  function countUp(el){
+    var target = parseFloat(el.getAttribute('data-count'));
+    var t0 = null, dur = 900;
+    if(target === 0){ el.textContent = '0'; return; }
+    function step(ts){
+      if(!t0) t0 = ts;
+      var p = Math.min(1, (ts - t0) / dur);
+      el.textContent = Math.round(target * (1 - Math.pow(1 - p, 3)));
+      if(p < 1) requestAnimationFrame(step);
+    }
+    requestAnimationFrame(step);
+  }
+  var counted = new WeakSet();
+  var io = new IntersectionObserver(function(entries){
+    entries.forEach(function(en){
+      if(en.isIntersecting){
+        en.target.querySelectorAll('[data-count]').forEach(function(el){
+          if(!counted.has(el)){ counted.add(el); countUp(el); }
+        });
+      }
+    });
+  }, {threshold:.3});
+  document.querySelectorAll('[data-stats]').forEach(function(el){ io.observe(el); });
+  setTimeout(function(){
+    document.querySelectorAll('[data-stats] [data-count]').forEach(function(el){
+      if(!counted.has(el)){
+        var r = el.getBoundingClientRect();
+        if(r.top < window.innerHeight){ counted.add(el); countUp(el); }
+      }
+    });
+  }, 200);
+
+  updateBadges();
+})();
+</script>
+</body>
+</html>
