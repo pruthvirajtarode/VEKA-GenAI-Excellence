@@ -115,6 +115,7 @@ tr:hover{background:rgba(255,255,255,0.02)}
 .diagram .node-safe{border-color:rgba(76,175,80,0.4);color:#4CAF50}
 .diagram .arr{color:var(--accent);font-size:20px;font-weight:bold}
 
+
 .quick-nav {
     position: sticky;
     top: 0;
@@ -147,6 +148,14 @@ tr:hover{background:rgba(255,255,255,0.02)}
     background: rgba(255, 255, 255, 0.1);
     border-color: var(--accent);
 }
+.quick-nav button.active {
+    background: rgba(228, 0, 43, 0.1);
+    border-color: var(--accent);
+    color: var(--accent);
+}
+/* Hide all sections by default, only show the open one */
+.section { display: none !important; }
+.section.open { display: block !important; }
 </style>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script></head>
 <body>
@@ -1289,6 +1298,7 @@ document.addEventListener('DOMContentLoaded', function() {
     box-shadow: 0 4px 12px rgba(228, 0, 43, 0.3);
 }
 
+
 .quick-nav {
     position: sticky;
     top: 0;
@@ -1321,6 +1331,14 @@ document.addEventListener('DOMContentLoaded', function() {
     background: rgba(255, 255, 255, 0.1);
     border-color: var(--accent);
 }
+.quick-nav button.active {
+    background: rgba(228, 0, 43, 0.1);
+    border-color: var(--accent);
+    color: var(--accent);
+}
+/* Hide all sections by default, only show the open one */
+.section { display: none !important; }
+.section.open { display: block !important; }
 </style>
 <button id="back-to-top" title="Back to Top" style="position: fixed; bottom: 30px; right: 30px; z-index: 999; background: var(--accent, #E4002B); color: white; width: 45px; height: 45px; border: none; border-radius: 50%; display: none; align-items: center; justify-content: center; box-shadow: 0 4px 15px rgba(0,0,0,0.3); transition: opacity 0.3s, transform 0.3s; opacity: 0; transform: translateY(10px); cursor: pointer;">
     <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5M5 12l7-7 7 7"/></svg>
@@ -1366,12 +1384,22 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 </script>
 
+
 <script>
 document.addEventListener('DOMContentLoaded', () => {
-    if(document.querySelector('.quick-nav')) return; // Prevent duplicate
+    if(document.querySelector('.quick-nav')) {
+        document.querySelector('.quick-nav').remove();
+    }
     const nav = document.createElement('div');
     nav.className = 'quick-nav';
     const sections = document.querySelectorAll('.section');
+    
+    // Ensure only the first section is open by default
+    sections.forEach((sec, i) => {
+        if(i === 0) sec.classList.add('open');
+        else sec.classList.remove('open');
+    });
+
     sections.forEach((sec, index) => {
         const h2 = sec.querySelector('.section-head h2');
         if (h2) {
@@ -1380,10 +1408,20 @@ document.addEventListener('DOMContentLoaded', () => {
             let text = h2.innerText || h2.textContent;
             let shortText = text.split(':')[0].split('—')[0].split('-')[0].trim();
             btn.innerText = shortText;
+            
+            if(index === 0) btn.classList.add('active');
+
             btn.onclick = () => {
+                // Close all
+                sections.forEach(s => s.classList.remove('open'));
+                document.querySelectorAll('.quick-nav button').forEach(b => b.classList.remove('active'));
+                
+                // Open this
                 sec.classList.add('open');
-                const y = sec.getBoundingClientRect().top + window.scrollY - 70;
-                window.scrollTo({top: y, behavior: 'smooth'});
+                btn.classList.add('active');
+                
+                // Scroll to top
+                window.scrollTo({top: 0, behavior: 'instant'});
             };
             nav.appendChild(btn);
         }

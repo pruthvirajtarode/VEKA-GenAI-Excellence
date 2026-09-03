@@ -76,6 +76,7 @@ tr:hover{background:rgba(255,255,255,0.02)}
 .cst-live{background:rgba(76,175,80,0.15);color:#4CAF50}
 .cst-team{background:rgba(156,39,176,0.15);color:#CE93D8}
 
+
 .quick-nav {
     position: sticky;
     top: 0;
@@ -108,6 +109,14 @@ tr:hover{background:rgba(255,255,255,0.02)}
     background: rgba(255, 255, 255, 0.1);
     border-color: var(--accent);
 }
+.quick-nav button.active {
+    background: rgba(228, 0, 43, 0.1);
+    border-color: var(--accent);
+    color: var(--accent);
+}
+/* Hide all sections by default, only show the open one */
+.section { display: none !important; }
+.section.open { display: block !important; }
 </style>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script></head>
 <body>
@@ -918,12 +927,22 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 </script>
 
+
 <script>
 document.addEventListener('DOMContentLoaded', () => {
-    if(document.querySelector('.quick-nav')) return; // Prevent duplicate
+    if(document.querySelector('.quick-nav')) {
+        document.querySelector('.quick-nav').remove();
+    }
     const nav = document.createElement('div');
     nav.className = 'quick-nav';
     const sections = document.querySelectorAll('.section');
+    
+    // Ensure only the first section is open by default
+    sections.forEach((sec, i) => {
+        if(i === 0) sec.classList.add('open');
+        else sec.classList.remove('open');
+    });
+
     sections.forEach((sec, index) => {
         const h2 = sec.querySelector('.section-head h2');
         if (h2) {
@@ -932,10 +951,20 @@ document.addEventListener('DOMContentLoaded', () => {
             let text = h2.innerText || h2.textContent;
             let shortText = text.split(':')[0].split('—')[0].split('-')[0].trim();
             btn.innerText = shortText;
+            
+            if(index === 0) btn.classList.add('active');
+
             btn.onclick = () => {
+                // Close all
+                sections.forEach(s => s.classList.remove('open'));
+                document.querySelectorAll('.quick-nav button').forEach(b => b.classList.remove('active'));
+                
+                // Open this
                 sec.classList.add('open');
-                const y = sec.getBoundingClientRect().top + window.scrollY - 70;
-                window.scrollTo({top: y, behavior: 'smooth'});
+                btn.classList.add('active');
+                
+                // Scroll to top
+                window.scrollTo({top: 0, behavior: 'instant'});
             };
             nav.appendChild(btn);
         }
