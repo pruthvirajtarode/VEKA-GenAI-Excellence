@@ -1,0 +1,910 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>M3: AI Risk &amp; Privacy</title>
+<style>
+:root{
+  --bg:#0a0a0a; --bg2:#111113; --card:#161617; --card2:#1c1c1e;
+  --line:#2a2a2c; --line2:#333336;
+  --ink:#f5f5f4; --ink-soft:#a8a8ac; --ink-dim:#77777c;
+  --red:#e2202f; --red2:#ff4655; --red-tint:rgba(226,32,47,.14); --red-tint2:rgba(226,32,47,.06);
+  --green:#22c55e; --green-tint:rgba(34,197,94,.14);
+  --sun:#f5b942; --sun-tint:rgba(245,185,66,.12);
+  --sans: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --mono: ui-monospace, "Cascadia Code", "SF Mono", Menlo, Consolas, monospace;
+}
+*{box-sizing:border-box}
+html{background:var(--bg)}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--sans);-webkit-font-smoothing:antialiased;line-height:1.5}
+h1,h2,h3{font-weight:800;letter-spacing:-.02em;margin:0 0 .5em}
+p{margin:0 0 1em;color:var(--ink-soft)}
+strong{color:var(--ink)}
+button{font-family:inherit}
+:focus-visible{outline:3px solid var(--red2);outline-offset:2px}
+img{max-width:100%}
+
+.wrap{max-width:980px;margin:0 auto;padding:0 24px 90px}
+
+/* ---------- sticky HUD ---------- */
+#hud{position:sticky;top:0;z-index:50;background:rgba(10,10,10,.86);backdrop-filter:blur(10px);
+  border-bottom:1px solid var(--line);padding:10px 24px;display:flex;align-items:center;justify-content:space-between;gap:12px}
+#hud .brand{font-family:var(--mono);font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-dim);display:flex;align-items:center;gap:8px}
+#hud .brand b{color:var(--ink)}
+.xpbadge{font-family:var(--mono);font-weight:800;font-size:13px;background:var(--card2);border:1px solid var(--line2);
+  color:var(--ink);border-radius:99px;padding:.4em 1em;display:inline-flex;align-items:center;gap:.5em}
+.xpbadge b{color:var(--red2)}
+.badgemini{display:none;gap:.35em}
+@media (min-width:640px){.badgemini{display:inline-flex}}
+.badgemini span{opacity:.22;filter:grayscale(1);font-size:16px;transition:.25s}
+.badgemini span.on{opacity:1;filter:none;transform:scale(1.15)}
+
+/* ---------- hero ---------- */
+.hero{position:relative;padding:64px 24px 46px;text-align:center;overflow:hidden;
+  background:
+    radial-gradient(60vmin 40vmin at 15% 0%, rgba(226,32,47,.20), rgba(226,32,47,0) 60%),
+    radial-gradient(50vmin 34vmin at 90% 100%, rgba(226,32,47,.14), rgba(226,32,47,0) 65%),
+    linear-gradient(180deg,#141416,#0a0a0a 80%)}
+.hero::before{content:"";position:absolute;inset:0;opacity:.5;
+  background-image:linear-gradient(rgba(255,255,255,.045) 1px, transparent 1px),linear-gradient(90deg,rgba(255,255,255,.045) 1px, transparent 1px);
+  background-size:42px 42px;mask-image:radial-gradient(70% 70% at 50% 20%, #000 40%, transparent 100%)}
+.hero .in{position:relative;max-width:760px;margin:0 auto}
+.eyebrow{font-family:var(--mono);font-size:12px;letter-spacing:.28em;text-transform:uppercase;color:var(--red2);font-weight:800;margin-bottom:14px}
+.hero h1{font-size:clamp(30px,5.4vw,52px);line-height:1.02}
+.hero .sub{font-size:clamp(15px,2vw,19px);color:var(--ink-soft);max-width:640px;margin:14px auto 0}
+.hero .rule{height:3px;max-width:980px;margin:34px auto 0;background:linear-gradient(90deg,var(--red),var(--red2))}
+
+/* ---------- sections / accordion ---------- */
+.sec{margin-top:22px}
+details.card{background:var(--card);border:1px solid var(--line);border-radius:16px;overflow:hidden}
+details.card + details.card{margin-top:16px}
+summary.hd{list-style:none;cursor:pointer;padding:20px 22px;display:flex;align-items:center;gap:12px;user-select:none}
+summary.hd::-webkit-details-marker{display:none}
+summary.hd .ic{font-size:20px}
+summary.hd .tt{font-size:clamp(17px,2.4vw,21px);font-weight:800;flex:1}
+summary.hd .ct{font-family:var(--mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-dim)}
+summary.hd .chev{width:28px;height:28px;border-radius:8px;background:var(--card2);border:1px solid var(--line2);
+  display:flex;align-items:center;justify-content:center;transition:transform .22s ease;flex-shrink:0}
+summary.hd .chev svg{width:14px;height:14px;stroke:var(--ink-soft);fill:none;stroke-width:2.4;stroke-linecap:round}
+details[open] summary.hd .chev{transform:rotate(180deg)}
+details[open] summary.hd{border-bottom:1px solid var(--line)}
+.bd{padding:22px}
+.bd > p:last-child{margin-bottom:0}
+
+/* ---------- stat tiles ---------- */
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:20px}
+.stat{background:var(--card2);border:1px solid var(--line2);border-radius:12px;padding:16px 10px;text-align:center}
+.stat .n{font-family:var(--mono);font-weight:800;font-size:clamp(22px,4vw,30px);color:var(--red2)}
+.stat .l{font-size:12px;color:var(--ink-dim);margin-top:2px}
+@media (max-width:620px){.stats{grid-template-columns:repeat(2,1fr)}}
+
+ul.obj{list-style:none;margin:0;padding:0}
+ul.obj li{display:flex;gap:10px;padding:8px 0;font-size:15px;color:var(--ink-soft)}
+ul.obj li::before{content:"▶";color:var(--red2);font-size:10px;margin-top:5px;flex-shrink:0}
+
+/* ---------- grids ---------- */
+.grid{display:grid;gap:14px}
+.g2{grid-template-columns:1fr 1fr}
+.g3{grid-template-columns:repeat(3,1fr)}
+.g4{grid-template-columns:repeat(4,1fr)}
+@media (max-width:760px){.g2,.g3{grid-template-columns:1fr}}
+@media (max-width:620px){.g4{grid-template-columns:repeat(2,1fr)}}
+
+/* ---------- process flow ---------- */
+.flowrow{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+@media (max-width:760px){.flowrow{grid-template-columns:repeat(2,1fr)}}
+.flowstep{background:var(--card2);border:1px solid var(--line2);border-radius:12px;padding:14px 12px;font-size:13px;color:var(--ink-soft)}
+.flowstep b{display:inline-flex;align-items:center;justify-content:center;width:22px;height:22px;border-radius:99px;
+  background:var(--red-tint);color:var(--red2);font-family:var(--mono);font-weight:800;font-size:11px;margin-right:6px;flex-shrink:0}
+
+/* ---------- do / don't (reused) ---------- */
+.dd{border-radius:14px;padding:16px 18px;border:1px solid var(--line2)}
+.dd.do{background:var(--green-tint);border-color:rgba(34,197,94,.3)}
+.dd.dont{background:var(--red-tint);border-color:rgba(226,32,47,.3)}
+.dd h3{font-size:14px;margin-bottom:10px}
+.dd.do h3{color:var(--green)}
+.dd.dont h3{color:var(--red2)}
+.dd ul{margin:0;padding-left:18px}
+.dd li{font-size:13.5px;color:var(--ink-soft);margin-bottom:6px}
+
+/* ---------- 3 data tiers ---------- */
+.tier{border-radius:14px;padding:16px 18px;border:1px solid var(--line2);background:var(--card2)}
+.tier h3{font-size:14px;margin-bottom:8px}
+.tier ul{margin:0;padding-left:18px}
+.tier li{font-size:13px;color:var(--ink-soft);margin-bottom:6px}
+.tier.pub{background:var(--green-tint);border-color:rgba(34,197,94,.3)} .tier.pub h3{color:var(--green)}
+.tier.int{background:var(--sun-tint);border-color:rgba(245,185,66,.3)} .tier.int h3{color:var(--sun)}
+.tier.conf{background:var(--red-tint);border-color:rgba(226,32,47,.3)} .tier.conf h3{color:var(--red2)}
+
+/* ---------- flip cards (reused) ---------- */
+.flip{background:var(--card2);border:1px solid var(--line2);border-radius:14px;padding:18px 20px;cursor:pointer;
+  text-align:left;transition:.16s}
+.flip:hover{border-color:var(--red)}
+.flip .term{font-weight:800;font-size:15.5px;display:flex;align-items:center;gap:8px}
+.flip .hint{font-family:var(--mono);font-size:10.5px;color:var(--ink-dim);letter-spacing:.08em;text-transform:uppercase;margin-top:5px}
+.flip .def{display:none;font-size:13.5px;color:var(--ink-soft);line-height:1.5;margin-top:10px}
+.flip.open{border-color:var(--red);background:var(--red-tint2)}
+.flip.open .def{display:block}
+.flip.open .hint{display:none}
+.flip .eg{display:none;margin-top:8px;padding:8px 10px;background:var(--bg2);border-left:3px solid var(--green);border-radius:0 8px 8px 0;
+  font-family:var(--mono);font-size:11.5px;color:#bdf0cf}
+.flip.open .eg{display:block}
+.flip.case .term{font-weight:600;font-size:13.5px;line-height:1.45}
+.flip.case .def{font-weight:800;font-size:14px;margin-top:10px}
+.flip.case .def .ok{color:var(--green)}
+.flip.case .def .risk{color:var(--red2)}
+.flip.case .eg{border-left-color:var(--ink-dim);color:var(--ink-soft);font-family:var(--sans);font-size:12.5px}
+
+/* ---------- quiz (reused) ---------- */
+.qcard{background:var(--card2);border:1px solid var(--line2);border-radius:14px;padding:18px 20px;margin-bottom:14px}
+.qcard:last-child{margin-bottom:0}
+.qtag{font-family:var(--mono);font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--red2);font-weight:800;margin-bottom:8px}
+.qtxt{font-size:15px;font-weight:600;color:var(--ink);margin-bottom:12px}
+.opts{display:grid;gap:9px}
+.opts.tf{grid-template-columns:1fr 1fr}
+.opts.tf .opt{justify-content:center;font-weight:800}
+.opt{display:flex;gap:10px;align-items:center;text-align:left;background:var(--bg2);border:1px solid var(--line2);
+  border-radius:11px;padding:11px 14px;font-size:14px;color:var(--ink);cursor:pointer;transition:.14s}
+.opt:hover{border-color:var(--red2)}
+.opt .k{font-family:var(--mono);font-weight:800;color:var(--ink-dim);flex-shrink:0}
+.opt.right{border-color:var(--green);background:var(--green-tint)}
+.opt.right .k{color:var(--green)}
+.opt.wrong{border-color:rgba(226,32,47,.5);background:var(--red-tint);opacity:.7}
+.said{display:none;margin-top:12px;border-left:3px solid var(--sun);background:var(--sun-tint);
+  border-radius:0 10px 10px 0;padding:10px 14px;color:var(--ink);font-size:13.5px}
+.said.on{display:block}
+.said b{font-family:var(--mono);font-size:.72em;letter-spacing:.1em;text-transform:uppercase;color:var(--sun);display:block;margin-bottom:4px}
+
+/* ---------- policy list ---------- */
+.polist{list-style:none;margin:0;padding:0;counter-reset:po}
+.polist li{counter-increment:po;display:flex;gap:12px;padding:10px 0;border-bottom:1px solid var(--line2);font-size:14px;color:var(--ink-soft)}
+.polist li:last-child{border-bottom:0}
+.polist li::before{content:counter(po);font-family:var(--mono);font-weight:800;color:var(--red2);background:var(--red-tint);
+  width:24px;height:24px;border-radius:99px;display:flex;align-items:center;justify-content:center;font-size:12px;flex-shrink:0}
+
+/* ---------- boss verdict ---------- */
+.bossverdict{display:none;margin-top:16px;border-radius:14px;padding:20px 22px;text-align:center;font-size:14px;
+  background:var(--card2);border:1px solid var(--line2);color:var(--ink-soft)}
+.bossverdict.on{display:block}
+.bossverdict.pass{border-color:var(--green);background:var(--green-tint)}
+.bossverdict b{display:block;font-family:var(--mono);font-size:22px;margin-bottom:8px;color:var(--red2)}
+.bossverdict.pass b{color:var(--green)}
+
+/* ---------- badges / scoreboard (reused) ---------- */
+.badgerow{display:flex;gap:16px;justify-content:center;flex-wrap:wrap;margin:22px 0 6px}
+.badgecard{text-align:center;width:120px}
+.badgecard .em{font-size:44px;filter:grayscale(1);opacity:.28;transition:.3s}
+.badgecard.on .em{filter:none;opacity:1;transform:scale(1.06)}
+.badgecard .nm{font-family:var(--mono);font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-dim);margin-top:6px}
+.badgecard.on .nm{color:var(--ink);font-weight:800}
+.badgecard .rq{font-size:10.5px;color:#555559}
+.scorebig{font-family:var(--mono);font-weight:800;font-size:clamp(48px,9vw,84px);color:var(--red2);text-align:center;line-height:1;margin:6px 0}
+.stamp{display:inline-block;font-family:var(--mono);font-weight:800;letter-spacing:.12em;text-transform:uppercase;
+  font-size:14px;padding:.6em 1.2em;border:2px solid var(--green);color:var(--green);border-radius:.5em;
+  transform:rotate(-4deg);background:rgba(34,197,94,.08)}
+
+/* ---------- toast (reused) ---------- */
+#toastzone{position:fixed;top:64px;right:16px;z-index:90;display:flex;flex-direction:column;gap:8px;align-items:flex-end}
+.toast{background:var(--card2);border:1px solid var(--line2);color:#fff;font-family:var(--mono);font-weight:800;font-size:12.5px;
+  padding:.6em 1.1em;border-radius:99px;box-shadow:0 10px 24px -8px rgba(0,0,0,.6);animation:toastin .3s ease,toastout .4s ease 1.7s forwards}
+.toast b{color:var(--red2)}
+@keyframes toastin{0%{opacity:0;transform:translateY(-8px) scale(.92)}100%{opacity:1;transform:none}}
+@keyframes toastout{to{opacity:0;transform:translateY(-6px) scale(.96)}}
+
+/* ---------- footer ---------- */
+.foot{text-align:center;padding:40px 24px 10px;color:var(--ink-dim);font-size:12.5px}
+.foot .lg{font-family:var(--mono);font-weight:900;color:var(--ink);letter-spacing:-.01em;font-size:14px;margin-bottom:6px}
+
+.pill{display:inline-block;font-family:var(--mono);font-size:11px;letter-spacing:.06em;text-transform:uppercase;
+  padding:.4em .85em;border-radius:99px;background:var(--card2);border:1px solid var(--line2);color:var(--ink-soft)}
+</style>
+</head>
+<body>
+
+<div id="toastzone"></div>
+
+<div id="hud">
+  <span class="brand" style="display:flex; align-items:center;">
+    <a href="#" onclick="window.history.length > 1 ? window.history.back() : window.close(); return false;" style="color: var(--ink-soft); text-decoration: none; font-size: 1.2rem; margin-right: 12px;" title="Go Back">⬅️</a>
+    🛡️ <b>M3</b> · AI Risk &amp; Privacy <span class="badgemini" id="badgemini"><span title="Privacy Aware">👁️</span><span title="Data Guardian">🛡️</span><span title="Risk Spotter">🔍</span><span title="AI Governance Pro">📜</span></span></span>
+  <span class="xpbadge">⚡ XP <b id="xpVal">0</b></span>
+</div>
+
+<header class="hero">
+  <div class="in">
+    <div class="eyebrow">Session 3</div>
+    <h1>M3: AI Risk &amp; Privacy</h1>
+    <p class="sub">Know what's safe to paste into AI, what to redact first, and when a confident-sounding answer is actually a guess. Finish ready to clear the 13/15 certification quiz.</p>
+  </div>
+  <div class="rule"></div>
+</header>
+
+<div class="wrap">
+
+  <!-- LEARNING OBJECTIVES -->
+  <div class="sec">
+    <details class="card" open>
+      <summary class="hd"><span class="ic">🎯</span><span class="tt">Learning Objectives</span><span class="chev"><svg viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></svg></span></summary>
+      <div class="bd">
+        <div class="stats" data-stats>
+          <div class="stat"><div class="n" data-count="120">0</div><div class="l">Minutes</div></div>
+          <div class="stat"><div class="n" data-count="12">0</div><div class="l">Case Studies</div></div>
+          <div class="stat"><div class="n" data-count="15">0</div><div class="l">Quiz Scenarios</div></div>
+          <div class="stat"><div class="n" data-count="3">0</div><div class="l">Data Tiers</div></div>
+        </div>
+        <p><strong>By the end of this module, you will:</strong></p>
+        <ul class="obj">
+          <li>Understand how AI actually processes and stores what you type into it</li>
+          <li>Know the 5 categories of AI risk relevant to a profile systems manufacturer</li>
+          <li>Classify any VEKA data into 3 tiers: Public, Internal, Confidential</li>
+          <li>Anonymise dealer data, quotations and reports before using AI</li>
+          <li>Detect AI hallucinations in technical specifications, standards and calculations</li>
+          <li>Understand India's Digital Personal Data Protection Act (DPDP 2023) in practical terms</li>
+          <li>Apply a draft VEKA AI usage policy to your daily work</li>
+          <li>Score 13+ out of 15 on the "Is This Safe?" quiz</li>
+        </ul>
+      </div>
+    </details>
+  </div>
+
+  <!-- WARM-UP: TRUE OR FALSE -->
+  <div class="sec">
+    <details class="card" open>
+      <summary class="hd"><span class="ic">⚡</span><span class="tt">Warm-Up · True or False</span><span class="ct">+5 XP each · quick tap</span><span class="chev"><svg viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></svg></span></summary>
+      <div class="bd">
+        <p>Five quick statements to get everyone clicking. No prior reading needed — just tap True or False.</p>
+        <div class="qcard"><div class="qtag">1 of 5</div><div class="qtxt">Once you paste something into a public AI chatbot, it can potentially be seen by the company that runs it.</div>
+          <div class="opts tf" data-quiz data-xp="5">
+            <button class="opt" data-correct><span class="k">True</span></button>
+            <button class="opt"><span class="k">False</span></button>
+          </div>
+          <div class="said"><b>Correct</b>Assume anything you paste into a public tool leaves your hands the moment you hit send.</div>
+        </div>
+        <div class="qcard"><div class="qtag">2 of 5</div><div class="qtxt">Deleting your chat afterwards instantly erases it from the AI company's servers too.</div>
+          <div class="opts tf" data-quiz data-xp="5">
+            <button class="opt"><span class="k">True</span></button>
+            <button class="opt" data-correct><span class="k">False</span></button>
+          </div>
+          <div class="said"><b>Correct</b>A deleted chat on your screen doesn't guarantee deletion on their side — retention policies vary by tool.</div>
+        </div>
+        <div class="qcard"><div class="qtag">3 of 5</div><div class="qtxt">A free AI tool and a paid business AI tool can have very different data-retention policies.</div>
+          <div class="opts tf" data-quiz data-xp="5">
+            <button class="opt" data-correct><span class="k">True</span></button>
+            <button class="opt"><span class="k">False</span></button>
+          </div>
+          <div class="said"><b>Correct</b>Business/enterprise tiers often come with stronger data-handling guarantees — check before you assume.</div>
+        </div>
+        <div class="qcard"><div class="qtag">4 of 5</div><div class="qtxt">If a document has no customer name in it, it's automatically safe to upload anywhere.</div>
+          <div class="opts tf" data-quiz data-xp="5">
+            <button class="opt"><span class="k">True</span></button>
+            <button class="opt" data-correct><span class="k">False</span></button>
+          </div>
+          <div class="said"><b>Correct</b>Pricing, drawings and internal figures can be sensitive even with no name attached.</div>
+        </div>
+        <div class="qcard"><div class="qtag">5 of 5</div><div class="qtxt">VEKA's AI usage policy applies even when you're using your personal phone.</div>
+          <div class="opts tf" data-quiz data-xp="5">
+            <button class="opt" data-correct><span class="k">True</span></button>
+            <button class="opt"><span class="k">False</span></button>
+          </div>
+          <div class="said"><b>Correct</b>The policy follows the data, not the device — company data stays covered wherever you access it from.</div>
+        </div>
+      </div>
+    </details>
+  </div>
+
+  <!-- HOW AI PROCESSES WHAT YOU TYPE -->
+  <div class="sec">
+    <details class="card" open>
+      <summary class="hd"><span class="ic">🔄</span><span class="tt">How AI Actually Processes What You Type</span><span class="chev"><svg viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></svg></span></summary>
+      <div class="bd">
+        <p>It feels like a private conversation. It isn't quite that simple — here's the short version of where your words actually go.</p>
+        <div class="flowrow">
+          <div class="flowstep"><b>1</b>You type or paste something</div>
+          <div class="flowstep"><b>2</b>It's sent to the AI provider's servers</div>
+          <div class="flowstep"><b>3</b>It may be logged, stored, or reviewed</div>
+          <div class="flowstep"><b>4</b>It could train future models — unless the tool opts you out</div>
+        </div>
+      </div>
+    </details>
+  </div>
+
+  <!-- 5 CATEGORIES OF AI RISK -->
+  <div class="sec">
+    <details class="card">
+      <summary class="hd"><span class="ic">🧠</span><span class="tt">5 Categories of AI Risk</span><span class="ct">for a profile systems manufacturer</span><span class="chev"><svg viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></svg></span></summary>
+      <div class="bd">
+        <div class="grid g3">
+          <button class="flip"><div class="term">1. Data leakage</div><div class="hint">tap to reveal</div>
+            <div class="def">Confidential drawings, formulas or dealer pricing typed into a public AI tool, now sitting on someone else's servers.</div>
+            <div class="eg">Fix: keep confidential work in company-approved tools only.</div></button>
+          <button class="flip"><div class="term">2. Hallucinated technical content</div><div class="hint">tap to reveal</div>
+            <div class="def">AI invents a standard number, tolerance, or material spec that sounds exactly right — and isn't.</div>
+            <div class="eg">Fix: verify every standard or figure before it goes in a client document.</div></button>
+          <button class="flip"><div class="term">3. IP &amp; design exposure</div><div class="hint">tap to reveal</div>
+            <div class="def">Proprietary profile designs, tooling specs or unreleased R&amp;D pasted into a tool outside the company.</div>
+            <div class="eg">Fix: treat design and tooling files as Confidential by default.</div></button>
+          <button class="flip"><div class="term">4. Compliance violation</div><div class="hint">tap to reveal</div>
+            <div class="def">Careless AI use that breaches DPDP 2023 or a client NDA — even by accident.</div>
+            <div class="eg">Fix: anonymise personal data before it leaves your machine.</div></button>
+          <button class="flip"><div class="term">5. Over-reliance without verification</div><div class="hint">tap to reveal</div>
+            <div class="def">Trusting an AI answer for a technical or structural decision without anyone checking it.</div>
+            <div class="eg">Fix: AI drafts, a human verifies — every time.</div></button>
+        </div>
+      </div>
+    </details>
+  </div>
+
+  <!-- 12 CASE STUDIES -->
+  <div class="sec">
+    <details class="card">
+      <summary class="hd"><span class="ic">🗂️</span><span class="tt">12 Case Studies</span><span class="ct">tap each card for the verdict</span><span class="chev"><svg viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></svg></span></summary>
+      <div class="bd">
+        <p>Twelve short, real-feeling moments from a workplace like this one. Tap each to see whether it was safe practice or a risk — and why.</p>
+        <div class="grid g3">
+          <button class="flip case"><div class="term">A sales rep pasted a dealer's full pricing sheet into a free AI chatbot to reformat it as a table.</div><div class="hint">tap for verdict</div>
+            <div class="def"><span class="risk">⚠️ Risk</span></div>
+            <div class="eg">Confidential dealer pricing sent to a third-party tool with no anonymisation.</div></button>
+          <button class="flip case"><div class="term">A trainee asked AI to explain, in general terms, what "double glazing" means for a customer email.</div><div class="hint">tap for verdict</div>
+            <div class="def"><span class="ok">✅ Good practice</span></div>
+            <div class="eg">No company or customer data involved — a general knowledge question.</div></button>
+          <button class="flip case"><div class="term">An engineer had AI double-check a wind-load calculation, then verified the numbers manually before signing off.</div><div class="hint">tap for verdict</div>
+            <div class="def"><span class="ok">✅ Good practice</span></div>
+            <div class="eg">Used AI as a first draft, verified before trusting it.</div></button>
+          <button class="flip case"><div class="term">A team member uploaded a signed customer contract to "get a quick summary" of the payment terms.</div><div class="hint">tap for verdict</div>
+            <div class="def"><span class="risk">⚠️ Risk</span></div>
+            <div class="eg">Contract details are confidential and often contain personal data.</div></button>
+          <button class="flip case"><div class="term">AI generated an installation guide that cited a standard number — the number turned out not to exist.</div><div class="hint">tap for verdict</div>
+            <div class="def"><span class="risk">⚠️ Risk</span></div>
+            <div class="eg">A hallucinated standard used without verification.</div></button>
+          <button class="flip case"><div class="term">A manager swapped dealer names for IDs before asking AI to summarise performance trends.</div><div class="hint">tap for verdict</div>
+            <div class="def"><span class="ok">✅ Good practice</span></div>
+            <div class="eg">Anonymised before it ever left the building.</div></button>
+          <button class="flip case"><div class="term">Someone used a personal phone's free AI app to check a client's technical drawing overnight.</div><div class="hint">tap for verdict</div>
+            <div class="def"><span class="risk">⚠️ Risk</span></div>
+            <div class="eg">Unapproved tool, and a confidential drawing, outside company control.</div></button>
+          <button class="flip case"><div class="term">A designer asked AI for general "best practices in profile aesthetics" for a public blog post, with no client details.</div><div class="hint">tap for verdict</div>
+            <div class="def"><span class="ok">✅ Good practice</span></div>
+            <div class="eg">Public, non-sensitive request with no company data.</div></button>
+          <button class="flip case"><div class="term">AI suggested a tolerance range for a profile series; the team used it directly in a client spec without checking.</div><div class="hint">tap for verdict</div>
+            <div class="def"><span class="risk">⚠️ Risk</span></div>
+            <div class="eg">Unverified AI output used directly in real client work.</div></button>
+          <button class="flip case"><div class="term">A rep drafted a LinkedIn post about energy-efficient windows using AI, then had a colleague review it before posting.</div><div class="hint">tap for verdict</div>
+            <div class="def"><span class="ok">✅ Good practice</span></div>
+            <div class="eg">Draft plus human review, exactly as policy expects.</div></button>
+          <button class="flip case"><div class="term">Someone pasted a customer's name, phone number and order details into AI just to "clean up the formatting."</div><div class="hint">tap for verdict</div>
+            <div class="def"><span class="risk">⚠️ Risk</span></div>
+            <div class="eg">Personal data covered by DPDP, exposed for a trivial task.</div></button>
+          <button class="flip case"><div class="term">A team lead checked with IT before rolling out a new AI tool for confidential quotation work.</div><div class="hint">tap for verdict</div>
+            <div class="def"><span class="ok">✅ Good practice</span></div>
+            <div class="eg">Approved the tool before it touched confidential data.</div></button>
+        </div>
+      </div>
+    </details>
+  </div>
+
+  <!-- THE 3 DATA TIERS -->
+  <div class="sec">
+    <details class="card">
+      <summary class="hd"><span class="ic">🏷️</span><span class="tt">The 3 Data Tiers</span><span class="chev"><svg viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></svg></span></summary>
+      <div class="bd">
+        <p>Every piece of VEKA data falls into one of three tiers. When you're not sure which, treat it as the more sensitive one.</p>
+        <div class="grid g3">
+          <div class="tier pub"><h3>🟢 Public</h3><ul>
+            <li>Published brochures &amp; catalogues</li>
+            <li>Website content</li>
+            <li>General product specs already public</li>
+          </ul></div>
+          <div class="tier int"><h3>🟡 Internal</h3><ul>
+            <li>Internal SOPs and process notes</li>
+            <li>Generic training material</li>
+            <li>Internal memos with no client info</li>
+          </ul></div>
+          <div class="tier conf"><h3>🔴 Confidential</h3><ul>
+            <li>Dealer pricing &amp; discounts</li>
+            <li>Customer contracts &amp; personal data</li>
+            <li>Technical drawings &amp; unreleased designs</li>
+          </ul></div>
+        </div>
+      </div>
+    </details>
+  </div>
+
+  <!-- GAME 1: CLASSIFY THE DATA -->
+  <div class="sec">
+    <details class="card">
+      <summary class="hd"><span class="ic">🎮</span><span class="tt">Game 1 · Classify the Data</span><span class="ct">+10 XP each</span><span class="chev"><svg viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></svg></span></summary>
+      <div class="bd">
+        <div class="qcard"><div class="qtag">Round 1 of 6</div><div class="qtxt">VEKA's published product catalogue PDF on the company website</div>
+          <div class="opts" data-quiz>
+            <button class="opt" data-correct><span class="k">A</span> Public</button>
+            <button class="opt"><span class="k">B</span> Internal</button>
+            <button class="opt"><span class="k">C</span> Confidential</button>
+          </div>
+          <div class="said"><b>Correct</b>Already published for anyone to see — that's Public.</div>
+        </div>
+        <div class="qcard"><div class="qtag">Round 2 of 6</div><div class="qtxt">An internal quality-check checklist used on the factory floor, with no client names on it</div>
+          <div class="opts" data-quiz>
+            <button class="opt"><span class="k">A</span> Public</button>
+            <button class="opt" data-correct><span class="k">B</span> Internal</button>
+            <button class="opt"><span class="k">C</span> Confidential</button>
+          </div>
+          <div class="said"><b>Correct</b>Not meant for outsiders, but nothing sensitive in it either — that's Internal.</div>
+        </div>
+        <div class="qcard"><div class="qtag">Round 3 of 6</div><div class="qtxt">A dealer's custom pricing sheet with discount percentages</div>
+          <div class="opts" data-quiz>
+            <button class="opt"><span class="k">A</span> Public</button>
+            <button class="opt"><span class="k">B</span> Internal</button>
+            <button class="opt" data-correct><span class="k">C</span> Confidential</button>
+          </div>
+          <div class="said"><b>Correct</b>Named pricing and discounts are commercially sensitive — Confidential.</div>
+        </div>
+        <div class="qcard"><div class="qtag">Round 4 of 6</div><div class="qtxt">A customer's phone number and address from an order form</div>
+          <div class="opts" data-quiz>
+            <button class="opt"><span class="k">A</span> Public</button>
+            <button class="opt"><span class="k">B</span> Internal</button>
+            <button class="opt" data-correct><span class="k">C</span> Confidential</button>
+          </div>
+          <div class="said"><b>Correct</b>Personal data — Confidential, and covered by DPDP.</div>
+        </div>
+        <div class="qcard"><div class="qtag">Round 5 of 6</div><div class="qtxt">A general installation guide already printed in the public brochure</div>
+          <div class="opts" data-quiz>
+            <button class="opt" data-correct><span class="k">A</span> Public</button>
+            <button class="opt"><span class="k">B</span> Internal</button>
+            <button class="opt"><span class="k">C</span> Confidential</button>
+          </div>
+          <div class="said"><b>Correct</b>If it's already in a public brochure, it's Public.</div>
+        </div>
+        <div class="qcard"><div class="qtag">Round 6 of 6</div><div class="qtxt">This quarter's internal sales-target memo, with no client specifics</div>
+          <div class="opts" data-quiz>
+            <button class="opt"><span class="k">A</span> Public</button>
+            <button class="opt" data-correct><span class="k">B</span> Internal</button>
+            <button class="opt"><span class="k">C</span> Confidential</button>
+          </div>
+          <div class="said"><b>Correct</b>Company-only, but no client or personal data — Internal.</div>
+        </div>
+      </div>
+    </details>
+  </div>
+
+  <!-- ANONYMISING BEFORE YOU UPLOAD -->
+  <div class="sec">
+    <details class="card">
+      <summary class="hd"><span class="ic">🔏</span><span class="tt">Anonymising Before You Upload</span><span class="chev"><svg viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></svg></span></summary>
+      <div class="bd">
+        <div class="grid g2">
+          <div class="dd do"><h3>✅ Do</h3><ul>
+            <li>Replace dealer/customer names with IDs</li>
+            <li>Strip phone, PAN, GST and address before it leaves your machine</li>
+            <li>Remove pricing tied to a specific named client</li>
+            <li>Check whether a generic, aggregated version works instead</li>
+          </ul></div>
+          <div class="dd dont"><h3>❌ Don't</h3><ul>
+            <li>Upload a raw quotation with the client's name and price still on it</li>
+            <li>Assume "just a quick check" makes it safe</li>
+            <li>Paste an entire customer contract just to summarise it</li>
+            <li>Wait until later to think about this — start now</li>
+          </ul></div>
+        </div>
+      </div>
+    </details>
+  </div>
+
+  <!-- GAME 2: WHAT NEEDS TO BE REMOVED -->
+  <div class="sec">
+    <details class="card">
+      <summary class="hd"><span class="ic">🎮</span><span class="tt">Game 2 · What Needs to Be Removed?</span><span class="ct">+10 XP each</span><span class="chev"><svg viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></svg></span></summary>
+      <div class="bd">
+        <div class="qcard"><div class="qtag">Round 1 of 3</div><div class="qtxt">Before pasting a quotation into AI to reformat it, what should you do first?</div>
+          <div class="opts" data-quiz>
+            <button class="opt" data-correct><span class="k">A</span> Remove the client's name and final price, keep it generic</button>
+            <button class="opt"><span class="k">B</span> Nothing, formatting doesn't count as sharing data</button>
+            <button class="opt"><span class="k">C</span> Just remove the letterhead logo</button>
+          </div>
+          <div class="said"><b>Correct</b>The identifying and commercially sensitive parts are exactly what needs to come out first.</div>
+        </div>
+        <div class="qcard"><div class="qtag">Round 2 of 3</div><div class="qtxt">A technical drawing has a client's project code stamped on it. Before uploading it for AI review, you should:</div>
+          <div class="opts" data-quiz>
+            <button class="opt"><span class="k">A</span> Upload it as-is, project codes aren't sensitive</button>
+            <button class="opt" data-correct><span class="k">B</span> Crop or redact the project code and any client identifiers</button>
+            <button class="opt"><span class="k">C</span> Rename the file only</button>
+          </div>
+          <div class="said"><b>Correct</b>Renaming the file doesn't touch what's printed on the drawing itself.</div>
+        </div>
+        <div class="qcard"><div class="qtag">Round 3 of 3</div><div class="qtxt">Which of these is safest to paste into a public AI tool as-is?</div>
+          <div class="opts" data-quiz>
+            <button class="opt" data-correct><span class="k">A</span> A generic installation FAQ with no client details</button>
+            <button class="opt"><span class="k">B</span> A filled-in customer order form</button>
+            <button class="opt"><span class="k">C</span> A dealer's confidential rate card</button>
+          </div>
+          <div class="said"><b>Correct</b>Generic, non-identifying content is the one that needs no redaction at all.</div>
+        </div>
+      </div>
+    </details>
+  </div>
+
+  <!-- CATCHING AI HALLUCINATIONS -->
+  <div class="sec">
+    <details class="card">
+      <summary class="hd"><span class="ic">🕵️</span><span class="tt">Catching AI Hallucinations in Technical Specs</span><span class="ct">tap each card</span><span class="chev"><svg viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></svg></span></summary>
+      <div class="bd">
+        <div class="grid g3">
+          <button class="flip"><div class="term">1. It can invent a standard</div><div class="hint">tap to reveal</div>
+            <div class="def">It may cite an IS/EN standard number that doesn't apply — or doesn't exist at all.</div>
+            <div class="eg">Fix: verify every standard or code against the official source before using it.</div></button>
+          <button class="flip"><div class="term">2. It can make up a number</div><div class="hint">tap to reveal</div>
+            <div class="def">A wind-load figure or tolerance that sounds exactly right, but was never actually calculated.</div>
+            <div class="eg">Fix: ask for the calculation method, then verify manually or with an engineer.</div></button>
+          <button class="flip"><div class="term">3. It can blend two specs</div><div class="hint">tap to reveal</div>
+            <div class="def">It may mix details from two different profile series into a single, confident-sounding answer.</div>
+            <div class="eg">Fix: always name the exact series/SKU and double-check the reply matches it.</div></button>
+        </div>
+      </div>
+    </details>
+  </div>
+
+  <!-- GAME 3: CATCH THE HALLUCINATION -->
+  <div class="sec">
+    <details class="card">
+      <summary class="hd"><span class="ic">🎮</span><span class="tt">Game 3 · Catch the Hallucination</span><span class="ct">+10 XP each</span><span class="chev"><svg viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></svg></span></summary>
+      <div class="bd">
+        <div class="qcard"><div class="qtag">Round 1 of 3</div><div class="qtxt">AI confidently quotes a standard number for a wind-load test. What should you do before it goes in a client document?</div>
+          <div class="opts" data-quiz>
+            <button class="opt" data-correct><span class="k">A</span> Verify the standard number against the official source</button>
+            <button class="opt"><span class="k">B</span> Use it as-is, AI wouldn't state a number with confidence if wrong</button>
+            <button class="opt"><span class="k">C</span> Round it to be safe</button>
+          </div>
+          <div class="said"><b>Correct</b>Confidence isn't proof — the source document is.</div>
+        </div>
+        <div class="qcard"><div class="qtag">Round 2 of 3</div><div class="qtxt">AI gives you a tolerance figure for a profile series but doesn't show how it got there. Best move?</div>
+          <div class="opts" data-quiz>
+            <button class="opt"><span class="k">A</span> Use it, it's probably from the spec sheet</button>
+            <button class="opt" data-correct><span class="k">B</span> Ask it to show its working, then verify</button>
+            <button class="opt"><span class="k">C</span> Ask a different AI tool instead</button>
+          </div>
+          <div class="said"><b>Correct</b>Showing the working is how you catch a guessed figure before it's used.</div>
+        </div>
+        <div class="qcard"><div class="qtag">Round 3 of 3</div><div class="qtxt">You ask about Series X, but the AI's answer mixes in details from Series Y. What happened?</div>
+          <div class="opts" data-quiz>
+            <button class="opt"><span class="k">A</span> Series X and Y must be identical</button>
+            <button class="opt" data-correct><span class="k">B</span> It likely blended specs from a similar but different product</button>
+            <button class="opt"><span class="k">C</span> Nothing — this is expected and fine</button>
+          </div>
+          <div class="said"><b>Correct</b>Always name the exact series and check the reply actually matches it.</div>
+        </div>
+      </div>
+    </details>
+  </div>
+
+  <!-- DPDP 2023 -->
+  <div class="sec">
+    <details class="card">
+      <summary class="hd"><span class="ic">⚖️</span><span class="tt">DPDP 2023 — What It Means for VEKA</span><span class="chev"><svg viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></svg></span></summary>
+      <div class="bd">
+        <p>India's Digital Personal Data Protection Act (2023) governs how personal data — names, phone numbers, addresses, ID numbers — can be collected, used and stored. For VEKA, this mostly touches dealer and customer contact details.</p>
+        <div class="grid g2">
+          <div class="tier int"><h3>What counts as "personal data"</h3><ul>
+            <li>Anything that identifies a person: name, phone, email, address, PAN</li>
+            <li>Still personal data even without a name, if it can be traced back to someone</li>
+          </ul></div>
+          <div class="tier int"><h3>What it means day to day</h3><ul>
+            <li>Have a clear purpose before using someone's personal data in a new tool</li>
+            <li>A public AI tool is a third party — sending it personal data can count as a data transfer</li>
+            <li>When in doubt: anonymise first, ask compliance/IT second</li>
+          </ul></div>
+        </div>
+      </div>
+    </details>
+  </div>
+
+  <!-- THE DRAFT VEKA AI USAGE POLICY -->
+  <div class="sec">
+    <details class="card">
+      <summary class="hd"><span class="ic">📋</span><span class="tt">The Draft VEKA AI Usage Policy</span><span class="chev"><svg viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></svg></span></summary>
+      <div class="bd">
+        <ol class="polist">
+          <li>Only use company-approved AI tools for confidential work</li>
+          <li>Never paste customer personal data, pricing, or contracts into a public/free AI tool</li>
+          <li>Verify any technical spec or standard AI gives you before using it</li>
+          <li>When unsure if data is Internal or Confidential, treat it as Confidential</li>
+          <li>Report any accidental data upload to IT/compliance immediately</li>
+          <li>AI output is a draft — a human always reviews before it goes external</li>
+        </ol>
+      </div>
+    </details>
+  </div>
+
+  <!-- GAME 4: APPLY THE POLICY -->
+  <div class="sec">
+    <details class="card">
+      <summary class="hd"><span class="ic">🎮</span><span class="tt">Game 4 · Apply the Policy</span><span class="ct">+10 XP each</span><span class="chev"><svg viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></svg></span></summary>
+      <div class="bd">
+        <div class="qcard"><div class="qtag">Round 1 of 3</div><div class="qtxt">You're not sure if a document counts as Internal or Confidential. What does policy say to do?</div>
+          <div class="opts" data-quiz>
+            <button class="opt"><span class="k">A</span> Treat it as Internal, that's the safer default</button>
+            <button class="opt" data-correct><span class="k">B</span> Treat it as Confidential</button>
+            <button class="opt"><span class="k">C</span> Ask a colleague informally and move on</button>
+          </div>
+          <div class="said"><b>Correct</b>When unsure, default to the more sensitive tier — Confidential.</div>
+        </div>
+        <div class="qcard"><div class="qtag">Round 2 of 3</div><div class="qtxt">You find a new AI tool online you'd like to use for a client project. What should you do first?</div>
+          <div class="opts" data-quiz>
+            <button class="opt"><span class="k">A</span> Try it once with a small file to test it</button>
+            <button class="opt" data-correct><span class="k">B</span> Check it's company-approved before using it for confidential work</button>
+            <button class="opt"><span class="k">C</span> Use it, since it's just a productivity tool</button>
+          </div>
+          <div class="said"><b>Correct</b>Approval comes before confidential data touches any new tool.</div>
+        </div>
+        <div class="qcard"><div class="qtag">Round 3 of 3</div><div class="qtxt">AI drafts a technical reply to a client. Before it goes out, what must happen?</div>
+          <div class="opts" data-quiz>
+            <button class="opt"><span class="k">A</span> Nothing, AI drafts are ready to send</button>
+            <button class="opt" data-correct><span class="k">B</span> A human reviews and verifies it first</button>
+            <button class="opt"><span class="k">C</span> It gets sent, then corrected later if needed</button>
+          </div>
+          <div class="said"><b>Correct</b>AI drafts, a human verifies — every single time, before anything goes external.</div>
+        </div>
+      </div>
+    </details>
+  </div>
+
+  <!-- BOSS: IS THIS SAFE? -->
+  <div class="sec">
+    <details class="card">
+      <summary class="hd"><span class="ic">🏁</span><span class="tt">Is This Safe?</span><span class="ct">15 scenarios · +5 XP each · certification bar: 13/15</span><span class="chev"><svg viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></svg></span></summary>
+      <div class="bd">
+        <p>Fifteen quick real-world moments. Tap <strong>Safe</strong> or <strong>Not Safe</strong> for each — this one only counts your first answer, just like the real thing.</p>
+        <div id="bossgrid">
+          <div class="qcard"><div class="qtag">Scenario 1 of 15</div><div class="qtxt">Pasting a paragraph from the public brochure into AI to reword it.</div>
+            <div class="opts tf" data-quiz data-xp="5" data-lock="1">
+              <button class="opt" data-correct><span class="k">Safe</span></button>
+              <button class="opt"><span class="k">Not Safe</span></button>
+            </div>
+            <div class="said"><b>Verdict</b>Already public content, no company or customer data involved.</div>
+          </div>
+          <div class="qcard"><div class="qtag">Scenario 2 of 15</div><div class="qtxt">Pasting a customer's signed contract into AI to "summarise the key terms."</div>
+            <div class="opts tf" data-quiz data-xp="5" data-lock="1">
+              <button class="opt"><span class="k">Safe</span></button>
+              <button class="opt" data-correct><span class="k">Not Safe</span></button>
+            </div>
+            <div class="said"><b>Verdict</b>Contracts are confidential and usually contain personal data.</div>
+          </div>
+          <div class="qcard"><div class="qtag">Scenario 3 of 15</div><div class="qtxt">Asking AI to explain what a wind-load rating generally means, with no VEKA-specific data.</div>
+            <div class="opts tf" data-quiz data-xp="5" data-lock="1">
+              <button class="opt" data-correct><span class="k">Safe</span></button>
+              <button class="opt"><span class="k">Not Safe</span></button>
+            </div>
+            <div class="said"><b>Verdict</b>General knowledge question, nothing company-specific shared.</div>
+          </div>
+          <div class="qcard"><div class="qtag">Scenario 4 of 15</div><div class="qtxt">Uploading a dealer's discount sheet with the dealer's name still on it, "just to reformat the columns."</div>
+            <div class="opts tf" data-quiz data-xp="5" data-lock="1">
+              <button class="opt"><span class="k">Safe</span></button>
+              <button class="opt" data-correct><span class="k">Not Safe</span></button>
+            </div>
+            <div class="said"><b>Verdict</b>Confidential pricing tied to a named dealer, unredacted.</div>
+          </div>
+          <div class="qcard"><div class="qtag">Scenario 5 of 15</div><div class="qtxt">Asking AI to help write a generic LinkedIn post about window energy efficiency.</div>
+            <div class="opts tf" data-quiz data-xp="5" data-lock="1">
+              <button class="opt" data-correct><span class="k">Safe</span></button>
+              <button class="opt"><span class="k">Not Safe</span></button>
+            </div>
+            <div class="said"><b>Verdict</b>Public-facing, generic content — no sensitive data involved.</div>
+          </div>
+          <div class="qcard"><div class="qtag">Scenario 6 of 15</div><div class="qtxt">Pasting a client's phone number and address into AI to "auto-format an address label."</div>
+            <div class="opts tf" data-quiz data-xp="5" data-lock="1">
+              <button class="opt"><span class="k">Safe</span></button>
+              <button class="opt" data-correct><span class="k">Not Safe</span></button>
+            </div>
+            <div class="said"><b>Verdict</b>Personal data covered by DPDP, used for a task that didn't need AI at all.</div>
+          </div>
+          <div class="qcard"><div class="qtag">Scenario 7 of 15</div><div class="qtxt">Asking a company-approved AI tool to draft a reply, then having a human verify it before sending.</div>
+            <div class="opts tf" data-quiz data-xp="5" data-lock="1">
+              <button class="opt" data-correct><span class="k">Safe</span></button>
+              <button class="opt"><span class="k">Not Safe</span></button>
+            </div>
+            <div class="said"><b>Verdict</b>Approved tool plus human review — exactly what policy expects.</div>
+          </div>
+          <div class="qcard"><div class="qtag">Scenario 8 of 15</div><div class="qtxt">Uploading a full technical drawing with the client's project code visible, unredacted.</div>
+            <div class="opts tf" data-quiz data-xp="5" data-lock="1">
+              <button class="opt"><span class="k">Safe</span></button>
+              <button class="opt" data-correct><span class="k">Not Safe</span></button>
+            </div>
+            <div class="said"><b>Verdict</b>Client identifiers left in place on confidential design content.</div>
+          </div>
+          <div class="qcard"><div class="qtag">Scenario 9 of 15</div><div class="qtxt">Asking AI for standard installation steps that are already printed in the public brochure.</div>
+            <div class="opts tf" data-quiz data-xp="5" data-lock="1">
+              <button class="opt" data-correct><span class="k">Safe</span></button>
+              <button class="opt"><span class="k">Not Safe</span></button>
+            </div>
+            <div class="said"><b>Verdict</b>Already public information — nothing new is being exposed.</div>
+          </div>
+          <div class="qcard"><div class="qtag">Scenario 10 of 15</div><div class="qtxt">Pasting your own internal sales-target number, with no client names, into AI to make a chart.</div>
+            <div class="opts tf" data-quiz data-xp="5" data-lock="1">
+              <button class="opt" data-correct><span class="k">Safe</span></button>
+              <button class="opt"><span class="k">Not Safe</span></button>
+            </div>
+            <div class="said"><b>Verdict</b>Internal-tier data, no personal or client-identifying details.</div>
+          </div>
+          <div class="qcard"><div class="qtag">Scenario 11 of 15</div><div class="qtxt">Asking a free public AI tool to check a client's confidential quotation for math errors.</div>
+            <div class="opts tf" data-quiz data-xp="5" data-lock="1">
+              <button class="opt"><span class="k">Safe</span></button>
+              <button class="opt" data-correct><span class="k">Not Safe</span></button>
+            </div>
+            <div class="said"><b>Verdict</b>Confidential client pricing sent to an unapproved public tool.</div>
+          </div>
+          <div class="qcard"><div class="qtag">Scenario 12 of 15</div><div class="qtxt">Asking a general question like "what's a common tolerance range for aluminium profiles?" with no client specifics.</div>
+            <div class="opts tf" data-quiz data-xp="5" data-lock="1">
+              <button class="opt" data-correct><span class="k">Safe</span></button>
+              <button class="opt"><span class="k">Not Safe</span></button>
+            </div>
+            <div class="said"><b>Verdict</b>General technical question, still worth verifying the answer — but safe to ask.</div>
+          </div>
+          <div class="qcard"><div class="qtag">Scenario 13 of 15</div><div class="qtxt">Copy-pasting an entire customer email thread into AI to "just draft a reply."</div>
+            <div class="opts tf" data-quiz data-xp="5" data-lock="1">
+              <button class="opt"><span class="k">Safe</span></button>
+              <button class="opt" data-correct><span class="k">Not Safe</span></button>
+            </div>
+            <div class="said"><b>Verdict</b>The whole thread likely carries names, contact details and commercial terms.</div>
+          </div>
+          <div class="qcard"><div class="qtag">Scenario 14 of 15</div><div class="qtxt">Using AI to reformat a document after you've already removed all names, prices and IDs.</div>
+            <div class="opts tf" data-quiz data-xp="5" data-lock="1">
+              <button class="opt" data-correct><span class="k">Safe</span></button>
+              <button class="opt"><span class="k">Not Safe</span></button>
+            </div>
+            <div class="said"><b>Verdict</b>Properly anonymised first — this is the workflow to aim for.</div>
+          </div>
+          <div class="qcard"><div class="qtag">Scenario 15 of 15</div><div class="qtxt">Trusting an AI-generated standard number in a client document without checking it first.</div>
+            <div class="opts tf" data-quiz data-xp="5" data-lock="1">
+              <button class="opt"><span class="k">Safe</span></button>
+              <button class="opt" data-correct><span class="k">Not Safe</span></button>
+            </div>
+            <div class="said"><b>Verdict</b>Unverified AI output going straight into client-facing work — exactly what to avoid.</div>
+          </div>
+        </div>
+        <div class="bossverdict" id="bossverdict"></div>
+      </div>
+    </details>
+  </div>
+
+  <!-- SCOREBOARD -->
+  <div class="sec">
+    <div class="card" style="padding:30px 22px;text-align:center">
+      <div class="pill">Your scoreboard</div>
+      <div class="scorebig" id="scoreBig">0</div>
+      <p style="color:var(--ink-dim);margin-bottom:0">total XP earned across the warm-up, all 4 games, and the certification quiz</p>
+      <div class="badgerow" id="badgerow">
+        <div class="badgecard" data-min="50"><div class="em">🛡️</div><div class="nm">Privacy Aware</div><div class="rq">50 XP</div></div>
+        <div class="badgecard" data-min="120"><div class="em">🔒</div><div class="nm">Data Guardian</div><div class="rq">120 XP</div></div>
+        <div class="badgecard" data-min="190"><div class="em">🧠</div><div class="nm">Risk Spotter</div><div class="rq">190 XP</div></div>
+        <div class="badgecard" data-min="250"><div class="em">👑</div><div class="nm">AI Governance Pro</div><div class="rq">250 XP</div></div>
+      </div>
+      <div style="margin-top:18px"><span class="stamp">Module 3 complete ✅</span></div>
+    </div>
+  </div>
+
+</div>
+
+<div class="foot">
+  <div class="lg">HOUSE OF EDTECH</div>
+  M3 · AI Risk &amp; Privacy — know what's safe before you paste it.
+</div>
+
+<script>
+(function(){
+  "use strict";
+  var xp = 0;
+  var BADGES = [50, 120, 190, 250];
+  var bossCorrect = 0, bossAnswered = 0;
+  var BOSS_TOTAL = 15;
+
+  function toast(msg){
+    var t = document.createElement('div');
+    t.className = 'toast';
+    t.innerHTML = msg;
+    document.getElementById('toastzone').appendChild(t);
+    setTimeout(function(){ t.remove(); }, 2100);
+  }
+
+  function addXP(n, label){
+    xp += n;
+    document.getElementById('xpVal').textContent = xp;
+    var sb = document.getElementById('scoreBig'); if(sb) sb.textContent = xp;
+    toast('+' + n + ' XP <span style="opacity:.7">· ' + (label||'') + '</span>');
+    updateBadges();
+  }
+
+  function updateBadges(){
+    var mini = document.querySelectorAll('#badgemini span');
+    BADGES.forEach(function(min, i){
+      if(mini[i]) mini[i].classList.toggle('on', xp >= min);
+    });
+    document.querySelectorAll('.badgecard').forEach(function(card){
+      var min = parseFloat(card.getAttribute('data-min'));
+      card.classList.toggle('on', xp >= min);
+    });
+  }
+
+  function showBossVerdict(){
+    var el = document.getElementById('bossverdict');
+    if(!el) return;
+    var pass = bossCorrect >= 13;
+    el.innerHTML = '<b>' + bossCorrect + ' / 15 correct</b>' +
+      (pass
+        ? '🎉 Certified: AI-Safe Practitioner — that clears the 13+ bar from the objectives.'
+        : 'Just short of the 13/15 certification bar. Scroll back up, check the ones marked wrong, and talk it through with your table.');
+    el.classList.add('on');
+    el.classList.toggle('pass', pass);
+  }
+
+  document.addEventListener('click', function(e){
+
+    var f = e.target.closest('.flip');
+    if(f){ f.classList.toggle('open'); return; }
+
+    var o = e.target.closest('.opt');
+    if(o){
+      var box = o.closest('[data-quiz]');
+      if(box.classList.contains('done')) return;
+      var right = o.hasAttribute('data-correct');
+      var locked = box.hasAttribute('data-lock');
+      o.classList.add(right ? 'right' : 'wrong');
+
+      if(right){
+        box.classList.add('done');
+        box.querySelectorAll('.opt').forEach(function(b){ if(!b.hasAttribute('data-correct')) b.classList.add('wrong'); });
+        var said2 = box.parentNode.querySelector('.said');
+        if(said2) said2.classList.add('on');
+        var xpAmt = parseInt(box.getAttribute('data-xp'), 10) || 10;
+        addXP(xpAmt, 'correct!');
+        if(locked){
+          bossCorrect++; bossAnswered++;
+          if(bossAnswered === BOSS_TOTAL) showBossVerdict();
+        }
+      } else if(locked){
+        box.classList.add('done');
+        box.querySelectorAll('.opt').forEach(function(b){ if(b.hasAttribute('data-correct')) b.classList.add('right'); });
+        var said3 = box.parentNode.querySelector('.said');
+        if(said3) said3.classList.add('on');
+        bossAnswered++;
+        if(bossAnswered === BOSS_TOTAL) showBossVerdict();
+      }
+      return;
+    }
+  });
+
+  function countUp(el){
+    var target = parseFloat(el.getAttribute('data-count'));
+    var t0 = null, dur = 900;
+    if(target === 0){ el.textContent = '0'; return; }
+    function step(ts){
+      if(!t0) t0 = ts;
+      var p = Math.min(1, (ts - t0) / dur);
+      el.textContent = Math.round(target * (1 - Math.pow(1 - p, 3)));
+      if(p < 1) requestAnimationFrame(step);
+    }
+    requestAnimationFrame(step);
+  }
+  var counted = new WeakSet();
+  var io = new IntersectionObserver(function(entries){
+    entries.forEach(function(en){
+      if(en.isIntersecting){
+        en.target.querySelectorAll('[data-count]').forEach(function(el){
+          if(!counted.has(el)){ counted.add(el); countUp(el); }
+        });
+      }
+    });
+  }, {threshold:.3});
+  document.querySelectorAll('[data-stats]').forEach(function(el){ io.observe(el); });
+  setTimeout(function(){
+    document.querySelectorAll('[data-stats] [data-count]').forEach(function(el){
+      if(!counted.has(el)){
+        var r = el.getBoundingClientRect();
+        if(r.top < window.innerHeight){ counted.add(el); countUp(el); }
+      }
+    });
+  }, 200);
+
+  updateBadges();
+})();
+</script>
+</body>
+</html>
