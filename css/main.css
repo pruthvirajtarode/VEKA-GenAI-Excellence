@@ -429,10 +429,12 @@ th {
         height: 100%;
         transform: translateX(-100%);
         box-shadow: var(--shadow-lg);
+        z-index: 9999;
     }
     
     .sidebar.open {
         transform: translateX(0);
+        z-index: 9999;
     }
     
     .mobile-only {
