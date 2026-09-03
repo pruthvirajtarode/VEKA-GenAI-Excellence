@@ -739,6 +739,34 @@ class App {
                             </div>
                         </div>
                         
+                        <!-- Avatar Graphic -->
+                        <style>
+                        @keyframes floatAvatar { 0% { transform: translateY(0px); } 50% { transform: translateY(-15px); } 100% { transform: translateY(0px); } }
+                        @keyframes floatCard1 { 0% { transform: translateY(0px) rotate(0deg); } 50% { transform: translateY(-8px) rotate(-2deg); } 100% { transform: translateY(0px) rotate(0deg); } }
+                        @keyframes floatCard2 { 0% { transform: translateY(0px) rotate(0deg); } 50% { transform: translateY(8px) rotate(2deg); } 100% { transform: translateY(0px) rotate(0deg); } }
+                        </style>
+                        <div class="hero-graphic hide-on-mobile" style="position: absolute; right: 18%; top: -60px; width: 340px; height: 340px; display: flex; align-items: center; justify-content: center; pointer-events: none;">
+                            <div style="position: relative; width: 100%; height: 100%; animation: floatAvatar 6s ease-in-out infinite;">
+                                <img src="assets/images/veka_ai_avatar.png" alt="AI Avatar" style="width: 100%; height: 100%; object-fit: contain; border-radius: 24px; filter: drop-shadow(0 10px 30px rgba(226,32,47,0.4)); mask-image: linear-gradient(to bottom, black 80%, transparent 100%); -webkit-mask-image: linear-gradient(to bottom, black 80%, transparent 100%);">
+                                
+                                <!-- Floating Glassmorphic Card 1 -->
+                                <div style="position: absolute; top: 20%; left: -15%; background: rgba(22,22,23,0.7); backdrop-filter: blur(12px); border: 1px solid var(--border-color); border-top: 2px solid var(--accent); padding: 10px 18px; border-radius: 12px; animation: floatCard1 4s ease-in-out infinite; display: flex; flex-direction: column; gap: 4px; box-shadow: 0 8px 32px rgba(0,0,0,0.5);">
+                                    <span style="font-size: 0.65rem; color: var(--text-muted); letter-spacing: 0.1em; text-transform: uppercase; font-weight: 600;">AI Tasks Today</span>
+                                    <span style="font-size: 1.3rem; font-weight: 800; color: var(--accent);">142 <span style="font-size: 1rem;">✔️</span></span>
+                                </div>
+
+                                <!-- Floating Glassmorphic Card 2 -->
+                                <div style="position: absolute; bottom: 15%; right: -20%; background: rgba(22,22,23,0.7); backdrop-filter: blur(12px); border: 1px solid var(--border-color); border-bottom: 2px solid var(--accent); padding: 10px 18px; border-radius: 12px; animation: floatCard2 5.5s ease-in-out infinite 1s; display: flex; flex-direction: column; gap: 4px; box-shadow: 0 8px 32px rgba(0,0,0,0.5);">
+                                    <span style="font-size: 0.65rem; color: var(--text-muted); letter-spacing: 0.1em; text-transform: uppercase; font-weight: 600;">Productivity Boost</span>
+                                    <div style="display: flex; align-items: center; gap: 10px;">
+                                        <div style="width: 70px; height: 6px; background: rgba(255,255,255,0.1); border-radius: 3px;"><div style="width: 78%; height: 100%; background: var(--accent); border-radius: 3px; box-shadow: 0 0 10px var(--accent);"></div></div>
+                                        <span style="font-size: 1.2rem; font-weight: 800; color: white;">78%</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        
                         <!-- QR Code Section -->
                         <div class="text-center hide-on-mobile" style="display: flex; flex-direction: column; align-items: center; margin-right: 1rem; margin-bottom: 1rem;">
                             <p style="color: white; font-size: 0.75rem; margin-bottom: 0.5rem; text-transform: uppercase; letter-spacing: 0.05em; font-weight: 600;">Scan to open on phone</p>
