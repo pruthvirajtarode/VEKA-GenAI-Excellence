@@ -744,8 +744,19 @@ class App {
                         @keyframes floatAvatar { 0% { transform: translateY(0px); } 50% { transform: translateY(-15px); } 100% { transform: translateY(0px); } }
                         @keyframes floatCard1 { 0% { transform: translateY(0px) rotate(0deg); } 50% { transform: translateY(-8px) rotate(-2deg); } 100% { transform: translateY(0px) rotate(0deg); } }
                         @keyframes floatCard2 { 0% { transform: translateY(0px) rotate(0deg); } 50% { transform: translateY(8px) rotate(2deg); } 100% { transform: translateY(0px) rotate(0deg); } }
+                        @media (max-width: 900px) {
+                            .hero-graphic {
+                                position: relative !important;
+                                right: auto !important;
+                                top: auto !important;
+                                margin: 40px auto 20px auto !important;
+                                width: 280px !important;
+                                height: 280px !important;
+                            }
+                            .hero-title { font-size: 1.8rem !important; }
+                        }
                         </style>
-                        <div class="hero-graphic hide-on-mobile" style="position: absolute; right: 18%; top: -60px; width: 340px; height: 340px; display: flex; align-items: center; justify-content: center; pointer-events: none;">
+                        <div class="hero-graphic" style="position: absolute; right: 18%; top: -60px; width: 340px; height: 340px; display: flex; align-items: center; justify-content: center; pointer-events: none;">
                             <div style="position: relative; width: 100%; height: 100%; animation: floatAvatar 6s ease-in-out infinite;">
                                 <img src="assets/images/veka_ai_avatar.png" alt="AI Avatar" style="width: 100%; height: 100%; object-fit: contain; border-radius: 24px; filter: drop-shadow(0 10px 30px rgba(226,32,47,0.4)); mask-image: linear-gradient(to bottom, black 80%, transparent 100%); -webkit-mask-image: linear-gradient(to bottom, black 80%, transparent 100%);">
                                 
