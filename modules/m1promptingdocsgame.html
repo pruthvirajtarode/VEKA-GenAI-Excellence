@@ -1,0 +1,759 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>M1: Prompting & Docs</title>
+<style>
+:root{
+  --bg:#0a0a0a; --bg2:#111113; --card:#161617; --card2:#1c1c1e;
+  --line:#2a2a2c; --line2:#333336;
+  --ink:#f5f5f4; --ink-soft:#a8a8ac; --ink-dim:#77777c;
+  --red:#e2202f; --red2:#ff4655; --red-tint:rgba(226,32,47,.14); --red-tint2:rgba(226,32,47,.06);
+  --green:#22c55e; --green-tint:rgba(34,197,94,.14);
+  --sun:#f5b942; --sun-tint:rgba(245,185,66,.12);
+  --sans: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --mono: ui-monospace, "Cascadia Code", "SF Mono", Menlo, Consolas, monospace;
+}
+*{box-sizing:border-box}
+html{background:var(--bg)}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--sans);-webkit-font-smoothing:antialiased;line-height:1.5}
+h1,h2,h3{font-weight:800;letter-spacing:-.02em;margin:0 0 .5em}
+p{margin:0 0 1em;color:var(--ink-soft)}
+strong{color:var(--ink)}
+button{font-family:inherit}
+:focus-visible{outline:3px solid var(--red2);outline-offset:2px}
+img{max-width:100%}
+
+.wrap{max-width:980px;margin:0 auto;padding:0 24px 90px}
+
+/* ---------- sticky HUD ---------- */
+#hud{position:sticky;top:0;z-index:50;background:rgba(10,10,10,.86);backdrop-filter:blur(10px);
+  border-bottom:1px solid var(--line);padding:10px 24px;display:flex;align-items:center;justify-content:space-between;gap:12px}
+#hud .brand{font-family:var(--mono);font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-dim);display:flex;align-items:center;gap:8px}
+#hud .brand b{color:var(--ink)}
+.xpbadge{font-family:var(--mono);font-weight:800;font-size:13px;background:var(--card2);border:1px solid var(--line2);
+  color:var(--ink);border-radius:99px;padding:.4em 1em;display:inline-flex;align-items:center;gap:.5em}
+.xpbadge b{color:var(--red2)}
+.badgemini{display:none;gap:.35em}
+@media (min-width:640px){.badgemini{display:inline-flex}}
+.badgemini span{opacity:.22;filter:grayscale(1);font-size:16px;transition:.25s}
+.badgemini span.on{opacity:1;filter:none;transform:scale(1.15)}
+
+/* ---------- hero ---------- */
+.hero{position:relative;padding:64px 24px 46px;text-align:center;overflow:hidden;
+  background:
+    radial-gradient(60vmin 40vmin at 15% 0%, rgba(226,32,47,.20), rgba(226,32,47,0) 60%),
+    radial-gradient(50vmin 34vmin at 90% 100%, rgba(226,32,47,.14), rgba(226,32,47,0) 65%),
+    linear-gradient(180deg,#141416,#0a0a0a 80%)}
+.hero::before{content:"";position:absolute;inset:0;opacity:.5;
+  background-image:linear-gradient(rgba(255,255,255,.045) 1px, transparent 1px),linear-gradient(90deg,rgba(255,255,255,.045) 1px, transparent 1px);
+  background-size:42px 42px;mask-image:radial-gradient(70% 70% at 50% 20%, #000 40%, transparent 100%)}
+.hero .in{position:relative;max-width:760px;margin:0 auto}
+.eyebrow{font-family:var(--mono);font-size:12px;letter-spacing:.28em;text-transform:uppercase;color:var(--red2);font-weight:800;margin-bottom:14px}
+.hero h1{font-size:clamp(30px,5.4vw,52px);line-height:1.02}
+.hero .sub{font-size:clamp(15px,2vw,19px);color:var(--ink-soft);max-width:640px;margin:14px auto 0}
+.hero .rule{height:3px;max-width:980px;margin:34px auto 0;background:linear-gradient(90deg,var(--red),var(--red2))}
+
+/* ---------- sections / accordion ---------- */
+.sec{margin-top:22px}
+details.card{background:var(--card);border:1px solid var(--line);border-radius:16px;overflow:hidden}
+details.card + details.card{margin-top:16px}
+summary.hd{list-style:none;cursor:pointer;padding:20px 22px;display:flex;align-items:center;gap:12px;user-select:none}
+summary.hd::-webkit-details-marker{display:none}
+summary.hd .ic{font-size:20px}
+summary.hd .tt{font-size:clamp(17px,2.4vw,21px);font-weight:800;flex:1}
+summary.hd .ct{font-family:var(--mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-dim)}
+summary.hd .chev{width:28px;height:28px;border-radius:8px;background:var(--card2);border:1px solid var(--line2);
+  display:flex;align-items:center;justify-content:center;transition:transform .22s ease;flex-shrink:0}
+summary.hd .chev svg{width:14px;height:14px;stroke:var(--ink-soft);fill:none;stroke-width:2.4;stroke-linecap:round}
+details[open] summary.hd .chev{transform:rotate(180deg)}
+details[open] summary.hd{border-bottom:1px solid var(--line)}
+.bd{padding:22px}
+.bd > p:last-child{margin-bottom:0}
+
+/* ---------- stat tiles ---------- */
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:20px}
+.stat{background:var(--card2);border:1px solid var(--line2);border-radius:12px;padding:16px 10px;text-align:center}
+.stat .n{font-family:var(--mono);font-weight:800;font-size:clamp(22px,4vw,30px);color:var(--red2)}
+.stat .l{font-size:12px;color:var(--ink-dim);margin-top:2px}
+@media (max-width:620px){.stats{grid-template-columns:repeat(2,1fr)}}
+
+ul.obj{list-style:none;margin:0;padding:0}
+ul.obj li{display:flex;gap:10px;padding:8px 0;font-size:15px;color:var(--ink-soft)}
+ul.obj li::before{content:"▶";color:var(--red2);font-size:10px;margin-top:5px;flex-shrink:0}
+
+/* ---------- grids / cards ---------- */
+.grid{display:grid;gap:14px}
+.g2{grid-template-columns:1fr 1fr}
+.g3{grid-template-columns:repeat(3,1fr)}
+@media (max-width:760px){.g2,.g3{grid-template-columns:1fr}}
+
+/* ---------- flip cards (dark) ---------- */
+.flip{background:var(--card2);border:1px solid var(--line2);border-radius:14px;padding:18px 20px;cursor:pointer;
+  text-align:left;transition:.16s}
+.flip:hover{border-color:var(--red)}
+.flip .term{font-weight:800;font-size:16px;display:flex;align-items:center;gap:8px}
+.flip .hint{font-family:var(--mono);font-size:10.5px;color:var(--ink-dim);letter-spacing:.08em;text-transform:uppercase;margin-top:5px}
+.flip .def{display:none;font-size:14px;color:var(--ink-soft);line-height:1.5;margin-top:10px}
+.flip.open{border-color:var(--red);background:var(--red-tint2)}
+.flip.open .def{display:block}
+.flip.open .hint{display:none}
+.flip .eg{display:none;margin-top:8px;padding:8px 10px;background:var(--bg2);border-left:3px solid var(--red);border-radius:0 8px 8px 0;
+  font-family:var(--mono);font-size:12px;color:#d9d9db}
+.flip.open .eg{display:block}
+
+/* ---------- role scenario cards ---------- */
+.role{background:var(--card2);border:1px solid var(--line2);border-radius:16px;padding:18px 20px;cursor:pointer;transition:.16s}
+.role:hover{border-color:var(--red)}
+.role .rt{font-weight:800;font-size:16px;display:flex;align-items:center;gap:10px}
+.role .rt .em{font-size:20px}
+.role .hint{font-family:var(--mono);font-size:10.5px;color:var(--ink-dim);letter-spacing:.08em;text-transform:uppercase;margin-top:6px}
+.role .compare{display:none;margin-top:12px;display:none}
+.role.open .compare{display:grid;gap:8px}
+.role.open .hint{display:none}
+.pex{border-radius:10px;padding:10px 12px;font-size:13px;line-height:1.45}
+.pex.bad{background:rgba(226,32,47,.08);border:1px solid rgba(226,32,47,.3);color:#f0b8bc}
+.pex.bad b{color:var(--red2);font-family:var(--mono);font-size:10px;letter-spacing:.1em;text-transform:uppercase;display:block;margin-bottom:4px}
+.pex.good{background:var(--green-tint);border:1px solid rgba(34,197,94,.35);color:#bdf0cf}
+.pex.good b{color:var(--green);font-family:var(--mono);font-size:10px;letter-spacing:.1em;text-transform:uppercase;display:block;margin-bottom:4px}
+
+/* ---------- do / don't ---------- */
+.dd{border-radius:14px;padding:16px 18px;border:1px solid var(--line2)}
+.dd.do{background:var(--green-tint);border-color:rgba(34,197,94,.3)}
+.dd.dont{background:var(--red-tint);border-color:rgba(226,32,47,.3)}
+.dd h3{font-size:14px;margin-bottom:10px}
+.dd.do h3{color:var(--green)}
+.dd.dont h3{color:var(--red2)}
+.dd ul{margin:0;padding-left:18px}
+.dd li{font-size:13.5px;color:var(--ink-soft);margin-bottom:6px}
+
+/* ---------- quiz ---------- */
+.qcard{background:var(--card2);border:1px solid var(--line2);border-radius:14px;padding:18px 20px;margin-bottom:14px}
+.qcard:last-child{margin-bottom:0}
+.qtag{font-family:var(--mono);font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--red2);font-weight:800;margin-bottom:8px}
+.qtxt{font-size:15.5px;font-weight:600;color:var(--ink);margin-bottom:12px}
+.opts{display:grid;gap:9px}
+.opt{display:flex;gap:10px;align-items:center;text-align:left;background:var(--bg2);border:1px solid var(--line2);
+  border-radius:11px;padding:11px 14px;font-size:14px;color:var(--ink);cursor:pointer;transition:.14s}
+.opt:hover{border-color:var(--red2)}
+.opt .k{font-family:var(--mono);font-weight:800;color:var(--ink-dim);flex-shrink:0}
+.opt.right{border-color:var(--green);background:var(--green-tint)}
+.opt.right .k{color:var(--green)}
+.opt.wrong{border-color:rgba(226,32,47,.5);background:var(--red-tint);opacity:.7}
+.said{display:none;margin-top:12px;border-left:3px solid var(--sun);background:var(--sun-tint);
+  border-radius:0 10px 10px 0;padding:10px 14px;color:var(--ink);font-size:13.5px}
+.said.on{display:block}
+.said b{font-family:var(--mono);font-size:.72em;letter-spacing:.1em;text-transform:uppercase;color:var(--sun);display:block;margin-bottom:4px}
+
+/* ---------- prompt library ---------- */
+.pgroup{margin-bottom:22px}
+.pgroup:last-child{margin-bottom:0}
+.pgroup h3{font-size:14px;color:var(--red2);font-family:var(--mono);letter-spacing:.06em;text-transform:uppercase;margin-bottom:10px;
+  display:flex;align-items:center;gap:8px}
+.prompt{background:#0d0d0e;border:1px solid var(--line2);border-radius:14px;padding:16px 18px;position:relative;margin-bottom:10px}
+.prompt:last-child{margin-bottom:0}
+.prompt .lbl{font-family:var(--mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-dim);margin-bottom:6px;display:block}
+.prompt pre{font-family:var(--mono);font-size:12.6px;line-height:1.55;margin:0;white-space:pre-wrap;color:#e7e7ea;padding-right:70px}
+.prompt .cp{position:absolute;top:14px;right:14px;background:var(--card2);color:var(--ink-soft);border:1px solid var(--line2);
+  border-radius:99px;padding:.45em .95em;font-size:11px;font-weight:700;cursor:pointer;font-family:var(--mono)}
+.prompt .cp:hover{background:var(--red);color:#fff;border-color:var(--red)}
+
+/* ---------- badges / scoreboard ---------- */
+.badgerow{display:flex;gap:16px;justify-content:center;flex-wrap:wrap;margin:22px 0 6px}
+.badgecard{text-align:center;width:120px}
+.badgecard .em{font-size:44px;filter:grayscale(1);opacity:.28;transition:.3s}
+.badgecard.on .em{filter:none;opacity:1;transform:scale(1.06)}
+.badgecard .nm{font-family:var(--mono);font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-dim);margin-top:6px}
+.badgecard.on .nm{color:var(--ink);font-weight:800}
+.badgecard .rq{font-size:10.5px;color:#555559}
+.scorebig{font-family:var(--mono);font-weight:800;font-size:clamp(48px,9vw,84px);color:var(--red2);text-align:center;line-height:1;margin:6px 0}
+.stamp{display:inline-block;font-family:var(--mono);font-weight:800;letter-spacing:.12em;text-transform:uppercase;
+  font-size:14px;padding:.6em 1.2em;border:2px solid var(--green);color:var(--green);border-radius:.5em;
+  transform:rotate(-4deg);background:rgba(34,197,94,.08)}
+
+/* ---------- toast ---------- */
+#toastzone{position:fixed;top:64px;right:16px;z-index:90;display:flex;flex-direction:column;gap:8px;align-items:flex-end}
+.toast{background:var(--card2);border:1px solid var(--line2);color:#fff;font-family:var(--mono);font-weight:800;font-size:12.5px;
+  padding:.6em 1.1em;border-radius:99px;box-shadow:0 10px 24px -8px rgba(0,0,0,.6);animation:toastin .3s ease,toastout .4s ease 1.7s forwards}
+.toast b{color:var(--red2)}
+@keyframes toastin{0%{opacity:0;transform:translateY(-8px) scale(.92)}100%{opacity:1;transform:none}}
+@keyframes toastout{to{opacity:0;transform:translateY(-6px) scale(.96)}}
+
+/* ---------- footer ---------- */
+.foot{text-align:center;padding:40px 24px 10px;color:var(--ink-dim);font-size:12.5px}
+.foot .lg{font-family:var(--mono);font-weight:900;color:var(--ink);letter-spacing:-.01em;font-size:14px;margin-bottom:6px}
+
+.pill{display:inline-block;font-family:var(--mono);font-size:11px;letter-spacing:.06em;text-transform:uppercase;
+  padding:.4em .85em;border-radius:99px;background:var(--card2);border:1px solid var(--line2);color:var(--ink-soft)}
+</style>
+</head>
+<body>
+
+<div id="toastzone"></div>
+
+<div id="hud">
+  <span class="brand">🎯 <b>M1</b> · Prompting &amp; Docs <span class="badgemini" id="badgemini"><span title="Prompt Rookie">🔰</span><span title="Prompt Pro">⚡</span><span title="Prompt Architect">🧠</span><span title="Prompt Master">👑</span></span></span>
+  <span class="xpbadge">⚡ XP <b id="xpVal">0</b></span>
+</div>
+
+<header class="hero">
+  <div class="in">
+    <div class="eyebrow">Session 1</div>
+    <h1>M1: Prompting &amp; Docs</h1>
+    <p class="sub">How to ask AI for something you can actually use — prompt craft, document handling, photo analysis, and a copy-paste prompt library for every role in the room.</p>
+  </div>
+  <div class="rule"></div>
+</header>
+
+<div class="wrap">
+
+  <!-- LEARNING OBJECTIVES -->
+  <div class="sec">
+    <details class="card" open>
+      <summary class="hd"><span class="ic">🎯</span><span class="tt">Learning Objectives</span><span class="chev"><svg viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></svg></span></summary>
+      <div class="bd">
+        <div class="stats" data-stats>
+          <div class="stat"><div class="n" data-count="120">0</div><div class="l">Minutes</div></div>
+          <div class="stat"><div class="n" data-count="6">0</div><div class="l">Role Scenarios</div></div>
+          <div class="stat"><div class="n" data-count="12">0</div><div class="l">Ready Prompts</div></div>
+          <div class="stat"><div class="n" data-count="0">0</div><div class="l">Prior Experience</div></div>
+        </div>
+        <p><strong>By the end of this module, you will:</strong></p>
+        <ul class="obj">
+          <li>Know the 5 parts of a prompt that produces usable output</li>
+          <li>See the difference between a vague prompt and a working one, in your own function</li>
+          <li>Use 6 reusable prompt patterns instead of starting from a blank box every time</li>
+          <li>Hand a document or photo to AI and get back exactly the structured thing you need</li>
+          <li>Walk away with a personal library of 12 ready-to-paste prompts for your role</li>
+        </ul>
+      </div>
+    </details>
+  </div>
+
+  <!-- 5-PART FRAMEWORK -->
+  <div class="sec">
+    <details class="card" open>
+      <summary class="hd"><span class="ic">🧩</span><span class="tt">The 5-Part Prompt</span><span class="ct">tap each card</span><span class="chev"><svg viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></svg></span></summary>
+      <div class="bd">
+        <p>Every prompt that actually works is built from the same five pieces. Miss one, and you get a generic, mushy answer you have to fix by hand.</p>
+        <div class="grid g3" style="grid-template-columns:repeat(5,1fr)">
+          <button class="flip" data-part><div class="term">1. Role</div><div class="hint">tap to reveal</div>
+            <div class="def">Who should the AI act as? This sets its judgment and vocabulary.</div>
+            <div class="eg">"Act as a senior ops manager reviewing this report..."</div></button>
+          <button class="flip" data-part><div class="term">2. Task</div><div class="hint">tap to reveal</div>
+            <div class="def">The exact deliverable — one clear verb, one clear output.</div>
+            <div class="eg">"...summarize the 3 biggest risks..."</div></button>
+          <button class="flip" data-part><div class="term">3. Context</div><div class="hint">tap to reveal</div>
+            <div class="def">The background it can't guess — audience, goal, what's already been tried.</div>
+            <div class="eg">"...this goes to the CFO who hasn't seen the raw data..."</div></button>
+          <button class="flip" data-part><div class="term">4. Format</div><div class="hint">tap to reveal</div>
+            <div class="def">How the output should look — table, bullets, word count, headings.</div>
+            <div class="eg">"...as 3 bullets, under 40 words each..."</div></button>
+          <button class="flip" data-part><div class="term">5. Constraints</div><div class="hint">tap to reveal</div>
+            <div class="def">Limits and tone — what to avoid, what to flag, how confident to sound.</div>
+            <div class="eg">"...flag anything you're not sure about, don't editorialize."</div></button>
+        </div>
+      </div>
+    </details>
+  </div>
+
+  <!-- GAME 1: PROMPT DOCTOR -->
+  <div class="sec">
+    <details class="card" open>
+      <summary class="hd"><span class="ic">🎮</span><span class="tt">Game 1 · Prompt Doctor</span><span class="ct">+10 XP each</span><span class="chev"><svg viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></svg></span></summary>
+      <div class="bd">
+        <p>Each of these prompts is missing exactly one of the 5 parts. Diagnose it.</p>
+
+        <div class="qcard">
+          <div class="qtag">Round 1 of 3</div>
+          <div class="qtxt">"Write me something about our Q3 numbers."</div>
+          <div class="opts" data-quiz>
+            <button class="opt"><span class="k">A</span> Missing Role</button>
+            <button class="opt" data-correct><span class="k">B</span> Missing Format &amp; Task specificity</button>
+            <button class="opt"><span class="k">C</span> Missing Constraints</button>
+          </div>
+          <div class="said"><b>Diagnosis</b>"Something" isn't a task, and there's no format. Fix: "Write a 3-bullet summary of our Q3 revenue numbers, one bullet per region."</div>
+        </div>
+
+        <div class="qcard">
+          <div class="qtag">Round 2 of 3</div>
+          <div class="qtxt">"Act as a recruiter and write a job description for a data analyst, as a clean 5-section doc with headings, under 400 words."</div>
+          <div class="opts" data-quiz>
+            <button class="opt" data-correct><span class="k">A</span> Missing Context</button>
+            <button class="opt"><span class="k">B</span> Missing Role</button>
+            <button class="opt"><span class="k">C</span> Missing Format</button>
+          </div>
+          <div class="said"><b>Diagnosis</b>Role, Task and Format are all there — but nothing about the actual team, seniority, or must-have skills. Without context it'll write a generic template.</div>
+        </div>
+
+        <div class="qcard">
+          <div class="qtag">Round 3 of 3</div>
+          <div class="qtxt">"Act as a finance analyst reviewing this vendor contract for hidden fees — flag anything you're not 100% sure about instead of guessing."</div>
+          <div class="opts" data-quiz>
+            <button class="opt"><span class="k">A</span> Missing Task</button>
+            <button class="opt"><span class="k">B</span> Missing Constraints</button>
+            <button class="opt" data-correct><span class="k">C</span> Missing Format — nothing says how to lay out the flagged fees</button>
+          </div>
+          <div class="said"><b>Diagnosis</b>Role, Task and Constraints are solid. Without a format, you'll get a wall of prose instead of something you can scan in ten seconds.</div>
+        </div>
+      </div>
+    </details>
+  </div>
+
+  <!-- 6 ROLE SCENARIOS -->
+  <div class="sec">
+    <details class="card" open>
+      <summary class="hd"><span class="ic">👥</span><span class="tt">6 Role Scenarios</span><span class="ct">tap to compare</span><span class="chev"><svg viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></svg></span></summary>
+      <div class="bd">
+        <p>Same weak habit shows up in every function — here's what "vague" vs "working" looks like in each one.</p>
+        <div class="grid g2">
+          <button class="role" data-role>
+            <div class="rt"><span class="em">📈</span>Sales / Business Dev</div>
+            <div class="hint">tap to compare</div>
+            <div class="compare">
+              <div class="pex bad"><b>Vague</b>"Write a follow-up email to this lead."</div>
+              <div class="pex good"><b>Working</b>"Act as an SDR. Write a 3-line follow-up to a lead who went quiet after a demo 8 days ago, reminding them of the ROI number we discussed, no pressure tone, one clear CTA to book 15 minutes."</div>
+            </div>
+          </button>
+          <button class="role" data-role>
+            <div class="rt"><span class="em">📣</span>Marketing / Content</div>
+            <div class="hint">tap to compare</div>
+            <div class="compare">
+              <div class="pex bad"><b>Vague</b>"Give me social post ideas."</div>
+              <div class="pex good"><b>Working</b>"Act as a B2B content strategist. Give me 5 LinkedIn post hooks (1 line each) for a SaaS audience of ops managers, about reducing manual reporting — no emojis, no hashtags, punchy not salesy."</div>
+            </div>
+          </button>
+          <button class="role" data-role>
+            <div class="rt"><span class="em">⚙️</span>Operations / PM</div>
+            <div class="hint">tap to compare</div>
+            <div class="compare">
+              <div class="pex bad"><b>Vague</b>"Summarize this project update."</div>
+              <div class="pex good"><b>Working</b>"Act as a PMO lead. Summarize this update as: Status (1 line), 3 risks with owner names, 2 decisions needed this week — for a director who has 90 seconds to read it."</div>
+            </div>
+          </button>
+          <button class="role" data-role>
+            <div class="rt"><span class="em">🧑‍🤝‍🧑</span>HR / People</div>
+            <div class="hint">tap to compare</div>
+            <div class="compare">
+              <div class="pex bad"><b>Vague</b>"Help me write feedback for this employee."</div>
+              <div class="pex good"><b>Working</b>"Act as a supportive manager. Draft written feedback covering 2 strengths and 1 growth area from these notes, warm but direct tone, under 150 words, no corporate jargon."</div>
+            </div>
+          </button>
+          <button class="role" data-role>
+            <div class="rt"><span class="em">💰</span>Finance / Analytics</div>
+            <div class="hint">tap to compare</div>
+            <div class="compare">
+              <div class="pex bad"><b>Vague</b>"Check these numbers for errors."</div>
+              <div class="pex good"><b>Working</b>"Act as a financial analyst. Compare this month's expense sheet against last month's, list every line item that moved more than 15%, as a table with the % change — flag anything that looks like a duplicate."</div>
+            </div>
+          </button>
+          <button class="role" data-role>
+            <div class="rt"><span class="em">🎧</span>Customer Support</div>
+            <div class="hint">tap to compare</div>
+            <div class="compare">
+              <div class="pex bad"><b>Vague</b>"Reply to this angry customer."</div>
+              <div class="pex good"><b>Working</b>"Act as a senior support agent. Write a reply that acknowledges the 3-day delay, offers the fix below, and does NOT over-apologize — under 100 words, calm and direct tone."</div>
+            </div>
+          </button>
+        </div>
+      </div>
+    </details>
+  </div>
+
+  <!-- DOC & PHOTO HANDLING -->
+  <div class="sec">
+    <details class="card">
+      <summary class="hd"><span class="ic">📎</span><span class="tt">Handling Docs &amp; Photos</span><span class="chev"><svg viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></svg></span></summary>
+      <div class="bd">
+        <p>Attaching a file doesn't replace a prompt — it just gives the prompt something real to point at.</p>
+        <div class="grid g2" style="margin-bottom:14px">
+          <div class="dd do"><h3>✅ Documents — do this</h3>
+            <ul>
+              <li>Name the doc type and exactly what to pull out</li>
+              <li>Ask for a specific output shape — table, list, JSON</li>
+              <li>Point at the section that matters in a long file</li>
+              <li>Ask it to quote or cite the line it's working from</li>
+            </ul>
+          </div>
+          <div class="dd dont"><h3>❌ Documents — avoid this</h3>
+            <ul>
+              <li>"Check this" with no definition of wrong</li>
+              <li>Dumping a 40-page doc with no pointer to what matters</li>
+              <li>Assuming it knows your company's specific terms</li>
+              <li>Skipping the format, then reformatting it yourself anyway</li>
+            </ul>
+          </div>
+        </div>
+        <div class="grid g2">
+          <div class="dd do"><h3>✅ Photos — do this</h3>
+            <ul>
+              <li>Say what's in frame that actually matters</li>
+              <li>Ask for structured output — a count, a list, yes/no</li>
+              <li>Give the business context a photo can't show</li>
+              <li>Ask it to flag anything it's unsure about</li>
+            </ul>
+          </div>
+          <div class="dd dont"><h3>❌ Photos — avoid this</h3>
+            <ul>
+              <li>"What's in this picture?" with no goal</li>
+              <li>Trusting a count with zero double-check</li>
+              <li>Skipping context ("this is our warehouse shelf 4B")</li>
+              <li>One photo when the comparison needs a before/after pair</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </details>
+  </div>
+
+  <!-- GAME 2: MATCH THE ROLE -->
+  <div class="sec">
+    <details class="card">
+      <summary class="hd"><span class="ic">🎮</span><span class="tt">Game 2 · Match the Role</span><span class="ct">+10 XP each</span><span class="chev"><svg viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></svg></span></summary>
+      <div class="bd">
+        <p>Given the task, which role's prompt pattern fits best?</p>
+
+        <div class="qcard">
+          <div class="qtag">Round 1 of 4</div>
+          <div class="qtxt">"I need to compare two months of expenses and catch anything that looks duplicated."</div>
+          <div class="opts" data-quiz>
+            <button class="opt"><span class="k">A</span> Marketing / Content</button>
+            <button class="opt" data-correct><span class="k">B</span> Finance / Analytics</button>
+            <button class="opt"><span class="k">C</span> Customer Support</button>
+          </div>
+          <div class="said"><b>Correct</b>Number comparison + anomaly flagging is squarely a Finance pattern.</div>
+        </div>
+
+        <div class="qcard">
+          <div class="qtag">Round 2 of 4</div>
+          <div class="qtxt">"I need 5 punchy hook lines for a LinkedIn campaign."</div>
+          <div class="opts" data-quiz>
+            <button class="opt" data-correct><span class="k">A</span> Marketing / Content</button>
+            <button class="opt"><span class="k">B</span> Operations / PM</button>
+            <button class="opt"><span class="k">C</span> HR / People</button>
+          </div>
+          <div class="said"><b>Correct</b>Short, punchy, audience-specific copy is a Marketing pattern.</div>
+        </div>
+
+        <div class="qcard">
+          <div class="qtag">Round 3 of 4</div>
+          <div class="qtxt">"A director needs my project status in 90 seconds, with risks and owners."</div>
+          <div class="opts" data-quiz>
+            <button class="opt"><span class="k">A</span> Sales / Business Dev</button>
+            <button class="opt" data-correct><span class="k">B</span> Operations / PM</button>
+            <button class="opt"><span class="k">C</span> Finance / Analytics</button>
+          </div>
+          <div class="said"><b>Correct</b>Status + risk + owner in a tight format is a classic PMO/Ops pattern.</div>
+        </div>
+
+        <div class="qcard">
+          <div class="qtag">Round 4 of 4</div>
+          <div class="qtxt">"A customer is upset about a 3-day delay and I need to reply without over-apologizing."</div>
+          <div class="opts" data-quiz>
+            <button class="opt"><span class="k">A</span> HR / People</button>
+            <button class="opt"><span class="k">B</span> Sales / Business Dev</button>
+            <button class="opt" data-correct><span class="k">C</span> Customer Support</button>
+          </div>
+          <div class="said"><b>Correct</b>Tone-controlled, acknowledge-and-resolve replies are the Support pattern.</div>
+        </div>
+      </div>
+    </details>
+  </div>
+
+  <!-- 12 READY PROMPTS -->
+  <div class="sec">
+    <details class="card">
+      <summary class="hd"><span class="ic">📚</span><span class="tt">12 Ready-to-Paste Prompts</span><span class="ct">your library</span><span class="chev"><svg viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></svg></span></summary>
+      <div class="bd">
+        <p>Two per role. Copy, swap the bracketed bits, go.</p>
+
+        <div class="pgroup"><h3>📈 Sales / Business Dev</h3>
+          <div class="prompt"><span class="lbl">Follow-up after silence</span><button class="cp">Copy</button>
+<pre>Act as an SDR. Write a 3-line follow-up email
+to a lead who went quiet [X] days after a demo.
+Remind them of [the specific value point we
+discussed], no pressure tone, one clear CTA to
+book 15 minutes. Keep it under 60 words.</pre></div>
+          <div class="prompt"><span class="lbl">Deal-risk summary</span><button class="cp">Copy</button>
+<pre>Act as a sales manager. Read this deal thread
+and tell me: (1) the single biggest risk to this
+deal closing, (2) one question I should ask the
+client this week, (3) a confidence score 1-10
+with your reasoning in one sentence.</pre></div>
+        </div>
+
+        <div class="pgroup"><h3>📣 Marketing / Content</h3>
+          <div class="prompt"><span class="lbl">Hook lines</span><button class="cp">Copy</button>
+<pre>Act as a B2B content strategist. Give me 5
+LinkedIn post hooks (1 line each) for [audience]
+about [topic]. No emojis, no hashtags, punchy
+not salesy. Rank them best to worst and say why
+the top one works.</pre></div>
+          <div class="prompt"><span class="lbl">Repurpose long-form</span><button class="cp">Copy</button>
+<pre>Act as an editor. Take this [blog post /
+transcript] and pull out 3 standalone social
+posts, each under 280 characters, that could
+run without any extra context. Keep our voice:
+direct, no buzzwords.</pre></div>
+        </div>
+
+        <div class="pgroup"><h3>⚙️ Operations / PM</h3>
+          <div class="prompt"><span class="lbl">90-second status</span><button class="cp">Copy</button>
+<pre>Act as a PMO lead. Summarize this project update
+for a director with 90 seconds to read it:
+- Status in 1 line
+- 3 risks, each with an owner name
+- 2 decisions needed this week
+No fluff, no restating the obvious.</pre></div>
+          <div class="prompt"><span class="lbl">Meeting notes → actions</span><button class="cp">Copy</button>
+<pre>Act as an ops coordinator. Turn these raw
+meeting notes into an action list: owner, task,
+due date. Flag anything mentioned but never
+assigned to a person.</pre></div>
+        </div>
+
+        <div class="pgroup"><h3>🧑‍🤝‍🧑 HR / People</h3>
+          <div class="prompt"><span class="lbl">Feedback draft</span><button class="cp">Copy</button>
+<pre>Act as a supportive manager. From these notes,
+draft written feedback: 2 strengths, 1 growth
+area. Warm but direct tone, under 150 words,
+no corporate jargon like "synergy" or "leverage."</pre></div>
+          <div class="prompt"><span class="lbl">Job description</span><button class="cp">Copy</button>
+<pre>Act as a recruiter. Write a job description for
+a [role] on a [team size]-person team, [seniority]
+level, must-have skills: [list]. Format as 5
+sections with headings, under 400 words.</pre></div>
+        </div>
+
+        <div class="pgroup"><h3>💰 Finance / Analytics</h3>
+          <div class="prompt"><span class="lbl">Anomaly check</span><button class="cp">Copy</button>
+<pre>Act as a financial analyst. Compare [this
+month's] expense sheet against [last month's].
+List every line item that moved more than 15%,
+as a table with % change. Flag anything that
+looks like a possible duplicate.</pre></div>
+          <div class="prompt"><span class="lbl">Contract fee scan</span><button class="cp">Copy</button>
+<pre>Act as a finance analyst reviewing a vendor
+contract for hidden fees. List every fee found,
+where in the doc it appears, and flag anything
+you're not 100% sure about instead of guessing.
+Format as a table.</pre></div>
+        </div>
+
+        <div class="pgroup"><h3>🎧 Customer Support</h3>
+          <div class="prompt"><span class="lbl">De-escalation reply</span><button class="cp">Copy</button>
+<pre>Act as a senior support agent. Write a reply
+that acknowledges [the specific issue], offers
+[the fix], and does NOT over-apologize. Under
+100 words, calm and direct tone.</pre></div>
+          <div class="prompt"><span class="lbl">Ticket pattern check</span><button class="cp">Copy</button>
+<pre>Act as a support lead. Read these 10 tickets
+and tell me: the single most common root cause,
+how many tickets it explains, and one process
+fix that would prevent it next time.</pre></div>
+        </div>
+      </div>
+    </details>
+  </div>
+
+  <!-- BOSS QUIZ -->
+  <div class="sec">
+    <details class="card">
+      <summary class="hd"><span class="ic">🏁</span><span class="tt">Final Check · 5 Questions</span><span class="ct">+10 XP each</span><span class="chev"><svg viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></svg></span></summary>
+      <div class="bd">
+        <div class="qcard"><div class="qtag">Q1 of 5</div><div class="qtxt">Which part of a prompt tells the AI how the output should look?</div>
+          <div class="opts" data-quiz>
+            <button class="opt"><span class="k">A</span> Role</button>
+            <button class="opt" data-correct><span class="k">B</span> Format</button>
+            <button class="opt"><span class="k">C</span> Context</button>
+          </div>
+          <div class="said"><b>Correct</b>Format is the shape of the output — table, bullets, word count.</div>
+        </div>
+        <div class="qcard"><div class="qtag">Q2 of 5</div><div class="qtxt">What's the biggest risk of dumping a 40-page doc with no pointer to what matters?</div>
+          <div class="opts" data-quiz>
+            <button class="opt"><span class="k">A</span> The AI refuses to read it</button>
+            <button class="opt" data-correct><span class="k">B</span> It answers something technically true but not what you needed</button>
+            <button class="opt"><span class="k">C</span> Nothing — more context is always better</button>
+          </div>
+          <div class="said"><b>Correct</b>Without a pointer, it guesses what matters — and it usually guesses wrong.</div>
+        </div>
+        <div class="qcard"><div class="qtag">Q3 of 5</div><div class="qtxt">When analyzing a photo, what should you always ask for?</div>
+          <div class="opts" data-quiz>
+            <button class="opt"><span class="k">A</span> A poetic description</button>
+            <button class="opt" data-correct><span class="k">B</span> Structured output, and a flag when it's unsure</button>
+            <button class="opt"><span class="k">C</span> Nothing extra — just "what's in this picture"</button>
+          </div>
+          <div class="said"><b>Correct</b>Structured output plus an uncertainty flag is what makes a photo answer usable.</div>
+        </div>
+        <div class="qcard"><div class="qtag">Q4 of 5</div><div class="qtxt">"Write a job description" with a role, seniority, and must-have skills — but no format — is missing what?</div>
+          <div class="opts" data-quiz>
+            <button class="opt"><span class="k">A</span> Task</button>
+            <button class="opt"><span class="k">B</span> Context</button>
+            <button class="opt" data-correct><span class="k">C</span> Format</button>
+          </div>
+          <div class="said"><b>Correct</b>Everything else is there — without a format you'll get a wall of prose you have to restructure yourself.</div>
+        </div>
+        <div class="qcard"><div class="qtag">Q5 of 5</div><div class="qtxt">Why give the AI a Role at all?</div>
+          <div class="opts" data-quiz>
+            <button class="opt" data-correct><span class="k">A</span> It sets the judgment and vocabulary the answer will use</button>
+            <button class="opt"><span class="k">B</span> It's required by every AI tool to function</button>
+            <button class="opt"><span class="k">C</span> It makes the answer longer</button>
+          </div>
+          <div class="said"><b>Correct</b>"Act as a finance analyst" vs "act as a marketer" reading the same doc produce genuinely different, useful answers.</div>
+        </div>
+      </div>
+    </details>
+  </div>
+
+  <!-- SCOREBOARD -->
+  <div class="sec">
+    <div class="card" style="padding:30px 22px;text-align:center">
+      <div class="pill">Your scoreboard</div>
+      <div class="scorebig" id="scoreBig">0</div>
+      <p style="color:var(--ink-dim);margin-bottom:0">total XP earned across both games and the final check</p>
+      <div class="badgerow" id="badgerow">
+        <div class="badgecard" data-min="20"><div class="em">🔰</div><div class="nm">Prompt Rookie</div><div class="rq">20 XP</div></div>
+        <div class="badgecard" data-min="50"><div class="em">⚡</div><div class="nm">Prompt Pro</div><div class="rq">50 XP</div></div>
+        <div class="badgecard" data-min="85"><div class="em">🧠</div><div class="nm">Prompt Architect</div><div class="rq">85 XP</div></div>
+        <div class="badgecard" data-min="120"><div class="em">👑</div><div class="nm">Prompt Master</div><div class="rq">120 XP</div></div>
+      </div>
+      <div style="margin-top:18px"><span class="stamp">Module 1 complete ✅</span></div>
+    </div>
+  </div>
+
+</div>
+
+<div class="foot">
+  <div class="lg">HOUSE OF EDTECH</div>
+  M1 · Prompting &amp; Docs — bring your own prompts and try them live.
+</div>
+
+<script>
+(function(){
+  "use strict";
+  var xp = 0;
+  var BADGES = [20, 50, 85, 120];
+
+  function toast(msg){
+    var t = document.createElement('div');
+    t.className = 'toast';
+    t.innerHTML = msg;
+    document.getElementById('toastzone').appendChild(t);
+    setTimeout(function(){ t.remove(); }, 2100);
+  }
+
+  function addXP(n, label){
+    xp += n;
+    document.getElementById('xpVal').textContent = xp;
+    var sb = document.getElementById('scoreBig'); if(sb) sb.textContent = xp;
+    toast('+' + n + ' XP <span style="opacity:.7">· ' + (label||'') + '</span>');
+    updateBadges();
+  }
+
+  function updateBadges(){
+    var mini = document.querySelectorAll('#badgemini span');
+    BADGES.forEach(function(min, i){
+      if(mini[i]) mini[i].classList.toggle('on', xp >= min);
+    });
+    document.querySelectorAll('.badgecard').forEach(function(card){
+      var min = parseFloat(card.getAttribute('data-min'));
+      card.classList.toggle('on', xp >= min);
+    });
+  }
+
+  function copyText(txt, btn){
+    var ok = false;
+    try{
+      var ta = document.createElement('textarea');
+      ta.value = txt;
+      ta.setAttribute('readonly','');
+      ta.style.cssText = 'position:fixed;top:0;left:-9999px;opacity:0';
+      document.body.appendChild(ta);
+      ta.focus(); ta.select(); ta.setSelectionRange(0, ta.value.length);
+      ok = document.execCommand('copy');
+      document.body.removeChild(ta);
+    }catch(err){ ok = false; }
+    if(ok){ flash(btn, 'Copied'); return; }
+    if(navigator.clipboard && navigator.clipboard.writeText){
+      navigator.clipboard.writeText(txt).then(function(){ flash(btn,'Copied'); },
+                                             function(){ selectFallback(btn); });
+      return;
+    }
+    selectFallback(btn);
+  }
+  function flash(btn, msg){
+    var old = btn.textContent; btn.textContent = msg;
+    setTimeout(function(){ btn.textContent = old === msg ? 'Copy' : old; }, 1500);
+  }
+  function selectFallback(btn){
+    var pre = btn.parentNode.querySelector('pre');
+    var r = document.createRange(); r.selectNodeContents(pre);
+    var s = window.getSelection(); s.removeAllRanges(); s.addRange(r);
+    flash(btn, 'Press Ctrl+C');
+  }
+
+  document.addEventListener('click', function(e){
+
+    var f = e.target.closest('.flip, .role');
+    if(f){ f.classList.toggle('open'); return; }
+
+    var o = e.target.closest('.opt');
+    if(o){
+      var box = o.closest('[data-quiz]');
+      if(box.classList.contains('done')) return;
+      var right = o.hasAttribute('data-correct');
+      o.classList.add(right ? 'right' : 'wrong');
+      if(right){
+        box.classList.add('done');
+        box.querySelectorAll('.opt').forEach(function(b){ if(!b.hasAttribute('data-correct')) b.classList.add('wrong'); });
+        var said = box.parentNode.querySelector('.said');
+        if(said) said.classList.add('on');
+        addXP(10, 'correct!');
+      }
+      return;
+    }
+
+    var cp = e.target.closest('.cp');
+    if(cp){ copyText(cp.parentNode.querySelector('pre').innerText, cp); return; }
+  });
+
+  // count-up stat tiles + section reveal animation via IntersectionObserver
+  function countUp(el){
+    var target = parseFloat(el.getAttribute('data-count'));
+    var t0 = null, dur = 900;
+    if(target === 0){ el.textContent = '0'; return; }
+    function step(ts){
+      if(!t0) t0 = ts;
+      var p = Math.min(1, (ts - t0) / dur);
+      el.textContent = Math.round(target * (1 - Math.pow(1 - p, 3)));
+      if(p < 1) requestAnimationFrame(step);
+    }
+    requestAnimationFrame(step);
+  }
+  var counted = new WeakSet();
+  var io = new IntersectionObserver(function(entries){
+    entries.forEach(function(en){
+      if(en.isIntersecting){
+        en.target.querySelectorAll('[data-count]').forEach(function(el){
+          if(!counted.has(el)){ counted.add(el); countUp(el); }
+        });
+      }
+    });
+  }, {threshold:.3});
+  document.querySelectorAll('[data-stats]').forEach(function(el){ io.observe(el); });
+  // objectives panel is open by default, so also fire immediately in case it's already in view
+  setTimeout(function(){
+    document.querySelectorAll('[data-stats] [data-count]').forEach(function(el){
+      if(!counted.has(el)){
+        var r = el.getBoundingClientRect();
+        if(r.top < window.innerHeight){ counted.add(el); countUp(el); }
+      }
+    });
+  }, 200);
+
+  updateBadges();
+})();
+</script>
+</body>
+</html>
