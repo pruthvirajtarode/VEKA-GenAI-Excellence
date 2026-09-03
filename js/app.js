@@ -155,21 +155,22 @@ class App {
         setTimeout(() => {
             let headers = [];
             let data = [];
+            let numRows = parseInt(rows, 10) || 5;
             
             if (func === 'Finance' || func === 'Accounts') {
                 headers = ['Invoice ID', 'Vendor', 'Amount', 'Date', 'Status'];
-                for (let i = 0; i < 5; i++) {
+                for (let i = 0; i < numRows; i++) {
                     let amount = (Math.random() * 10000).toFixed(2);
                     let status = Math.random() > 0.8 ? 'Pending' : 'Paid';
                     if (anomalies && i === 2) {
                         amount = "999999.99"; // Anomaly
                         status = "REJECTED";
                     }
-                    data.push([`INV-${1000 + i}`, `Vendor ${String.fromCharCode(65+i)}`, `$${amount}`, `2024-0${Math.floor(Math.random()*9)+1}-15`, status]);
+                    data.push([`INV-${1000 + i}`, `Vendor ${String.fromCharCode(65+(i%26))}`, `$${amount}`, `2024-0${Math.floor(Math.random()*9)+1}-15`, status]);
                 }
             } else if (func === 'Production' || func === 'Operations') {
                 headers = ['Batch ID', 'Machine', 'Yield (%)', 'Defect Rate', 'QA Status'];
-                for (let i = 0; i < 5; i++) {
+                for (let i = 0; i < numRows; i++) {
                     let y = (80 + Math.random() * 19).toFixed(1);
                     let d = (Math.random() * 5).toFixed(2);
                     let qa = y > 85 ? 'Passed' : 'Review';
@@ -178,24 +179,25 @@ class App {
                         d = "85.00";
                         qa = "FAILED";
                     }
-                    data.push([`BCH-${8000 + i}`, `Extruder ${i+1}`, `${y}%`, `${d}%`, qa]);
+                    data.push([`BCH-${8000 + i}`, `Extruder ${(i%5)+1}`, `${y}%`, `${d}%`, qa]);
                 }
             } else {
                 headers = ['Record ID', 'Category', 'Value 1', 'Value 2', 'Status'];
-                for (let i = 0; i < 5; i++) {
+                for (let i = 0; i < numRows; i++) {
                     data.push([`REC-${i}`, `Cat-${i}`, Math.floor(Math.random()*100), Math.floor(Math.random()*100), 'Active']);
                 }
             }
 
             this.lastSyntheticData = { headers, data, func };
             
-            let tableRows = data.map(row => `<tr>${row.map(cell => `<td class="p-3 border-b border-border">${cell}</td>`).join('')}</tr>`).join('');
+            let previewData = data.slice(0, 5);
+            let tableRows = previewData.map(row => `<tr>${row.map(cell => `<td class="p-3 border-b border-border">${cell}</td>`).join('')}</tr>`).join('');
             let tableHTML = `
                 <div class="w-full h-full flex flex-col p-4">
                     <div class="flex justify-between items-center mb-4">
                         <h3 class="text-lg text-accent">${func} Training Dataset</h3>
                         <div class="flex gap-2">
-                            <span class="btn btn-secondary text-xs py-1" style="pointer-events:none;">${rows} Rows</span>
+                            <span class="btn btn-secondary text-xs py-1" style="pointer-events:none;">${numRows} Rows</span>
                             <span class="btn btn-secondary text-xs py-1" style="pointer-events:none;">${anomalies ? 'Anomalies: Yes' : 'Clean Data'}</span>
                         </div>
                     </div>
@@ -210,7 +212,7 @@ class App {
                                 ${tableRows}
                             </tbody>
                         </table>
-                        <p class="text-center text-muted text-sm mt-4 italic">Showing preview of 5 records.</p>
+                        <p class="text-center text-muted text-sm mt-4 italic">Showing preview of ${previewData.length} records.</p>
                     </div>
                     <div class="mt-auto pt-6 flex justify-end">
                         <button class="btn btn-primary" onclick="window.app.downloadSyntheticCSV()">Download CSV</button>
