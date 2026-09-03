@@ -114,6 +114,39 @@ tr:hover{background:rgba(255,255,255,0.02)}
 .diagram .node-danger{border-color:rgba(255,82,82,0.4);color:#FF5252}
 .diagram .node-safe{border-color:rgba(76,175,80,0.4);color:#4CAF50}
 .diagram .arr{color:var(--accent);font-size:20px;font-weight:bold}
+
+.quick-nav {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background: var(--bg);
+    padding: 12px 20px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    gap: 10px;
+    overflow-x: auto;
+    scrollbar-width: none;
+}
+.quick-nav::-webkit-scrollbar { display: none; }
+.quick-nav button {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid var(--border);
+    color: var(--text);
+    padding: 8px 16px;
+    border-radius: 8px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    white-space: nowrap;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: all 0.2s ease;
+}
+.quick-nav button:hover {
+    background: rgba(255, 255, 255, 0.1);
+    border-color: var(--accent);
+}
 </style>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script></head>
 <body>
@@ -1255,6 +1288,39 @@ document.addEventListener('DOMContentLoaded', function() {
     transform: scale(1.05);
     box-shadow: 0 4px 12px rgba(228, 0, 43, 0.3);
 }
+
+.quick-nav {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background: var(--bg);
+    padding: 12px 20px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    gap: 10px;
+    overflow-x: auto;
+    scrollbar-width: none;
+}
+.quick-nav::-webkit-scrollbar { display: none; }
+.quick-nav button {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid var(--border);
+    color: var(--text);
+    padding: 8px 16px;
+    border-radius: 8px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    white-space: nowrap;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: all 0.2s ease;
+}
+.quick-nav button:hover {
+    background: rgba(255, 255, 255, 0.1);
+    border-color: var(--accent);
+}
 </style>
 <button id="back-to-top" title="Back to Top" style="position: fixed; bottom: 30px; right: 30px; z-index: 999; background: var(--accent, #E4002B); color: white; width: 45px; height: 45px; border: none; border-radius: 50%; display: none; align-items: center; justify-content: center; box-shadow: 0 4px 15px rgba(0,0,0,0.3); transition: opacity 0.3s, transform 0.3s; opacity: 0; transform: translateY(10px); cursor: pointer;">
     <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5M5 12l7-7 7 7"/></svg>
@@ -1297,6 +1363,35 @@ document.addEventListener('DOMContentLoaded', () => {
         el.style.transition = 'opacity 0.6s ease-out, transform 0.6s ease-out';
         observer.observe(el);
     });
+});
+</script>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    if(document.querySelector('.quick-nav')) return; // Prevent duplicate
+    const nav = document.createElement('div');
+    nav.className = 'quick-nav';
+    const sections = document.querySelectorAll('.section');
+    sections.forEach((sec, index) => {
+        const h2 = sec.querySelector('.section-head h2');
+        if (h2) {
+            sec.id = 'section-' + index;
+            const btn = document.createElement('button');
+            let text = h2.innerText || h2.textContent;
+            let shortText = text.split(':')[0].split('—')[0].split('-')[0].trim();
+            btn.innerText = shortText;
+            btn.onclick = () => {
+                sec.classList.add('open');
+                const y = sec.getBoundingClientRect().top + window.scrollY - 70;
+                window.scrollTo({top: y, behavior: 'smooth'});
+            };
+            nav.appendChild(btn);
+        }
+    });
+    const header = document.querySelector('.module-header');
+    if (header) {
+        header.parentNode.insertBefore(nav, header.nextSibling);
+    }
 });
 </script>
 </body>

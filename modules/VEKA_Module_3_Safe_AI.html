@@ -102,6 +102,39 @@ tr:hover{background:rgba(255,255,255,0.02)}
 .diagram .node-danger{border-color:rgba(255,82,82,0.4);color:#FF5252}
 .diagram .node-safe{border-color:rgba(76,175,80,0.4);color:#4CAF50}
 .diagram .arr{color:var(--accent);font-size:20px;font-weight:bold}
+
+.quick-nav {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background: var(--bg);
+    padding: 12px 20px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    gap: 10px;
+    overflow-x: auto;
+    scrollbar-width: none;
+}
+.quick-nav::-webkit-scrollbar { display: none; }
+.quick-nav button {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid var(--border);
+    color: var(--text);
+    padding: 8px 16px;
+    border-radius: 8px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    white-space: nowrap;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: all 0.2s ease;
+}
+.quick-nav button:hover {
+    background: rgba(255, 255, 255, 0.1);
+    border-color: var(--accent);
+}
 </style>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script></head>
 <body>
@@ -913,6 +946,35 @@ document.addEventListener('DOMContentLoaded', () => {
         el.style.transition = 'opacity 0.6s ease-out, transform 0.6s ease-out';
         observer.observe(el);
     });
+});
+</script>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    if(document.querySelector('.quick-nav')) return; // Prevent duplicate
+    const nav = document.createElement('div');
+    nav.className = 'quick-nav';
+    const sections = document.querySelectorAll('.section');
+    sections.forEach((sec, index) => {
+        const h2 = sec.querySelector('.section-head h2');
+        if (h2) {
+            sec.id = 'section-' + index;
+            const btn = document.createElement('button');
+            let text = h2.innerText || h2.textContent;
+            let shortText = text.split(':')[0].split('—')[0].split('-')[0].trim();
+            btn.innerText = shortText;
+            btn.onclick = () => {
+                sec.classList.add('open');
+                const y = sec.getBoundingClientRect().top + window.scrollY - 70;
+                window.scrollTo({top: y, behavior: 'smooth'});
+            };
+            nav.appendChild(btn);
+        }
+    });
+    const header = document.querySelector('.module-header');
+    if (header) {
+        header.parentNode.insertBefore(nav, header.nextSibling);
+    }
 });
 </script>
 </body>
