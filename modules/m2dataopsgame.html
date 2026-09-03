@@ -238,7 +238,13 @@ table.ds td.num{font-family:var(--mono);color:var(--ink)}
 <div id="toastzone"></div>
 
 <div id="hud">
-  <span class="brand">📊 <b>M2</b> · Data &amp; Ops <span class="badgemini" id="badgemini"><span title="Pattern Spotter">🔍</span><span title="Data Analyst">📊</span><span title="Ops Strategist">🧭</span><span title="Data Whisperer">👑</span></span></span>
+  <span class="brand" style="display:flex; align-items:center;">
+    <a href="#" onclick="window.history.length > 1 ? window.history.back() : window.close(); return false;" style="color: var(--ink-soft); text-decoration: none; margin-right: 10px; display: inline-flex; align-items: center; justify-content: center; width: 24px; height: 24px; border-radius: 4px; background: var(--card2); border: 1px solid var(--line2); transition: 0.2s;" onmouseover="this.style.borderColor='var(--red)'; this.style.color='var(--red)'" onmouseout="this.style.borderColor='var(--line2)'; this.style.color='var(--ink-soft)'" title="Go Back">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+    </a>
+    📊 <b>M2</b> · Data &amp; Ops 
+    <span class="badgemini" id="badgemini" style="margin-left:8px;"><span title="Pattern Spotter">🔍</span><span title="Data Analyst">📊</span><span title="Ops Strategist">🧭</span><span title="Data Whisperer">👑</span></span>
+  </span>
   <span class="xpbadge">⚡ XP <b id="xpVal">0</b></span>
 </div>
 
