@@ -3,1566 +3,1056 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>VEKA GenAI Excellence — Session 3: Safe AI</title>
+<meta name="description" content="VEKA GenAI Excellence Training Module. Interactive learning content for AI integration.">
+<meta name="keywords" content="VEKA, GenAI, Training, Module, AI, Artificial Intelligence">
+<title>M3: Safe AI — VEKA GenAI Excellence</title>
 <style>
-  :root{
-    --bg:#0a0a0a;
-    --panel:#141414;
-    --panel2:#1b1b1b;
-    --border:#2a2a2a;
-    --text:#eaeaea;
-    --muted:#9a9a9a;
-    --accent:#e2231a;
-    --accent-dim:#5c110d;
-    --safe:#2ecc71;
-    --unsafe:#e2231a;
-    --warn:#f1c40f;
-    --c1:#e2231a; /* confidentiality */
-    --c2:#3aa0ff; /* privacy/dpdp */
-    --c3:#f1c40f; /* hallucination */
-    --c4:#a76bff; /* regulatory */
-    --c5:#2ecc71; /* vendor */
-    --radius:12px;
-  }
-  *{box-sizing:border-box;}
-  body{
-    margin:0;
-    background:var(--bg);
-    color:var(--text);
-    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
-    line-height:1.55;
-  }
-  a{color:var(--accent);}
-  .topbar{
-    position:sticky; top:0; z-index:50;
-    background:#000; border-bottom:1px solid var(--border);
-    padding:16px 20px;
-    display:flex; align-items:center; justify-content:space-between; gap:16px; flex-wrap:wrap;
-  }
-  .topbar h1{font-size:1.25rem; margin:0; font-weight:700;}
-  .topbar .sub{color:var(--muted); font-size:0.82rem; margin-top:2px;}
-  .timer-box{
-    display:flex; align-items:center; gap:10px;
-    background:var(--panel); border:1px solid var(--border); border-radius:999px;
-    padding:8px 14px;
-  }
-  .timer-box .clock{font-variant-numeric:tabular-nums; font-weight:700; font-size:1.05rem; min-width:64px; text-align:center;}
-  .timer-box button{
-    background:var(--accent); color:#fff; border:none; border-radius:999px;
-    padding:6px 12px; font-size:0.78rem; font-weight:600; cursor:pointer;
-  }
-  .timer-box button.secondary{background:#333;}
-  .timer-box button:hover{filter:brightness(1.1);}
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--bg:#0a0a0a;--card:#1f1f1f;--card2:#141414;--border:rgba(255,255,255,0.08);--text:#e0e0e0;--accent:#E4002B;--blue:#2196F3;--green:#4CAF50;--red:#FF5252;--orange:#FF9800}
+body{font-family:'Segoe UI',Roboto,sans-serif;background:var(--bg);color:var(--text);line-height:1.6;padding-bottom:60px}
+.module-header{background:linear-gradient(to right, rgba(10,10,10,0.95), rgba(10,10,10,0.4)), url('https://images.unsplash.com/photo-1550751827-4bd374c3f58b?q=80&w=1200&auto=format&fit=crop') center/cover no-repeat;padding:40px 30px;text-align:center;border-bottom:3px solid var(--accent)}
+.module-header .tag{display:inline-block;background:rgba(0,0,0,0.3);padding:4px 14px;border-radius:15px;font-size:12px;font-weight:600;margin-bottom:10px;letter-spacing:1px}
+.module-header h1{font-size:36px;font-weight:800;margin-bottom:8px}
+.module-header p{font-size:18px;opacity:0.85;max-width:750px;margin:0 auto}
+.container{max-width:1000px;margin:0 auto;padding:20px}
 
-  .container{max-width:1100px; margin:0 auto; padding:20px 16px 80px;}
+/* Sections */
+.section{background:var(--card);border:1px solid var(--border);border-radius:12px;margin:20px 0;overflow:hidden}
+.section-head{padding:18px 24px;cursor:pointer;display:flex;align-items:center;justify-content:space-between;transition:background 0.2s}
+.section-head:hover{background:rgba(255,255,255,0.03)}
+.section-head h2{font-size:20px;font-weight:700;display:flex;align-items:center;gap:10px}
+.section-head .arrow{font-size:18px;opacity:0.5;transition:transform 0.3s}
+.section-body{padding:0 24px 24px;display:none}
+.section.open .section-body{display:block}
+.section.open .arrow{transform:rotate(180deg)}
 
-  .tabs{
-    display:flex; gap:8px; overflow-x:auto; padding:14px 0 18px;
-    border-bottom:1px solid var(--border); margin-bottom:22px;
-    scrollbar-width:thin;
-  }
-  .tab-btn{
-    flex:0 0 auto;
-    background:var(--panel); color:var(--text); border:1px solid var(--border);
-    border-radius:999px; padding:10px 16px; font-size:0.86rem; font-weight:600;
-    cursor:pointer; white-space:nowrap; display:flex; align-items:center; gap:6px;
-    transition:all .15s;
-  }
-  .tab-btn .chk{color:var(--safe); font-size:0.8rem; display:none;}
-  .tab-btn.visited .chk{display:inline;}
-  .tab-btn:hover{border-color:var(--accent);}
-  .tab-btn.active{background:var(--accent); border-color:var(--accent); color:#fff;}
+/* Cards */
+.card{background:var(--card2);border:1px solid var(--border);border-radius:12px;padding:24px;margin:16px 0;transition:transform 0.3s ease,box-shadow 0.3s ease;box-shadow:0 4px 6px rgba(0,0,0,0.3)}.card:hover{transform:translateY(-5px);box-shadow:0 12px 24px rgba(228,0,43,0.15);border-color:var(--accent)}
+.card h3{font-size:17px;font-weight:600;color:var(--accent);margin-bottom:8px}
+.card h4{font-size:15px;font-weight:600;color:var(--blue);margin-bottom:6px;margin-top:10px}
+.card p,.card li{font-size:14px;opacity:0.85;line-height:1.7}
+.card ul{list-style:none;margin:8px 0}
+.card ul li{padding:4px 0 4px 22px;position:relative}
+.card ul li:before{content:"▸";position:absolute;left:0;color:var(--accent);font-weight:bold}
 
-  .panel{display:none; animation:fade .25s ease;}
-  .panel.active{display:block;}
-  @keyframes fade{from{opacity:0; transform:translateY(4px);} to{opacity:1; transform:translateY(0);}}
+/* Layout */
+.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:15px}
+.grid-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:15px}
+@media(max-width:768px){.grid-2,.grid-3{grid-template-columns:1fr}}
 
-  .card{
-    background:var(--panel); border:1px solid var(--border); border-radius:var(--radius);
-    padding:24px; margin-bottom:20px;
-  }
-  .card h2{margin-top:0; font-size:1.4rem; display:flex; align-items:center; gap:10px;}
-  .card h3{font-size:1.1rem; margin-bottom:8px;}
-  .pill{
-    display:inline-block; background:var(--accent-dim); color:#ff8f88; border:1px solid var(--accent);
-    border-radius:999px; padding:2px 10px; font-size:0.72rem; font-weight:700; letter-spacing:.03em;
-    text-transform:uppercase; margin-bottom:10px;
-  }
-  .time-pill{
-    display:inline-block; background:#1c1c1c; color:var(--muted); border:1px solid var(--border);
-    border-radius:999px; padding:2px 10px; font-size:0.75rem; margin-left:8px;
-  }
+/* Stats */
+.stats{display:flex;gap:15px;flex-wrap:wrap;margin:15px 0}
+.stat{background:var(--card2);border:1px solid var(--border);border-radius:8px;padding:15px;text-align:center;flex:1;min-width:120px}
+.stat .n{font-size:28px;font-weight:800;color:var(--accent);display:block}
+.stat .l{font-size:12px;opacity:0.7}
 
-  .stat-grid{display:grid; grid-template-columns:repeat(auto-fit,minmax(130px,1fr)); gap:14px; margin:20px 0;}
-  .stat{background:var(--panel2); border:1px solid var(--border); border-radius:var(--radius); padding:18px 10px; text-align:center;}
-  .stat .num{font-size:2rem; font-weight:800; color:var(--accent);}
-  .stat .lbl{color:var(--muted); font-size:0.82rem; margin-top:4px;}
+/* Tables */
+table{width:100%;border-collapse:collapse;margin:12px 0;font-size:13px}
+th{background:rgba(255,255,255,0.08);padding:10px 12px;text-align:left;font-weight:600;border-bottom:2px solid var(--border)}
+td{padding:8px 12px;border-bottom:1px solid var(--border)}
+tr:hover{background:rgba(255,255,255,0.02)}
 
-  ul.obj{list-style:none; padding:0; margin:0;}
-  ul.obj li{padding:8px 0 8px 26px; position:relative; border-bottom:1px dashed var(--border);}
-  ul.obj li:last-child{border-bottom:none;}
-  ul.obj li::before{content:"▶"; color:var(--accent); position:absolute; left:0; top:9px; font-size:0.7rem;}
+/* Alerts */
+.tip{background:rgba(255,214,0,0.08);border-left:3px solid var(--accent);padding:12px 16px;margin:12px 0;border-radius:0 8px 8px 0;font-size:14px}
+.warning{background:rgba(255,82,82,0.08);border-left:3px solid var(--red);padding:12px 16px;margin:12px 0;border-radius:0 8px 8px 0;font-size:14px}
+.success{background:rgba(76,175,80,0.08);border-left:3px solid var(--green);padding:12px 16px;margin:12px 0;border-radius:0 8px 8px 0;font-size:14px}
+.info-box{background:rgba(33,150,243,0.08);border-left:3px solid var(--blue);padding:12px 16px;margin:12px 0;border-radius:0 8px 8px 0;font-size:14px}
 
-  .agenda-table{width:100%; border-collapse:collapse; margin-top:10px;}
-  .agenda-table td, .agenda-table th{padding:10px 8px; border-bottom:1px solid var(--border); font-size:0.9rem; text-align:left;}
-  .agenda-table th{color:var(--muted); font-weight:600; font-size:0.78rem; text-transform:uppercase;}
-  .agenda-table td.mins{color:var(--accent); font-weight:700; white-space:nowrap;}
+/* Prompts */
+.prompt{background:#1e1e2e;border:2px solid #69F0AE;border-radius:8px;padding:16px;margin:12px 0;font-family:'Courier New',monospace;font-size:13px;color:#a6e3a1;line-height:1.5;white-space:pre-wrap;position:relative}
+.prompt-label{display:inline-block;background:#69F0AE;color:#1e1e2e;padding:3px 12px;border-radius:15px;font-size:11px;font-weight:700;margin-bottom:8px;font-family:'Segoe UI',sans-serif}
+.copy-btn{position:absolute;top:10px;right:10px;background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.2);color:#69F0AE;padding:4px 12px;border-radius:5px;cursor:pointer;font-size:11px;font-family:'Segoe UI',sans-serif}
 
-  .risk-grid{display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); gap:14px; margin:18px 0;}
-  .risk-card{border-radius:var(--radius); padding:16px; border:1px solid var(--border); background:var(--panel2); border-left:4px solid var(--r-color,var(--accent));}
-  .risk-card h4{margin:0 0 6px; font-size:1rem;}
-  .risk-card p{margin:0; color:var(--muted); font-size:0.86rem;}
+/* Exercise */
+.exercise{background:rgba(156,39,176,0.08);border:2px solid rgba(156,39,176,0.2);border-radius:8px;padding:18px;margin:12px 0}
+.exercise h3{color:#CE93D8;font-size:16px;margin-bottom:8px}
 
-  .btn{
-    background:var(--accent); color:#fff; border:none; border-radius:8px;
-    padding:10px 18px; font-size:0.9rem; font-weight:700; cursor:pointer; margin-top:8px;
-  }
-  .btn:hover{filter:brightness(1.12);}
-  .btn.secondary{background:#2a2a2a; color:var(--text);}
-  .btn.small{padding:6px 12px; font-size:0.8rem;}
-  .btn:disabled{opacity:.45; cursor:not-allowed;}
+/* Badges */
+.badge{display:inline-block;padding:3px 10px;border-radius:12px;font-size:11px;font-weight:700}
+.badge-safe{background:rgba(76,175,80,0.15);color:var(--green);border:1px solid rgba(76,175,80,0.3)}
+.badge-risky{background:rgba(255,82,82,0.15);color:var(--red);border:1px solid rgba(255,82,82,0.3)}
+.badge-warn{background:rgba(255,152,0,0.15);color:var(--orange);border:1px solid rgba(255,152,0,0.3)}
 
-  .game-box{background:#0d0d0d; border:1px dashed var(--accent); border-radius:var(--radius); padding:20px; margin-top:16px;}
-  .game-box .gtitle{color:var(--accent); font-weight:800; font-size:0.78rem; text-transform:uppercase; letter-spacing:.05em; margin-bottom:6px;}
+/* Case Study */
+.case-study{background:var(--card2);border:1px solid var(--border);border-radius:10px;margin:16px 0;overflow:hidden}
+.case-study-header{padding:14px 18px;cursor:pointer;display:flex;align-items:center;justify-content:space-between}
+.case-study-header:hover{background:rgba(255,255,255,0.03)}
+.case-study-header h3{font-size:16px;font-weight:600;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.case-study-header .cs-arrow{font-size:14px;opacity:0.4;transition:transform 0.3s}
+.case-study-body{padding:0 18px 18px;display:none}
+.case-study.cs-open .case-study-body{display:block}
+.case-study.cs-open .cs-arrow{transform:rotate(180deg)}
+.cs-tag{font-size:11px;padding:2px 8px;border-radius:10px;font-weight:600}
+.cs-tag-leak{background:rgba(255,82,82,0.15);color:#FF5252}
+.cs-tag-halluc{background:rgba(255,152,0,0.15);color:#FF9800}
+.cs-tag-good{background:rgba(76,175,80,0.15);color:#4CAF50}
+.cs-tag-policy{background:rgba(33,150,243,0.15);color:#2196F3}
+.cs-tag-global{background:rgba(156,39,176,0.15);color:#CE93D8}
+.cs-block{background:rgba(0,0,0,0.2);border-radius:6px;padding:14px;margin:10px 0;font-size:14px}
+.cs-block h4{font-size:14px;margin-bottom:6px}
+.cs-block.what-happened{border-left:3px solid #FF5252}
+.cs-block.impact{border-left:3px solid #FF9800}
+.cs-block.lesson{border-left:3px solid #4CAF50}
+.cs-block.action{border-left:3px solid #2196F3}
 
-  .score-badge{
-    display:inline-flex; align-items:center; gap:6px; background:var(--panel2); border:1px solid var(--border);
-    border-radius:999px; padding:6px 14px; font-weight:700; font-size:0.85rem;
-  }
+/* Theory diagram */
+.diagram{background:rgba(0,0,0,0.3);border-radius:10px;padding:20px;margin:15px 0;text-align:center}
+.diagram .flow{display:flex;align-items:center;justify-content:center;gap:8px;flex-wrap:wrap;margin:10px 0}
+.diagram .node{background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.15);border-radius:8px;padding:10px 16px;font-size:13px;font-weight:600}
+.diagram .node-danger{border-color:rgba(255,82,82,0.4);color:#FF5252}
+.diagram .node-safe{border-color:rgba(76,175,80,0.4);color:#4CAF50}
+.diagram .arr{color:var(--accent);font-size:20px;font-weight:bold}
 
-  /* Part 1 flow */
-  .flow{display:flex; flex-wrap:wrap; gap:10px; margin:16px 0;}
-  .flow-step{
-    flex:1 1 140px; background:var(--panel2); border:1px solid var(--border); border-radius:var(--radius);
-    padding:14px; cursor:pointer; text-align:center; transition:.15s;
-  }
-  .flow-step:hover{border-color:var(--accent);}
-  .flow-step .fnum{color:var(--accent); font-weight:800; font-size:0.75rem;}
-  .flow-step .ftitle{font-weight:700; margin:6px 0 4px; font-size:0.92rem;}
-  .flow-detail{
-    display:none; background:#0d0d0d; border-left:3px solid var(--accent); border-radius:8px;
-    padding:14px 16px; margin-top:10px; font-size:0.88rem; color:var(--muted);
-  }
-  .flow-detail.show{display:block;}
 
-  /* classification game */
-  .classify-wrap{display:grid; grid-template-columns:1fr; gap:16px; margin-top:14px;}
-  .item-pool{display:flex; flex-wrap:wrap; gap:10px;}
-  .data-item{
-    background:var(--panel2); border:1px solid var(--border); border-radius:8px; padding:10px 14px;
-    font-size:0.86rem; cursor:pointer; transition:.15s;
-  }
-  .data-item.selected{border-color:var(--accent); box-shadow:0 0 0 2px var(--accent-dim);}
-  .data-item.placed{opacity:.35; cursor:default; text-decoration:line-through;}
-  .bins{display:grid; grid-template-columns:repeat(auto-fit,minmax(200px,1fr)); gap:12px;}
-  .bin{
-    border:2px dashed var(--border); border-radius:var(--radius); padding:12px; min-height:130px;
-    background:var(--panel);
-  }
-  .bin h4{margin:0 0 8px; font-size:0.95rem;}
-  .bin.public h4{color:#2ecc71;}
-  .bin.internal h4{color:#3aa0ff;}
-  .bin.confidential h4{color:#e2231a;}
-  .bin .placed-item{background:#0d0d0d; border:1px solid var(--border); border-radius:6px; padding:6px 10px; font-size:0.8rem; margin-bottom:6px;}
-  .bin .placed-item.correct{border-color:var(--safe); color:#bdf5cf;}
-  .bin .placed-item.wrong{border-color:var(--unsafe); color:#ffc6c2;}
-
-  /* matching game */
-  .match-wrap{display:grid; grid-template-columns:1fr 1fr; gap:24px; margin-top:14px;}
-  @media (max-width:640px){.match-wrap{grid-template-columns:1fr;}}
-  .match-col .match-item{
-    background:var(--panel2); border:1px solid var(--border); border-radius:8px; padding:10px 14px;
-    margin-bottom:8px; cursor:pointer; font-size:0.86rem;
-  }
-  .match-item.sel{border-color:var(--accent); box-shadow:0 0 0 2px var(--accent-dim);}
-  .match-item.matched{opacity:.35; cursor:default; border-color:var(--safe);}
-  .match-item.flash-wrong{border-color:var(--unsafe); animation:shake .3s;}
-  @keyframes shake{0%,100%{transform:translateX(0);}25%{transform:translateX(-4px);}75%{transform:translateX(4px);}}
-
-  /* redaction / hallucination text games */
-  .redact-text{font-size:0.98rem; line-height:1.9; background:#0d0d0d; border-radius:8px; padding:18px; border:1px solid var(--border);}
-  .redact-text span.sens{cursor:pointer; padding:1px 3px; border-radius:3px;}
-  .redact-text span.sens:hover{background:#2a2a2a;}
-  .redact-text span.marked{background:#000; color:#000; border-radius:3px;}
-  .redact-text span.marked::selection{background:#000;}
-  .redact-text span.reveal-correct{background:var(--safe); color:#00250f;}
-  .redact-text span.reveal-missed{background:var(--warn); color:#3a2c00;}
-  .redact-text span.reveal-false{background:var(--unsafe); color:#fff; text-decoration:line-through;}
-
-  /* case studies */
-  .cs-card{border:1px solid var(--border); border-radius:var(--radius); margin-bottom:14px; overflow:hidden; background:var(--panel2);}
-  .cs-head{padding:16px 18px; cursor:pointer; display:flex; justify-content:space-between; align-items:center; gap:10px;}
-  .cs-head:hover{background:#202020;}
-  .cs-head .cs-title{font-weight:700;}
-  .cs-tag{font-size:0.68rem; padding:3px 9px; border-radius:999px; text-transform:uppercase; font-weight:700; letter-spacing:.03em; white-space:nowrap;}
-  .cs-body{display:none; padding:0 18px 18px;}
-  .cs-body.open{display:block;}
-  .cs-options label{
-    display:block; background:#0d0d0d; border:1px solid var(--border); border-radius:8px;
-    padding:10px 14px; margin-bottom:8px; cursor:pointer; font-size:0.88rem;
-  }
-  .cs-options label:hover{border-color:var(--accent);}
-  .cs-options label.chosen{border-color:var(--accent);}
-  .cs-options input{margin-right:8px;}
-  .cs-feedback{display:none; margin-top:12px; padding:14px; border-radius:8px; font-size:0.88rem;}
-  .cs-feedback.correct{display:block; background:#0e2016; border:1px solid var(--safe); color:#bdf5cf;}
-  .cs-feedback.incorrect{display:block; background:#2a0e0c; border:1px solid var(--unsafe); color:#ffc6c2;}
-
-  /* policy builder */
-  .policy-check{display:flex; align-items:flex-start; gap:12px; padding:12px 0; border-bottom:1px dashed var(--border);}
-  .policy-check input{margin-top:4px; width:18px; height:18px;}
-  .policy-summary{white-space:pre-wrap; background:#0d0d0d; border:1px solid var(--border); border-radius:8px; padding:16px; font-size:0.88rem; margin-top:14px; display:none;}
-
-  /* final quiz */
-  .fq-item{border:1px solid var(--border); border-radius:var(--radius); padding:16px 18px; margin-bottom:14px; background:var(--panel2);}
-  .fq-item .fq-q{font-weight:600; margin-bottom:10px;}
-  .fq-options{display:flex; gap:10px; flex-wrap:wrap;}
-  .fq-options button{
-    background:#0d0d0d; border:1px solid var(--border); color:var(--text); border-radius:8px;
-    padding:8px 18px; cursor:pointer; font-weight:700; font-size:0.85rem;
-  }
-  .fq-options button.chosen-safe{border-color:var(--safe); background:#0e2016;}
-  .fq-options button.chosen-unsafe{border-color:var(--unsafe); background:#2a0e0c;}
-  .fq-explain{display:none; margin-top:10px; font-size:0.85rem; color:var(--muted); border-left:3px solid var(--border); padding-left:10px;}
-
-  /* arcade */
-  .flip-grid{display:grid; grid-template-columns:repeat(auto-fit,minmax(180px,1fr)); gap:14px; margin-top:10px;}
-  .flip-card{
-    background:var(--panel2); border:1px solid var(--border); border-radius:var(--radius);
-    padding:20px 16px; min-height:100px; cursor:pointer; text-align:center; display:flex;
-    align-items:center; justify-content:center; transition:background .2s;
-  }
-  .flip-card:hover{border-color:var(--accent);}
-  .flip-card .front{font-weight:700; font-size:0.95rem;}
-  .flip-card .back{font-size:0.85rem; color:var(--muted); display:none;}
-  .flip-card.flipped .front{display:none;}
-  .flip-card.flipped .back{display:block;}
-  .flip-card.flipped{border-color:var(--accent);}
-
-  .mcq-row{background:#0d0d0d; border:1px solid var(--border); border-radius:8px; padding:14px; margin-bottom:10px;}
-  .mcq-row .mcq-q{margin-bottom:8px; font-weight:600;}
-  .mcq-row .mcq-opts{display:flex; flex-wrap:wrap; gap:8px;}
-  .mcq-row button.opt{background:var(--panel2); border:1px solid var(--border); color:var(--text); border-radius:8px; padding:7px 14px; font-size:0.84rem; cursor:pointer;}
-  .mcq-row button.opt:hover{border-color:var(--accent);}
-  .mcq-row button.opt.right{border-color:var(--safe); background:#0e2016;}
-  .mcq-row button.opt.wrong{border-color:var(--unsafe); background:#2a0e0c;}
-  .mcq-row .mcq-fb{margin-top:8px; font-size:0.82rem;}
-
-  .odd-grid{display:grid; grid-template-columns:repeat(auto-fit,minmax(140px,1fr)); gap:8px; margin-top:8px;}
-  .odd-chip{background:var(--panel2); border:1px solid var(--border); border-radius:8px; padding:12px; text-align:center; cursor:pointer; font-size:0.85rem;}
-  .odd-chip:hover{border-color:var(--accent);}
-  .odd-chip.right{border-color:var(--safe); background:#0e2016;}
-  .odd-chip.wrong{border-color:var(--unsafe); background:#2a0e0c;}
-
-  .tot-row{display:flex; gap:12px; align-items:stretch; flex-wrap:wrap;}
-  .tot-btn{flex:1 1 220px; background:#0d0d0d; border:1px solid var(--border); border-radius:8px; padding:16px; cursor:pointer; font-size:0.86rem; text-align:center;}
-  .tot-btn:hover{border-color:var(--accent);}
-  .tot-btn.right{border-color:var(--safe); background:#0e2016;}
-  .tot-btn.wrong{border-color:var(--unsafe); background:#2a0e0c;}
-  .tot-vs{align-self:center; color:var(--muted); font-weight:800; padding:0 4px;}
-
-  .result-box{text-align:center; padding:30px; border-radius:var(--radius); margin-top:20px;}
-  .result-box.pass{background:#0e2016; border:1px solid var(--safe);}
-  .result-box.fail{background:#2a0e0c; border:1px solid var(--unsafe);}
-  .result-box .big{font-size:2.6rem; font-weight:800;}
-
-  .certificate{
-    border:3px solid var(--accent); border-radius:var(--radius); padding:40px; text-align:center;
-    background:radial-gradient(circle at top, #1a1010, #0a0a0a); margin-top:20px;
-  }
-  .certificate h2{font-size:1.8rem; margin-bottom:0; color:#fff;}
-  .certificate .name-input{
-    background:transparent; border:none; border-bottom:2px solid var(--accent); color:#fff;
-    font-size:1.4rem; text-align:center; padding:6px 10px; margin:14px 0; width:80%; max-width:420px;
-    font-family:inherit;
-  }
-  .certificate .name-input::placeholder{color:#555;}
-
-  footer{text-align:center; color:var(--muted); font-size:0.8rem; padding:30px 0 10px;}
-  .break-banner{
-    background:linear-gradient(90deg, var(--accent-dim), transparent); border:1px solid var(--accent);
-    border-radius:var(--radius); padding:16px 20px; margin:20px 0; display:flex; align-items:center; gap:14px;
-  }
-  .break-banner .icon{font-size:1.6rem;}
-  @media print{
-    .topbar,.tabs,footer,.no-print{display:none !important;}
-    .panel{display:none !important;}
-    #panel-part9{display:block !important;}
-    body{background:#fff; color:#000;}
-  }
+.quick-nav {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background: var(--bg);
+    padding: 12px 20px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    gap: 10px;
+    overflow-x: auto;
+    scrollbar-width: none;
+}
+.quick-nav::-webkit-scrollbar { display: none; }
+.quick-nav button {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid var(--border);
+    color: var(--text);
+    padding: 8px 16px;
+    border-radius: 8px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    white-space: nowrap;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: all 0.2s ease;
+}
+.quick-nav button:hover {
+    background: rgba(255, 255, 255, 0.1);
+    border-color: var(--accent);
+}
+.quick-nav button.active {
+    background: rgba(228, 0, 43, 0.1);
+    border-color: var(--accent);
+    color: var(--accent);
+}
+/* Hide all sections by default, only show the open one */
+.section { display: none !important; }
+.section.open { display: block !important; }
 </style>
-</head>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script></head>
 <body>
 
-<div class="topbar">
-  <div>
-    <h1>🛡️ Session 3 — Safe AI</h1>
-    <div class="sub">VEKA GenAI Excellence · Learn AI. Apply AI. Protect what matters.</div>
-  </div>
-  <div class="timer-box no-print">
-    <span class="clock" id="clockDisplay">00:00</span>
-    <button onclick="timerStart()">▶ Start</button>
-    <button class="secondary" onclick="timerPause()">⏸ Pause</button>
-    <button class="secondary" onclick="timerReset()">↺ Reset</button>
-  </div>
+<div class="module-header" style="position: relative; overflow: hidden;">
+<div class="tag">SESSION 3</div>
+<div style="position: relative; z-index: 2; max-width: 60%;"><h1>M3: Safe AI — Governance &amp; Data Protection</h1>
+<p>Theory, real-world incidents, VEKA case studies, hallucination detection, data classification, and enterprise AI policy — everything you need to use AI responsibly in a fenestration business</p></div>
+
+<style>
+@keyframes floatAvatarModule { 0% { transform: translateY(0px); } 50% { transform: translateY(-12px); } 100% { transform: translateY(0px); } }
+@keyframes floatCardM1 { 0% { transform: translateY(0px) rotate(0deg); } 50% { transform: translateY(-6px) rotate(-2deg); } 100% { transform: translateY(0px) rotate(0deg); } }
+@keyframes floatCardM2 { 0% { transform: translateY(0px) rotate(0deg); } 50% { transform: translateY(6px) rotate(2deg); } 100% { transform: translateY(0px) rotate(0deg); } }
+@media (max-width: 900px) {
+    .module-hero-graphic {
+        position: relative !important;
+        top: auto !important;
+        right: auto !important;
+        transform: none !important;
+        margin: 30px auto 10px auto !important;
+        width: 220px !important;
+        height: 220px !important;
+        display: flex !important;
+    }
+    .module-header > div:first-child {
+        max-width: 100% !important;
+        text-align: center;
+    }
+}
+</style>
+<div class="module-hero-graphic" style="position: absolute; right: 5%; top: 50%; transform: translateY(-50%); width: 280px; height: 280px; display: flex; align-items: center; justify-content: center; pointer-events: none; z-index: 1;">
+    <div style="position: relative; width: 100%; height: 100%; animation: floatAvatarModule 6s ease-in-out infinite;">
+        <img src="../assets/images/veka_m3_avatar.png" alt="AI Avatar" style="width: 100%; height: 100%; object-fit: contain; border-radius: 20px; filter: drop-shadow(0 10px 30px rgba(226,32,47,0.4)); mask-image: linear-gradient(to bottom, black 80%, transparent 100%); -webkit-mask-image: linear-gradient(to bottom, black 80%, transparent 100%);">
+        
+        <!-- Floating Glassmorphic Card 1 -->
+        <div style="position: absolute; top: 15%; left: -25%; background: rgba(22,22,23,0.8); backdrop-filter: blur(12px); border: 1px solid var(--border-color); border-top: 2px solid var(--accent); padding: 8px 14px; border-radius: 12px; animation: floatCardM1 4.5s ease-in-out infinite; display: flex; flex-direction: column; gap: 4px; box-shadow: 0 8px 32px rgba(0,0,0,0.5);">
+            <span style="font-size: 0.6rem; color: var(--text-muted); letter-spacing: 0.1em; text-transform: uppercase; font-weight: 600;">Security Score</span>
+            <span style="font-size: 1.1rem; font-weight: 800; color: var(--accent);">100% 🔒</span>
+        </div>
+
+        <!-- Floating Glassmorphic Card 2 -->
+        <div style="position: absolute; bottom: 15%; right: -25%; background: rgba(22,22,23,0.8); backdrop-filter: blur(12px); border: 1px solid var(--border-color); border-bottom: 2px solid var(--accent); padding: 8px 14px; border-radius: 12px; animation: floatCardM2 5.5s ease-in-out infinite 1s; display: flex; flex-direction: column; gap: 4px; box-shadow: 0 8px 32px rgba(0,0,0,0.5);">
+            <span style="font-size: 0.6rem; color: var(--text-muted); letter-spacing: 0.1em; text-transform: uppercase; font-weight: 600;">Data Privacy</span>
+            <div style="display: flex; align-items: center; gap: 8px;">
+                <div style="width: 50px; height: 6px; background: rgba(255,255,255,0.1); border-radius: 3px;"><div style="width: 100%; height: 100%; background: var(--accent); border-radius: 3px; box-shadow: 0 0 10px var(--accent);"></div></div>
+                <span style="font-size: 1.1rem; font-weight: 800; color: white;">Secured</span>
+            </div>
+        </div>
+    </div>
+</div>
 </div>
 
 <div class="container">
 
-  <!-- M3 GAMIFIED EXPERIENCE LINK -->
-  <div class="card" style="text-align: center; background: linear-gradient(135deg, rgba(99,102,241,0.1), rgba(0,0,0,0)); border-color: #6366f1; margin-bottom: 24px;">
-      <h3 style="font-size: 20px; display: flex; align-items: center; justify-content: center; gap: 8px; color: #6366f1;">🕹️ Play the M3 Gamified Experience</h3>
-      <p style="margin-bottom: 15px;">Test your knowledge of data policies, earn XP, and unlock badges in the interactive version of this module.</p>
-      <a href="m3riskprivacygame.html" style="display: inline-block; padding: 12px 24px; background: #6366f1; color: white; text-decoration: none; border-radius: 8px; font-weight: 600; transition: 0.2s;">Launch M3 Game</a>
-  </div>
+<!-- M3 GAMIFIED EXPERIENCE LINK -->
+<div class="card" style="text-align: center; background: linear-gradient(135deg, rgba(99,102,241,0.1), rgba(0,0,0,0)); border-color: var(--indigo); margin-bottom: 24px;">
+    <h3 style="font-size: 20px; display: flex; align-items: center; justify-content: center; gap: 8px; color: var(--indigo);">🕹️ Play the M3 Gamified Experience</h3>
+    <p style="margin-bottom: 15px;">Test your knowledge of data policies, earn XP, and unlock badges in the interactive version of this module.</p>
+    <a href="m3riskprivacygame.html" style="display: inline-block; padding: 12px 24px; background: var(--indigo); color: white; text-decoration: none; border-radius: 8px; font-weight: 600; transition: 0.2s;">Launch M3 Game</a>
+</div>
 
-  <div class="tabs" id="tabBar"></div>
+<!-- OBJECTIVES -->
+<div class="section open">
+<div class="section-head" onclick="toggle(this)"><h2>🎯 Learning Objectives</h2><span class="arrow">▼</span></div>
+<div class="section-body">
+<div class="stats">
+<div class="stat"><span class="n">120</span><span class="l">Minutes</span></div>
+<div class="stat"><span class="n">12</span><span class="l">Case Studies</span></div>
+<div class="stat"><span class="n">15</span><span class="l">Quiz Scenarios</span></div>
+<div class="stat"><span class="n">3</span><span class="l">Data Tiers</span></div>
+</div>
+<div class="card"><p>By the end of this module, you will:</p><ul>
+<li>Understand how AI actually processes and stores what you type into it</li>
+<li>Know the 5 categories of AI risk relevant to a profile systems manufacturer</li>
+<li>Classify any VEKA data into 3 tiers: Public, Internal, Confidential</li>
+<li>Anonymise dealer data, quotations and reports before using AI</li>
+<li>Detect AI hallucinations in technical specifications, standards and calculations</li>
+<li>Understand India's Digital Personal Data Protection Act (DPDP 2023) in practical terms</li>
+<li>Apply a draft VEKA AI usage policy to your daily work</li>
+<li>Score 13+ out of 15 on the "Is This Safe?" quiz</li>
+</ul></div>
 
-  <!-- ================= OBJECTIVES ================= -->
-  <div class="panel active" id="panel-objectives">
-    <div class="card" style="position: relative; overflow: hidden;">
-      
-      <style>
-      @keyframes floatAvatarModule { 0% { transform: translateY(0px); } 50% { transform: translateY(-12px); } 100% { transform: translateY(0px); } }
-      @keyframes floatCardM1 { 0% { transform: translateY(0px) rotate(0deg); } 50% { transform: translateY(-6px) rotate(-2deg); } 100% { transform: translateY(0px) rotate(0deg); } }
-      @keyframes floatCardM2 { 0% { transform: translateY(0px) rotate(0deg); } 50% { transform: translateY(6px) rotate(2deg); } 100% { transform: translateY(0px) rotate(0deg); } }
-      @media (max-width: 900px) {
-          .module-hero-graphic {
-              position: static !important;
-              transform: none !important;
-              margin: 30px auto !important;
-              width: 220px !important;
-              height: 220px !important;
-          }
-      }
-      </style>
-      <div class="module-hero-graphic" style="position: absolute; right: 5%; top: 50%; transform: translateY(-50%); width: 280px; height: 280px; display: flex; align-items: center; justify-content: center; pointer-events: none; z-index: 1;">
-          <div style="position: relative; width: 100%; height: 100%; animation: floatAvatarModule 6s ease-in-out infinite;">
-              <img src="../assets/images/veka_m3_avatar.png" alt="AI Avatar" style="width: 100%; height: 100%; object-fit: contain; border-radius: 20px; filter: drop-shadow(0 10px 30px rgba(226,32,47,0.4)); mask-image: linear-gradient(to bottom, black 80%, transparent 100%); -webkit-mask-image: linear-gradient(to bottom, black 80%, transparent 100%);">
-              
-              <!-- Floating Glassmorphic Card 1 -->
-              <div style="position: absolute; top: 15%; left: -25%; background: rgba(22,22,23,0.8); backdrop-filter: blur(12px); border: 1px solid #2a2a2a; border-top: 2px solid var(--accent); padding: 8px 14px; border-radius: 12px; animation: floatCardM1 4.5s ease-in-out infinite; display: flex; flex-direction: column; gap: 4px; box-shadow: 0 8px 32px rgba(0,0,0,0.5);">
-                  <span style="font-size: 0.6rem; color: #9a9a9a; letter-spacing: 0.1em; text-transform: uppercase; font-weight: 600;">Security Score</span>
-                  <span style="font-size: 1.1rem; font-weight: 800; color: var(--accent);">100% 🔒</span>
-              </div>
-      
-              <!-- Floating Glassmorphic Card 2 -->
-              <div style="position: absolute; bottom: 15%; right: -25%; background: rgba(22,22,23,0.8); backdrop-filter: blur(12px); border: 1px solid #2a2a2a; border-bottom: 2px solid var(--accent); padding: 8px 14px; border-radius: 12px; animation: floatCardM2 5.5s ease-in-out infinite 1s; display: flex; flex-direction: column; gap: 4px; box-shadow: 0 8px 32px rgba(0,0,0,0.5);">
-                  <span style="font-size: 0.6rem; color: #9a9a9a; letter-spacing: 0.1em; text-transform: uppercase; font-weight: 600;">Data Privacy</span>
-                  <div style="display: flex; align-items: center; gap: 8px;">
-                      <div style="width: 50px; height: 6px; background: rgba(255,255,255,0.1); border-radius: 3px;"><div style="width: 100%; height: 100%; background: var(--accent); border-radius: 3px; box-shadow: 0 0 10px var(--accent);"></div></div>
-                      <span style="font-size: 1.1rem; font-weight: 800; color: white;">Secured</span>
-                  </div>
-              </div>
-          </div>
-      </div>
-      
-      <div style="position: relative; z-index: 2; max-width: 65%;">
-        <span class="pill">🎯 Learning Objectives</span>
-        <h2>Session 3 — Safe AI</h2>
-      <p style="color:var(--muted)">A 3-hour, hands-on workshop for every VEKA employee who uses AI tools — sales, dealers desk, technical, HR, marketing, and production. By the end, you'll know exactly what's safe to type into an AI tool, what isn't, and what to do when you're not sure.</p>
+<div class="tip"><strong>💡 Why this module sits in the middle of the programme.</strong> Sessions 1 and 2 made you faster. If we stopped there, we would have taught a room of people to move confidential commercial data around quickly. This session is what makes the rest of the programme safe to actually use.</div>
+</div>
+</div>
 
-      <div class="stat-grid">
-        <div class="stat"><div class="num">180</div><div class="lbl">Minutes</div></div>
-        <div class="stat"><div class="num">13</div><div class="lbl">Case Studies</div></div>
-        <div class="stat"><div class="num">15</div><div class="lbl">Final Quiz Scenarios</div></div>
-        <div class="stat"><div class="num">3</div><div class="lbl">Data Tiers</div></div>
-        <div class="stat"><div class="num">7</div><div class="lbl">Core Interactive Games</div></div>
-        <div class="stat"><div class="num">50+</div><div class="lbl">Bonus Arcade Questions</div></div>
-      </div>
+<!-- ============================================================ -->
+<!-- PART 1: THEORY — HOW AI ACTUALLY WORKS -->
+<!-- ============================================================ -->
+<div class="section open">
+<div class="section-head" onclick="toggle(this)"><h2>🧠 Part 1: How AI Actually Works — What Happens to Your Data</h2><span class="arrow">▼</span></div>
+<div class="section-body">
 
-      <h3>By the end of this module, you will:</h3>
-      <ul class="obj">
-        <li>Understand how AI actually processes and stores what you type into it</li>
-        <li>Know the 5 categories of AI risk relevant to a profile systems manufacturer</li>
-        <li>Classify any VEKA data into 3 tiers: Public, Internal, Confidential</li>
-        <li>Anonymise dealer data, quotations and reports before using AI</li>
-        <li>Detect AI hallucinations in technical specifications, standards and calculations</li>
-        <li>Understand India's Digital Personal Data Protection Act (DPDP 2023) in practical terms</li>
-        <li>Apply your own draft VEKA AI usage policy (the "5 T's") to your daily work</li>
-        <li>Score 13+ out of 15 on the final "Is This Safe?" quiz and earn your certificate</li>
-      </ul>
+<div class="card">
+<h3>What is a Large Language Model (LLM)?</h3>
+<p>ChatGPT, Claude, Copilot and Gemini are Large Language Models. Think of them as extremely advanced autocomplete. They were trained on enormous quantities of text — books, websites, papers, forums — and learned the patterns in human language.</p>
+<p style="margin-top:8px"><strong>Key insight:</strong> LLMs don't "know" things the way a person does. They predict the most likely next word based on patterns they have seen. This is exactly why they can sound completely confident while being completely wrong — and why a fabricated U-value reads just as professionally as a real one.</p>
+
+<div class="diagram">
+<p style="font-size:13px;opacity:0.7;margin-bottom:10px">How an LLM generates a response:</p>
+<div class="flow">
+<div class="node">Your Prompt</div>
+<div class="arr">→</div>
+<div class="node">Pattern Matching<br/><span style="font-size:11px;opacity:0.7">against training data</span></div>
+<div class="arr">→</div>
+<div class="node">Word-by-Word<br/>Prediction</div>
+<div class="arr">→</div>
+<div class="node">Response<br/><span style="font-size:11px;opacity:0.7">(may contain errors)</span></div>
+</div>
+</div>
+<div class="info-box"><strong>Nothing in that chain checks whether the answer is true.</strong> There is no fact-checking step. Fluency and accuracy are separate things, and the model only optimises for one of them.</div>
+</div>
+
+<div class="card">
+<h3>What Happens When You Type Into a Free AI Tool?</h3>
+<div class="diagram">
+<p style="font-size:13px;opacity:0.7;margin-bottom:10px">Data flow — free consumer tools:</p>
+<div class="flow">
+<div class="node">You type a message<br/>or upload a file</div>
+<div class="arr">→</div>
+<div class="node node-danger">Sent to the provider's<br/>servers (often overseas)</div>
+<div class="arr">→</div>
+<div class="node node-danger">Retained for a<br/>period</div>
+<div class="arr">→</div>
+<div class="node node-danger">May be used to<br/>improve future models</div>
+</div>
+<p style="font-size:13px;opacity:0.7;margin-top:15px;margin-bottom:10px">Data flow — enterprise / business tier:</p>
+<div class="flow">
+<div class="node">You type a message<br/>or upload a file</div>
+<div class="arr">→</div>
+<div class="node node-safe">Sent encrypted to<br/>servers</div>
+<div class="arr">→</div>
+<div class="node node-safe">Processed under a<br/>no-training agreement</div>
+<div class="arr">→</div>
+<div class="node node-safe">NOT used<br/>for training</div>
+</div>
+</div>
+<p style="margin-top:10px"><strong>The critical difference:</strong> consumer tiers may retain your input and use it to improve the model. Business and enterprise tiers contractually do not. This is why the licence cost matters — it is the difference between a locked cabinet and a notice board.</p>
+<div class="warning"><strong>⚠️ Verify the current terms yourself before you rely on this.</strong> Retention periods and training policies change, and they differ by provider and by plan. Check the data-processing terms for the exact plan VEKA is on, and get IT to confirm it in writing. Do not rely on a training slide — including this one.</div>
+</div>
+
+<div class="card">
+<h3>Why Does This Matter for a Profile Systems Business?</h3>
+<p>VEKA sits in an unusual position: a manufacturer with trade-secret process knowledge, selling through a competitive channel, into projects won on price. That combination produces data that is unusually valuable to the wrong reader.</p>
+<div class="grid-2">
+<div>
+<h4>🪟 Data That Is Uniquely Sensitive Here</h4>
+<ul>
+<li><strong>Compound and formulation detail</strong> — the recipe is decades of R&amp;D and is not patented in most of its detail</li>
+<li><strong>Extrusion parameters, die and tooling design</strong> — process know-how competitors cannot buy</li>
+<li><strong>Dealer and fabricator price lists, discount slabs, rebate schemes</strong> — reveal your entire commercial structure</li>
+<li><strong>Project quotations</strong> — you are bidding against other systems suppliers and against aluminium</li>
+<li><strong>Unreleased system designs and launch plans</strong> — competitive timing advantage</li>
+<li><strong>Fabricator performance and volume data</strong> — a competitor's poaching list</li>
+</ul>
+</div>
+<div>
+<h4>💥 Consequences Specific to This Business</h4>
+<ul>
+<li>Leaked discount structure → every dealer negotiation resets from your floor, permanently</li>
+<li>Leaked project quotation → undercut on a multi-tower order</li>
+<li>Invented performance figure in a proposal → a commitment you cannot meet, on a facade you cannot replace cheaply</li>
+<li>Fabricated standard reference in a specification → rejected at approval stage, or worse, accepted and discovered later</li>
+<li>Formulation or process detail exposed → an advantage you cannot get back</li>
+<li>Employee personal data leaked → DPDP Act exposure, penalties up to ₹250 crore</li>
+</ul>
+</div>
+</div>
+<div class="tip"><strong>💡 The asymmetry to hold on to:</strong> a leak takes two seconds and cannot be undone. Anonymising the same data takes two minutes. There is no version of this where the shortcut was worth it.</div>
+</div>
+</div>
+</div>
+
+<!-- ============================================================ -->
+<!-- PART 2: THEORY — 5 CATEGORIES OF AI RISK -->
+<!-- ============================================================ -->
+<div class="section">
+<div class="section-head" onclick="toggle(this)"><h2>⚠️ Part 2: The 5 Categories of AI Risk at VEKA</h2><span class="arrow">▼</span></div>
+<div class="section-body">
+
+<div class="card" style="border-top:3px solid #FF5252">
+<h3 style="color:#FF5252">Risk 1: Data Leakage — Your Information Leaves Your Control</h3>
+<p>When you paste data into a consumer AI tool, it goes to a third party's servers, may be retained, and on some plans may be used to improve the model. Your dealer discount structure, a project quotation, or an unreleased system spec is then outside your control and outside your contracts.</p>
+<h4>Real-world parallel:</h4>
+<p>In 2023 Samsung restricted internal use of generative AI tools after engineers pasted internal code into ChatGPT. If that can happen at a company of that size with that much security investment, it can happen in a sales office. VEKA's equivalent is a project quotation or a discount matrix pasted in for a "quick summary".</p>
+</div>
+
+<div class="card" style="border-top:3px solid #FF9800">
+<h3 style="color:#FF9800">Risk 2: Hallucination — AI Generates False Information</h3>
+<p>AI does not distinguish fact from fiction. It generates the most statistically likely text, not the most accurate. In fenestration, a fabricated thermal or acoustic figure, an invented standard clause, or a made-up warranty term becomes a written commercial commitment the moment it goes into a proposal.</p>
+<h4>Why it is worse in this domain than in general use:</h4>
+<p>Models hallucinate more where training data is thin. Indian fenestration standards, system-specific test data and fabricator-dependent performance are all thin. The general concept of a U-value is well represented in training data; <em>your</em> system's tested U-value with <em>that</em> glazing in <em>that</em> configuration is not. The model will produce a number anyway.</p>
+</div>
+
+<div class="card" style="border-top:3px solid #9C27B0">
+<h3 style="color:#CE93D8">Risk 3: Over-Reliance — Trusting AI Without Verification</h3>
+<p>As teams get comfortable, they stop checking. This is the most dangerous risk because it is invisible until something goes wrong. A quotation total that is wrong, a technical claim nobody verified, a rejection email with a line that should never have been written — all because "the AI wrote it".</p>
+<h4>The human factor:</h4>
+<p>Structured, confident, well-formatted output triggers less scrutiny than a colleague's rough draft would. The better the formatting, the less it gets read. Watch for the moment your own review becomes a skim — that is the moment the risk arrives.</p>
+</div>
+
+<div class="card" style="border-top:3px solid #2196F3">
+<h3 style="color:#64B5F6">Risk 4: Compliance Violation — Breaking Rules Without Knowing</h3>
+<p>India's Digital Personal Data Protection Act 2023 sets rules on how personal data may be processed. Uploading employee identity documents, salary data or candidate CVs to an external AI service can constitute unauthorised processing and transfer, with penalties running to very large sums.</p>
+<h4>Practical DPDP points for VEKA:</h4>
+<ul>
+<li><strong>Consent and purpose:</strong> data collected for HR purposes cannot simply be reused for AI analysis</li>
+<li><strong>Third parties:</strong> an AI provider is a processor; your obligations do not disappear because a tool is convenient</li>
+<li><strong>Candidate data:</strong> a CV is someone else's personal data and you do not have consent to send it to a third party</li>
+<li><strong>Breach handling:</strong> if personal data leaks via an AI tool, there are notification obligations with tight timelines</li>
+<li><strong>Contractual overlay:</strong> separately from DPDP, your customer and supplier agreements may restrict sharing their information with third parties at all</li>
+</ul>
+<div class="info-box"><strong>Not legal advice.</strong> Have VEKA's legal team confirm how DPDP and your specific contracts apply before you set policy on the basis of a training module.</div>
+</div>
+
+<div class="card" style="border-top:3px solid #4CAF50">
+<h3 style="color:#4CAF50">Risk 5: Ethical Misuse — Using AI Inappropriately</h3>
+<p>AI can be used to fabricate documents that look authentic. Even where technically possible, these uses are dishonest and frequently illegal.</p>
+<h4>Examples in this business:</h4>
+<ul>
+<li>Generating a test report or certificate that was never issued</li>
+<li>Producing a performance claim for a marketing sheet with no test behind it</li>
+<li>Drafting a sustainability or recycled-content claim that nothing supports</li>
+<li>Creating a fabricated meeting record with invented attendees or decisions</li>
+<li>Writing a technical justification designed to get a specification approved that should not be</li>
+</ul>
+<p style="margin-top:8px"><strong>Position to state plainly in the room:</strong> using AI to generate false, misleading or fraudulent documentation is a disciplinary matter and potentially a legal one. There is no ambiguity here and no grey area to explore.</p>
+</div>
+
+<div class="tip"><strong>💡 Key Teaching Point:</strong> these five risks are not theoretical. They occur routinely at organisations that adopt AI without governance. The goal of Module 3 is to keep the productivity gains from Sessions 1 and 2 while removing the tail risk that comes attached to them.</div>
+
+</div>
+</div>
+
+<!-- ============================================================ -->
+<!-- PART 3: THEORY — AI TRUST EQUATION -->
+<!-- ============================================================ -->
+<div class="section">
+<div class="section-head" onclick="toggle(this)"><h2>🔑 Part 3: The AI Trust Equation — When to Trust, When to Verify</h2><span class="arrow">▼</span></div>
+<div class="section-body">
+
+<div class="card">
+<h3>The 4-Level Trust Framework for AI Outputs</h3>
+<p>Not all AI outputs carry the same risk. Use this to decide how much verification a given output needs — before you generate it, not after.</p>
+<table>
+<tr><th>Trust Level</th><th>Type of Output</th><th>Verification Needed</th><th>VEKA Example</th></tr>
+<tr><td style="color:#4CAF50;font-weight:700">Level 1: LOW RISK<br/>Trust freely</td><td>Drafting, formatting, summarising, brainstorming, general explanation</td><td>Quick read-through</td><td>Drafting a meeting agenda, rewriting a rough internal note, explaining a technical term to a new joiner</td></tr>
+<tr><td style="color:#64B5F6;font-weight:700">Level 2: MEDIUM RISK<br/>Verify key facts</td><td>Data analysis, comparisons, trend identification, internal summaries</td><td>Cross-check every number against the source file</td><td>Regional sales variance summary, dealer activity comparison, production output trend</td></tr>
+<tr><td style="color:#FF9800;font-weight:700">Level 3: HIGH RISK<br/>Expert verification</td><td>Technical claims, standards references, specification support, anything customer-facing</td><td>A qualified engineer or the document owner must review and sign</td><td>Technical section of a proposal, response to an architect's specification query, fabricator troubleshooting guidance</td></tr>
+<tr><td style="color:#FF5252;font-weight:700">Level 4: CRITICAL RISK<br/>Never use AI alone</td><td>Performance guarantees, structural and wind-load determinations, final pricing, legal positions, compound and process specification</td><td>Certified professional sign-off mandatory; AI output is not an input</td><td>Wind load suitability for a high-rise facade, warranty terms, final project quotation, formulation change</td></tr>
+</table>
+<div class="warning"><strong>⚠️ The trap in this table is Level 3 disguised as Level 1.</strong> "Draft a follow-up email to a dealer" feels like drafting. The moment the draft contains a lead time or a performance number, it became Level 3. Judge the output, not the task label.</div>
+</div>
+
+<div class="diagram">
+<p style="font-size:15px;font-weight:600;color:var(--accent);margin-bottom:15px">The Golden Rule:</p>
+<div class="flow">
+<div class="node" style="font-size:16px;padding:15px 25px;border-color:var(--accent)">AI Generates</div>
+<div class="arr" style="font-size:30px">→</div>
+<div class="node" style="font-size:16px;padding:15px 25px;border-color:var(--accent)">Human Verifies</div>
+<div class="arr" style="font-size:30px">→</div>
+<div class="node" style="font-size:16px;padding:15px 25px;border-color:var(--accent)">Human Decides</div>
+<div class="arr" style="font-size:30px">→</div>
+<div class="node" style="font-size:16px;padding:15px 25px;border-color:var(--accent)">Human is Accountable</div>
+</div>
+<p style="font-size:14px;opacity:0.7;margin-top:15px">"The AI told me" is never an acceptable defence. The person who uses the output owns the outcome.</p>
+</div>
+
+<div class="card">
+<h3>The Two Tags That Make Verification Possible</h3>
+<p>You cannot verify what you cannot see. Instruct the model to expose its own gaps, every time:</p>
+<ul>
+<li><strong>[confirm]</strong> — a fact the model does not have and you must supply</li>
+<li><strong>[assumption]</strong> — an inference it made, flagged for your approval</li>
+</ul>
+<span class="prompt-label">ADD TO EVERY HIGH-RISK PROMPT</span>
+<div class="prompt"><button class="copy-btn" onclick="copyPrompt(this,event)">📋 Copy</button>Do not invent any figure, date, specification, standard reference,
+certification, warranty term or lead time.
+
+Where a value would strengthen this output but is not in what I gave
+you, write [confirm: what is needed and who supplies it] instead of
+a value.
+
+Mark any inference as [assumption: ...].
+
+Cite the source line for every number you do use.
+
+At the end, list every [confirm] and [assumption] separately so I can
+work through them.</div>
+<div class="tip"><strong>💡 Use tag count as a smoke alarm.</strong> If a real technical or commercial task comes back with zero [confirm] tags, that is not a clean bill of health — it almost certainly means something got filled in silently. Go and find it.</div>
+</div>
+
+</div>
+</div>
+
+<!-- ============================================================ -->
+<!-- PART 4: GLOBAL AI SAFETY INCIDENTS -->
+<!-- ============================================================ -->
+<div class="section">
+<div class="section-head" onclick="toggle(this)"><h2>🌍 Part 4: Real-World AI Safety Incidents — Lessons from Industry</h2><span class="arrow">▼</span></div>
+<div class="section-body">
+
+<p style="margin-bottom:15px;opacity:0.8">Documented incidents at large organisations. They show what happens when AI is used without governance. Click each to expand.</p>
+
+<div class="case-study" onclick="toggleCS(this)">
+<div class="case-study-header"><h3><span class="cs-tag cs-tag-global">GLOBAL</span> Samsung — Internal Code Pasted Into ChatGPT</h3><span class="cs-arrow">▼</span></div>
+<div class="case-study-body">
+<div class="cs-block what-happened"><h4 style="color:#FF5252">What Happened</h4><p>In 2023, Samsung semiconductor staff pasted internal source code and meeting content into ChatGPT to debug and summarise. The material left the company's control and sat on a third party's servers.</p></div>
+<div class="cs-block impact"><h4 style="color:#FF9800">Impact</h4><p>Samsung restricted internal use of generative AI tools and moved towards building internal alternatives. The precise competitive damage was never publicly quantified — which is itself part of the lesson. With this kind of exposure you rarely find out what it cost you, because you never see the competitor who benefited.</p></div>
+<div class="cs-block lesson"><h4 style="color:#4CAF50">Lesson for VEKA</h4><p>The people who did this were engineers at a company with serious security training, doing something that felt helpful. Nobody was being reckless. VEKA's equivalent is pasting a project quotation, a discount matrix or an extrusion parameter sheet in for a quick check. The intent is fine; the exposure is permanent.</p></div>
+</div>
+</div>
+
+<div class="case-study" onclick="toggleCS(this)">
+<div class="case-study-header"><h3><span class="cs-tag cs-tag-global">GLOBAL</span> Air Canada — Chatbot Gave a Wrong Policy, Company Paid</h3><span class="cs-arrow">▼</span></div>
+<div class="case-study-body">
+<div class="cs-block what-happened"><h4 style="color:#FF5252">What Happened</h4><p>Air Canada's website chatbot told a customer he could book at full fare and apply for a bereavement discount afterwards. The airline's actual policy required applying before travel. The customer relied on the chatbot and was then refused.</p></div>
+<div class="cs-block impact"><h4 style="color:#FF9800">Impact</h4><p>Air Canada argued it should not be held responsible for what its chatbot said. In early 2024 a Canadian tribunal rejected that argument and ordered the airline to compensate the customer. The principle established was blunt: a company is responsible for the information it publishes, including AI-generated information.</p></div>
+<div class="cs-block lesson"><h4 style="color:#4CAF50">Lesson for VEKA</h4><p>If AI drafts a technical answer, a warranty statement or a delivery commitment that goes to a dealer, an architect or a homeowner — and it is wrong — VEKA owns it. "The tool generated it" is not a defence. This is the single strongest argument for the human sign-off gate, and it is worth reading aloud in the room.</p></div>
+</div>
+</div>
+
+<div class="case-study" onclick="toggleCS(this)">
+<div class="case-study-header"><h3><span class="cs-tag cs-tag-global">GLOBAL</span> New York Lawyer — Court Filing With Fabricated Cases</h3><span class="cs-arrow">▼</span></div>
+<div class="case-study-body">
+<div class="cs-block what-happened"><h4 style="color:#FF5252">What Happened</h4><p>In 2023 a lawyer used ChatGPT to research precedents and filed a brief citing six cases. The citations had correct formatting, plausible names and realistic reasoning. He did not verify them.</p></div>
+<div class="cs-block impact"><h4 style="color:#FF9800">Impact</h4><p>The cases did not exist. The court sanctioned the lawyer and the story went worldwide. What made it possible was not carelessness about quality — the output looked <em>better</em> than genuine research, which is precisely why it went unchecked.</p></div>
+<div class="cs-block lesson"><h4 style="color:#4CAF50">Lesson for VEKA</h4><p>When AI produces a standard reference with a clause number, a test result, or a named certification, treat the specificity as a warning rather than as reassurance. AI fabricates technical references with exactly the same confidence it states real ones. A specification citing a clause nobody can find is the fenestration version of this case.</p></div>
+</div>
+</div>
+
+<div class="case-study" onclick="toggleCS(this)">
+<div class="case-study-header"><h3><span class="cs-tag cs-tag-global">ILLUSTRATIVE</span> Supplier Contract Breached by a Convenient Upload</h3><span class="cs-arrow">▼</span></div>
+<div class="case-study-body">
+<div class="cs-block what-happened"><h4 style="color:#FF5252">📍 Scenario</h4><p>Staff at a services firm upload client deliverables to a consumer AI tool for review. The client's contract contains a confidentiality clause restricting disclosure to third parties, and a requirement about where data is processed. The AI provider's servers sit outside that boundary.</p></div>
+<div class="cs-block impact"><h4 style="color:#FF9800">💥 Risk</h4><p>The breach is contractual, not just technical. It exists the moment the upload happens, whether or not anything is ever "leaked" in the ordinary sense. Consequences typically include contract termination rights, an audit at your cost, and a relationship that never fully recovers.</p></div>
+<div class="cs-block lesson"><h4 style="color:#4CAF50">Lesson for VEKA</h4><p>This one is written as an illustration rather than a named incident, because the pattern matters more than the company. VEKA's version: a builder's tender documents, a customer's drawing set, or a supplier's technical data sheet uploaded for a quick summary. <strong>Before uploading anything that came from outside VEKA, check whether an agreement covers it.</strong> Usually one does.</p></div>
+</div>
+</div>
+
+</div>
+</div>
+
+<!-- ============================================================ -->
+<!-- PART 5: DATA CLASSIFICATION -->
+<!-- ============================================================ -->
+<div class="section">
+<div class="section-head" onclick="toggle(this)"><h2>🔒 Part 5: Data Classification — The 3-Tier System for VEKA</h2><span class="arrow">▼</span></div>
+<div class="section-body">
+<div class="grid-3">
+<div class="card" style="border-top:3px solid #4CAF50">
+<h3 style="color:#4CAF50">🟢 Tier 1: Public / Safe</h3>
+<p>Share freely with any AI tool</p>
+<ul>
+<li>General industry and technical knowledge</li>
+<li>Anything already on the public VEKA website</li>
+<li>Published brochures and customer-facing literature</li>
+<li>Published standards and public regulations</li>
+<li>Generic templates and checklists</li>
+<li>Training material like this module</li>
+</ul>
+</div>
+<div class="card" style="border-top:3px solid #FF9800">
+<h3 style="color:#FF9800">🟡 Tier 2: Internal — Anonymise</h3>
+<p>Share ONLY after removing identifiers</p>
+<ul>
+<li>Sales data (remove dealer and project names)</li>
+<li>Production output (remove line and plant identity)</li>
+<li>Complaint records (remove customer and individual names)</li>
+<li>Site photographs (remove logos, faces, signage)</li>
+<li>Internal reports (remove names and exact figures)</li>
+<li>Meeting notes (remove attendees and commercial detail)</li>
+</ul>
+</div>
+<div class="card" style="border-top:3px solid #FF5252">
+<h3 style="color:#FF5252">🔴 Tier 3: Confidential — NEVER</h3>
+<p>NEVER upload to any external AI</p>
+<ul>
+<li>Compound formulation and additive recipes</li>
+<li>Extrusion parameters, die and tooling design</li>
+<li>Dealer price lists, discount slabs, rebate schemes</li>
+<li>Project quotations and pricing strategy</li>
+<li>Employee salary, Aadhaar, PAN; candidate CVs</li>
+<li>Customer and supplier contracts; unreleased system data</li>
+</ul>
+</div>
+</div>
+
+<h3 style="color:white;margin-top:20px;font-size:18px">VEKA Anonymisation Guide</h3>
+<table>
+<tr><th>Original Data</th><th>Anonymised Version</th><th>Why</th></tr>
+<tr><td>"Meridian Fenestration, Pune ordered 42 units"</td><td>"Dealer A, West region, ~40 units"</td><td>Dealer identity and exact volume protected</td></tr>
+<tr><td>"Skyline Towers project, 3 towers, Mumbai"</td><td>"Residential high-rise project, metro city"</td><td>Customer and project identity protected</td></tr>
+<tr><td>"Mr. Sharma, Regional Head, approved this"</td><td>"Regional management approved this"</td><td>Individual identity protected</td></tr>
+<tr><td>"West region did ₹4.2 Cr in July"</td><td>"Region 1 did index 100 in month 1"</td><td>Shape of the data kept, commercial figure removed</td></tr>
+<tr><td>"Our quotation: ₹1.85 Cr for the 3-tower order"</td><td><span style="color:#FF5252">⛔ NEVER SHARE — Tier 3</span></td><td>A competitor needs only to be ₹1 lower</td></tr>
+<tr><td>"Dealer slab: 18% base, 4% volume rebate above X"</td><td><span style="color:#FF5252">⛔ NEVER SHARE — Tier 3</span></td><td>Exposes your entire commercial floor</td></tr>
+<tr><td>"Compound: [additive package and ratios]"</td><td><span style="color:#FF5252">⛔ NEVER SHARE — Tier 3</span></td><td>Trade secret. No business reason to ever paste this.</td></tr>
+<tr><td>"Candidate CV: name, phone, salary history"</td><td><span style="color:#FF5252">⛔ NEVER SHARE — Tier 3</span></td><td>Third-party personal data; no consent for this use</td></tr>
+</table>
+
+<div class="card">
+<h3>How to Anonymise in Practice — 4 Moves</h3>
+<ul>
+<li><strong>Replace, don't delete.</strong> Dealer A/B/C, Project Alpha/Beta, Region 1/2/3. AI needs to know two things are different, not what they are called.</li>
+<li><strong>Index or scale the numbers.</strong> Divide everything by a factor only you know, or convert to an index where the largest is 100. Ratios and trends survive; the commercial figure does not.</li>
+<li><strong>Keep the structure, drop the identity.</strong> Column headings, units and relationships all matter to the analysis. Names and absolute values usually do not.</li>
+<li><strong>Do it in the file, not in your head.</strong> Find-and-replace on a copy of the spreadsheet takes two minutes and is repeatable. Retyping "carefully" is how one row slips through.</li>
+</ul>
+<div class="warning"><strong>⚠️ Check for re-identification.</strong> "Dealer A, 42 units, Pune, uPVC, last week" identifies exactly one dealer to anyone in the industry. Anonymising the name is not enough if the combination of remaining details points to one company. Remove the location or the timing too.</div>
+</div>
+
+<div class="tip"><strong>💡 The VEKA Rule:</strong> if you would not print it and leave it on the table at a competitor's office, do not paste it into a consumer AI tool.</div>
+</div>
+</div>
+
+<!-- ============================================================ -->
+<!-- PART 6: VEKA CASE STUDIES -->
+<!-- ============================================================ -->
+<div class="section">
+<div class="section-head" onclick="toggle(this)"><h2>📂 Part 6: VEKA Case Studies — Data Leak Scenarios</h2><span class="arrow">▼</span></div>
+<div class="section-body">
+
+<p style="margin-bottom:15px;opacity:0.8">Fictional but realistic scenarios modelled on VEKA's actual business. All names and figures are synthetic. Click each to expand.</p>
+
+<div class="case-study" onclick="toggleCS(this)">
+<div class="case-study-header"><h3><span class="cs-tag cs-tag-leak">DATA LEAK</span> CS-1: The Discount Matrix Pasted In for a "Quick Table"</h3><span class="cs-arrow">▼</span></div>
+<div class="case-study-body">
+<div class="cs-block what-happened"><h4 style="color:#FF5252">📍 Scenario</h4><p>A channel sales manager wants a cleaner version of the dealer discount structure for a regional review. He pastes the whole matrix into a free AI tool — base discount by slab, volume rebate thresholds, special terms for three named key accounts — and asks it to format the table nicely.</p></div>
+<div class="cs-block impact"><h4 style="color:#FF9800">💥 Risk</h4><p>This is the most commercially damaging single paste available to anyone in the sales organisation. It is your entire pricing floor, your incentive design, and which accounts get special treatment — in one block. A competitor with this document knows exactly what to offer every dealer you have. And unlike a lost order, you would never know it happened.</p></div>
+<div class="cs-block lesson"><h4 style="color:#4CAF50">✅ Fix</h4><p>Formatting a table needs no real numbers at all. Replace every figure with a placeholder, get the structure back, then fill the real values in yourself in Excel. Or just do it in Excel. <strong>Time cost of doing it safely: about the same. Risk: zero.</strong></p></div>
+</div>
+</div>
+
+<div class="case-study" onclick="toggleCS(this)">
+<div class="case-study-header"><h3><span class="cs-tag cs-tag-leak">DATA LEAK</span> CS-2: The Builder's Tender Documents Uploaded for a Summary</h3><span class="cs-arrow">▼</span></div>
+<div class="case-study-body">
+<div class="cs-block what-happened"><h4 style="color:#FF5252">📍 Scenario</h4><p>A project sales executive receives a 60-page tender pack from a developer — drawings, specification, commercial conditions, penalty clauses. Rather than read it, he uploads the whole PDF and asks: "What are the fenestration requirements and what are the penalties for delay?"</p></div>
+<div class="cs-block impact"><h4 style="color:#FF9800">💥 Risk</h4><p>Two separate problems. First, the developer's confidential tender documents are now on a third party's servers, and the tender terms almost certainly prohibit that — a breach that exists whether or not anything is ever exposed. Second, VEKA's interest in this project and the commercial terms it is working with have left the building. Consequences range from disqualification from the tender to a damaged relationship with a developer you want repeat business from.</p></div>
+<div class="cs-block lesson"><h4 style="color:#4CAF50">✅ Fix</h4><p>Search the PDF for the clause you need — that is thirty seconds. If you genuinely need AI help interpreting a clause, extract that single paragraph, remove party names and project identity, and paste only that. On enterprise tooling with the right agreement, more is possible — but check the tender terms first, not after. <strong>Documents that arrived from outside VEKA are the highest-risk uploads in the company, because someone else's contract governs them.</strong></p></div>
+</div>
+</div>
+
+<div class="case-study" onclick="toggleCS(this)">
+<div class="case-study-header"><h3><span class="cs-tag cs-tag-leak">DATA LEAK</span> CS-3: Candidate CVs Screened in a Consumer Tool</h3><span class="cs-arrow">▼</span></div>
+<div class="case-study-body">
+<div class="cs-block what-happened"><h4 style="color:#FF5252">📍 Scenario</h4><p>HR has 40 CVs for a technical sales role and a deadline. Someone uploads all 40 — names, phone numbers, addresses, current employers, salary history — and asks the AI to rank them against the job description.</p></div>
+<div class="cs-block impact"><h4 style="color:#FF9800">💥 Risk</h4><p>Forty people's personal data, belonging to them and not to VEKA, sent to a third party with no consent for that purpose. This sits squarely in DPDP territory, with substantial penalty exposure. There is a second problem alongside it: an unexamined AI ranking can encode bias against gaps in employment, non-metro colleges, or unfamiliar company names — and produce a hiring decision nobody can explain if challenged.</p></div>
+<div class="cs-block lesson"><h4 style="color:#4CAF50">✅ Fix</h4><p>Never upload a CV. Instead, build the scorecard first (Module 3 lab), then extract only anonymised, job-relevant attributes yourself: "Candidate 1: 6 years technical sales, fenestration background, handled 20+ dealer accounts, comfortable on site." Rank those. The AI adds the same structure and you have disclosed nothing. <strong>The final shortlist decision stays with a human either way.</strong></p></div>
+</div>
+</div>
+
+<div class="case-study" onclick="toggleCS(this)">
+<div class="case-study-header"><h3><span class="cs-tag cs-tag-leak">DATA LEAK</span> CS-4: The Formulation Question</h3><span class="cs-arrow">▼</span></div>
+<div class="case-study-body">
+<div class="cs-block what-happened"><h4 style="color:#FF5252">📍 Scenario</h4><p>A plant engineer is troubleshooting a surface finish issue. He pastes the compound formulation — additive package, ratios, supplier grades — plus current extrusion line parameters, and asks the AI what might be causing it.</p></div>
+<div class="cs-block impact"><h4 style="color:#FF9800">💥 Risk</h4><p>This is the nuclear scenario for a manufacturer. Formulation and process knowledge is the accumulated result of decades of development. Much of it is protected as trade secret rather than by patent, which means its protection depends entirely on it never leaving the company. Once pasted, that protection is gone and cannot be restored. Unlike a lost order, there is no recovery and no version of this you can fix later.</p></div>
+<div class="cs-block lesson"><h4 style="color:#4CAF50">✅ Fix</h4><p>Ask the question generically: "What process factors typically cause this class of surface defect in PVC profile extrusion?" You get the same diagnostic thinking with none of your specifics. Then apply it internally against your own data. <strong>Formulation and process parameters are Tier 3 permanently, on every tool, including enterprise ones, unless R&amp;D and legal have specifically approved otherwise.</strong></p></div>
+</div>
+</div>
+
+<div class="case-study" onclick="toggleCS(this)">
+<div class="case-study-header"><h3><span class="cs-tag cs-tag-good">BEST PRACTICE</span> CS-5: Regional Sales Analysis Done Right</h3><span class="cs-arrow">▼</span></div>
+<div class="case-study-body">
+<div class="cs-block" style="border-left:3px solid #4CAF50"><h4 style="color:#4CAF50">📍 Scenario</h4><p>An MIS analyst needs to understand why one region is underperforming. She spends eight minutes on a copy of the file: dealer names become Dealer A–P, regions become Region 1–4, and all values are converted to an index where the highest month is 100. Column headings, units and the time series stay exactly as they were. Then she uploads it.</p></div>
+<div class="cs-block action"><h4 style="color:#2196F3">📊 Result</h4><p>The analysis found that the underperformance sat in a small cluster of dealers rather than across the region, and flagged a pattern in order timing nobody had looked at. Analysis quality was identical to using real names — because the shape of the data carries the insight, and the identities never did. Eight minutes of preparation; nothing disclosed. <strong>This is the pattern to copy.</strong></p></div>
+<div class="cs-block lesson"><h4 style="color:#4CAF50">✅ Why it worked</h4><p>She anonymised in the file, not in her head. She kept structure and dropped identity. And she checked the result for re-identification before uploading — Region 1 with sixteen dealers is not identifiable; a region with two would have been.</p></div>
+</div>
+</div>
+
+</div>
+</div>
+
+<!-- ============================================================ -->
+<!-- PART 7: HALLUCINATION CASE STUDIES -->
+<!-- ============================================================ -->
+<div class="section">
+<div class="section-head" onclick="toggle(this)"><h2>🔍 Part 7: AI Hallucinations — Fenestration-Specific Dangers</h2><span class="arrow">▼</span></div>
+<div class="section-body">
+<div class="warning"><strong>⚠️ AI can state things confidently that are entirely wrong.</strong> In this business, an invented number does not stay a mistake — it becomes a written commitment on a facade that costs a great deal to replace.</div>
+
+<div class="case-study" onclick="toggleCS(this)">
+<div class="case-study-header"><h3><span class="cs-tag cs-tag-halluc">HALLUCINATION</span> CS-6: The Invented Standard Clause</h3><span class="cs-arrow">▼</span></div>
+<div class="case-study-body">
+<div class="cs-block what-happened"><h4 style="color:#FF5252">📍 Scenario</h4><p>A technical executive asks an AI tool what the applicable standard requires for uPVC window water tightness. The answer arrives with a standard number, a specific clause reference in the form "Clause 7.4.2(b)", a test pressure and a pass criterion. It reads exactly like a technical extract. He pastes it into a specification response to an architect.</p></div>
+<div class="cs-block impact"><h4 style="color:#FF9800">💥 Problem</h4><p>The standard exists. The clause number does not. The test pressure came from a different context entirely. The architect's consultant tried to look up the clause during specification review, could not find it, and queried it — which meant VEKA's entire technical submission was then read with suspicion. The cost is not just the rework; it is that a specifier who has caught you once reads everything you send differently afterwards.</p></div>
+<div class="cs-block lesson"><h4 style="color:#4CAF50">✅ How to Catch It</h4><p>Never let a clause number leave the building unverified. Look it up in the actual standard document, every time. Better prompt: "Explain what water tightness testing assesses and why it matters. Do not cite clause numbers or test values — I will take those from the standard and our data sheets." <strong>Ask AI for the concept; take the numbers from the source.</strong></p></div>
+</div>
+</div>
+
+<div class="case-study" onclick="toggleCS(this)">
+<div class="case-study-header"><h3><span class="cs-tag cs-tag-halluc">HALLUCINATION</span> CS-7: A U-Value That Nobody Tested</h3><span class="cs-arrow">▼</span></div>
+<div class="case-study-body">
+<div class="cs-block what-happened"><h4 style="color:#FF5252">📍 Scenario</h4><p>A sales engineer is building a proposal for a residential project and needs a thermal performance figure. He asks the AI what U-value the system achieves. It returns a specific number to one decimal place, plus a comparison stating the system performs a given percentage better than aluminium.</p></div>
+<div class="cs-block impact"><h4 style="color:#FF9800">💥 Problem</h4><p>Both numbers are invented. Worse, the question was unanswerable in principle: the thermal performance of an installed window depends on the profile system, the glazing unit, the spacer, the reinforcement, the size and configuration, and the installation detail. No single number exists for "the system" in isolation. By putting a figure in a proposal, VEKA made a performance commitment on a project of hundreds of units. If the built windows are later tested and fall short, that is a warranty conversation on a facade.</p></div>
+<div class="cs-block lesson"><h4 style="color:#4CAF50">✅ How to Catch It</h4><p>Any performance figure comes from a test report for a defined configuration, or it does not go in the document. Instruct the agent: "Never state a thermal, acoustic, wind load or water tightness value. Write [confirm: which test report and configuration] instead." Then the proposal arrives with a gap you have to fill — which is exactly what you want it to do. <strong>The most dangerous questions are the ones with no valid single answer, because AI will always produce one anyway.</strong></p></div>
+</div>
+</div>
+
+<div class="case-study" onclick="toggleCS(this)">
+<div class="case-study-header"><h3><span class="cs-tag cs-tag-halluc">HALLUCINATION</span> CS-8: The Warranty Term That Was Never Offered</h3><span class="cs-arrow">▼</span></div>
+<div class="case-study-body">
+<div class="cs-block what-happened"><h4 style="color:#FF5252">📍 Scenario</h4><p>AI drafts a dealer proposal email. Nobody mentioned warranty in the prompt. The draft includes a sentence offering a ten-year warranty against warping and discolouration. It reads well, so it stays. The email goes out.</p></div>
+<div class="cs-block impact"><h4 style="color:#FF9800">💥 Problem</h4><p>VEKA has now made a written warranty commitment in terms nobody in the company approved, to a customer who will reasonably rely on it. The actual warranty position depends on the system, the market, the fabricator's own workmanship warranty and the installation. Softening it later to "up to ten years" does not undo a written statement already sent. This is the most common hallucination in commercial writing and the easiest to miss, precisely because it makes the email sound stronger.</p></div>
+<div class="cs-block lesson"><h4 style="color:#4CAF50">✅ How to Catch It</h4><p>Read every AI-drafted customer document looking specifically for <em>commitments</em>, not errors. Warranty, delivery, price, performance. Anything in one of those four categories that you did not put in the prompt was invented. Run the adversarial pass: "List every sentence that states or implies a commercial or technical commitment, and what evidence would be needed to keep it."</p></div>
+</div>
+</div>
+
+<div class="case-study" onclick="toggleCS(this)">
+<div class="case-study-header"><h3><span class="cs-tag cs-tag-halluc">HALLUCINATION</span> CS-9: Quotation Total Wrong by ₹6.4 Lakh</h3><span class="cs-arrow">▼</span></div>
+<div class="case-study-body">
+<div class="cs-block what-happened"><h4 style="color:#FF5252">📍 Scenario</h4><p>An estimator pastes a 38-line schedule of window types, quantities and rates into an AI tool and asks it to total the order value. It returns a clean figure. That figure goes into the quotation.</p></div>
+<div class="cs-block impact"><h4 style="color:#FF9800">💥 Problem</h4><p>Manual checking in Excel found the AI had mis-multiplied rate by quantity on three lines. The gap was ₹6.4 lakh (synthetic figure) on a mid-sized order — enough to turn a thin-margin job into a loss-making one, and enough that discovering it after the customer accepts leaves you with no good options. Language models are pattern engines, not calculators; arithmetic across many rows is a known weak point.</p></div>
+<div class="cs-block lesson"><h4 style="color:#4CAF50">✅ How to Catch It</h4><p>Do final arithmetic in Excel. Always. Use AI to structure the schedule, spot a missing window type, or sanity-check that a rate looks out of line — never for the number that goes in the quotation. <strong>A two-minute cross-check catches errors worth lakhs, and it never gets cheaper than two minutes.</strong></p></div>
+</div>
+</div>
+
+<div class="case-study" onclick="toggleCS(this)">
+<div class="case-study-header"><h3><span class="cs-tag cs-tag-halluc">HALLUCINATION</span> CS-10: AI "Approves" a High-Rise Configuration</h3><span class="cs-arrow">▼</span></div>
+<div class="case-study-body">
+<div class="cs-block what-happened"><h4 style="color:#FF5252">📍 Scenario</h4><p>An application engineer describes a proposed window configuration in text — size, opening type, floor level, coastal location — and asks whether it is suitable for the wind loads on an 18-floor coastal tower. The AI responds that the configuration appears suitable, with a short explanation.</p></div>
+<div class="cs-block impact"><h4 style="color:#FF9800">💥 Problem</h4><p>The AI processed a sentence, not a structural condition. Wind load suitability depends on design wind pressure at that height and exposure, the reinforcement specification, the profile section properties, the glazing, the anchoring, and the fabricator's execution. None of that was available to it. What it produced was a confident-sounding sentence that gives false comfort to the one person in the chain who most needed to escalate. If the configuration is built and fails in service on a coastal high-rise, the consequences are not commercial.</p></div>
+<div class="cs-block lesson"><h4 style="color:#4CAF50">✅ How to Catch It</h4><p>Structural suitability is Trust Level 4 — AI output is not an input to it. Only a qualified engineer working from actual design wind pressures and the reinforcement specification can make this call. Instruct any agent: "If a question requires a structural, wind load or safety determination, do not answer. State what information a qualified engineer would need and stop." <strong>An AI that says "escalate this" is working correctly.</strong></p></div>
+</div>
+</div>
+
+<div class="case-study" onclick="toggleCS(this)">
+<div class="case-study-header"><h3><span class="cs-tag cs-tag-halluc">HALLUCINATION</span> CS-11: A Fabricator's Track Record, Entirely Invented</h3><span class="cs-arrow">▼</span></div>
+<div class="case-study-body">
+<div class="cs-block what-happened"><h4 style="color:#FF5252">📍 Scenario</h4><p>Before appointing a new fabricator, a channel manager asks the AI what it knows about "Crestline Windows Pvt Ltd" — projects completed, reliability, certifications. It returns a detailed profile: eight years in business, four named projects, a quality certification, a good reputation in the region.</p></div>
+<div class="cs-block impact"><h4 style="color:#FF9800">💥 Problem</h4><p>Crestline Windows is a name invented for this workshop. Every detail in that profile was fabricated. If a manager relied on it to appoint a fabricator, VEKA would be putting its brand on windows made by a company with an unknown track record — and brand damage from bad fabrication is the hardest kind to repair, because the homeowner blames the profile.</p></div>
+<div class="cs-block lesson"><h4 style="color:#4CAF50">✅ How to Catch It</h4><p>Never use AI to verify that an organisation exists or is any good. Instead: ask for documents directly, call references yourself, check company registry filings, visit the workshop, look at their machines and their finished work. <strong>AI cannot verify real-world entities. It generates plausible profiles, and a plausible profile is worse than no information, because it stops you looking.</strong></p></div>
+</div>
+</div>
+
+<div class="case-study" onclick="toggleCS(this)">
+<div class="case-study-header"><h3><span class="cs-tag cs-tag-halluc">HALLUCINATION</span> CS-12: A Sustainability Claim With Nothing Behind It</h3><span class="cs-arrow">▼</span></div>
+<div class="case-study-body">
+<div class="cs-block what-happened"><h4 style="color:#FF5252">📍 Scenario</h4><p>Marketing asks AI to draft copy for a sustainability page. The draft includes a recycled content percentage, a lifecycle claim, and a reference to an environmental certification scheme. It is well written and nobody questions the specifics.</p></div>
+<div class="cs-block impact"><h4 style="color:#FF9800">💥 Problem</h4><p>Environmental claims are among the most heavily scrutinised statements a manufacturer can publish, and an unsupported one is a regulatory and reputational risk in most markets, not merely an inaccuracy. A recycled content figure has to trace to actual material flows. A certification reference has to be a certification you actually hold. AI produced all three because they made the page better.</p></div>
+<div class="cs-block lesson"><h4 style="color:#4CAF50">✅ How to Catch It</h4><p>Treat every environmental claim as Trust Level 4. AI can draft the structure and the tone; every factual claim comes from a document with a name and a date, verified by whoever owns sustainability reporting. Instruct: "Do not state any recycled content figure, lifecycle claim or certification. Write [confirm: which report and who owns it]."</p></div>
+</div>
+</div>
+
+<div class="card">
+<h3>Hallucination Red Flags — Quick Reference</h3>
+<table>
+<tr><th>Red Flag</th><th>Example</th><th>Action</th></tr>
+<tr><td>Very specific clause numbers</td><td>"As per Clause 7.4.2(b)(iii)..."</td><td>Look it up in the actual standard</td></tr>
+<tr><td>Precise decimal performance values</td><td>"U-value of exactly 1.3 W/m²K"</td><td>Find the test report and configuration, or delete it</td></tr>
+<tr><td>Comparative percentages</td><td>"40% better than aluminium"</td><td>Ask: better than which section, tested how?</td></tr>
+<tr><td>Confident "always" or "never"</td><td>"The standard always requires..."</td><td>Standards have conditions and exceptions</td></tr>
+<tr><td>Warranty or lead time you didn't mention</td><td>"10-year warranty", "dispatch in 4 weeks"</td><td>Invented. Delete, then check who can approve it.</td></tr>
+<tr><td>Detailed company or dealer profiles</td><td>"They completed four projects and hold..."</td><td>Verify independently — AI fabricates these</td></tr>
+<tr><td>Round-number estimates</td><td>"Exactly ₹5,00,000 per floor"</td><td>Real commercial figures are rarely round</td></tr>
+<tr><td>Any answer to an unanswerable question</td><td>"Yes, this configuration is suitable"</td><td>If it couldn't know, it didn't know</td></tr>
+</table>
+<div class="tip"><strong>💡 The pattern across all eight rows:</strong> the hallucinated version always reads <em>more</em> professional than the honest one. Confidence and specificity are what invention looks like. Learn to find them suspicious.</div>
+</div>
+
+<div class="exercise">
+<h3>🧪 Live Exercise: Spot the Hallucination</h3>
+<p>Facilitator runs this live on the projector. Participants call out which claims could possibly be real and which had to be invented. Award a point per catch.</p>
+<span class="prompt-label">DEMO PROMPT</span>
+<div class="prompt"><button class="copy-btn" onclick="copyPrompt(this,event)">📋 Copy</button>Write a short proposal paragraph for a uPVC window order.
+
+Details: dealer in Pune, 42 window units, 70mm system,
+the client is also considering aluminium.
+
+Include our technical advantages, warranty, delivery
+timeline and relevant certifications to make it persuasive.
+
+[Only four facts were given. Every other specific in the output
+was generated. Participants identify each one and say what
+evidence would be needed to keep it.]</div>
+<div class="info-box"><strong>Facilitator note:</strong> run it a second time with the "never invent" instruction from Part 3 added, and put the two outputs side by side. The second version is shorter, full of [confirm] tags, and looks worse — which is the whole point of the exercise. Ask the room which one they would rather have sent.</div>
+</div>
+</div>
+</div>
+
+<!-- ============================================================ -->
+<!-- PART 8: FREE vs PAID -->
+<!-- ============================================================ -->
+<div class="section">
+<div class="section-head" onclick="toggle(this)"><h2>💳 Part 8: Free vs Paid AI Tools — Data Security Comparison</h2><span class="arrow">▼</span></div>
+<div class="section-body">
+<div class="warning"><strong>⚠️ Verify every row before you present this.</strong> Provider terms, retention periods and prices change frequently, and they differ by plan and region. Have IT confirm the current position for the exact plans VEKA is considering, and update the table. The shape of the comparison is stable; the details are not.</div>
+<table>
+<tr><th>Feature</th><th><span class="badge badge-risky">Consumer / Free</span></th><th><span class="badge badge-safe">ChatGPT Business</span></th><th><span class="badge badge-safe">Claude Team</span></th><th><span class="badge badge-warn">MS Copilot</span></th></tr>
+<tr><td>Trains on your data?</td><td style="color:#FF5252">May do ⚠️</td><td style="color:#4CAF50">No ✓</td><td style="color:#4CAF50">No ✓</td><td style="color:#4CAF50">No ✓</td></tr>
+<tr><td>Data retained?</td><td>For a period</td><td>Per agreement</td><td>Per agreement</td><td>Within your M365 tenant</td></tr>
+<tr><td>Human review possible?</td><td style="color:#FF5252">Possible</td><td style="color:#4CAF50">Restricted</td><td style="color:#4CAF50">Restricted</td><td style="color:#4CAF50">Restricted</td></tr>
+<tr><td>Security certifications</td><td>Varies</td><td>Yes</td><td>Yes</td><td>Yes</td></tr>
+<tr><td>Admin controls?</td><td>None</td><td>Full</td><td>Full</td><td>Via M365</td></tr>
+<tr><td>Indicative cost/user/month</td><td>Free / low</td><td colspan="3" style="text-align:center">Roughly comparable across business tiers — get current quotes</td></tr>
+<tr><td>Safe for Tier 2?</td><td style="color:#FF9800">Only anonymised</td><td style="color:#4CAF50">Yes</td><td style="color:#4CAF50">Yes</td><td style="color:#4CAF50">Yes</td></tr>
+<tr><td>Safe for Tier 3?</td><td style="color:#FF5252">Never</td><td style="color:#FF5252">Never</td><td style="color:#FF5252">Never</td><td style="color:#FF9800">Only within tenant, with approval</td></tr>
+</table>
+
+<div class="card">
+<h3>💰 Building the Business Case — Do the Arithmetic, Don't Borrow It</h3>
+<p>An ROI table is only persuasive if leadership can see where the numbers came from. Fill this in with VEKA's own measurements rather than industry averages.</p>
+<div class="grid-2">
+<div><h4>Annual investment</h4>
+<table>
+<tr><td>Licence cost per user per month</td><td style="text-align:right">___</td></tr>
+<tr><td>× users</td><td style="text-align:right">___</td></tr>
+<tr><td>× 12 months</td><td style="text-align:right">___</td></tr>
+<tr><td style="font-weight:700">Total investment</td><td style="text-align:right;font-weight:700">___</td></tr>
+</table>
+</div>
+<div><h4>Annual return — measure each one</h4>
+<table>
+<tr><td>Time saved (minutes × frequency × people × cost per hour)</td><td style="text-align:right">___</td></tr>
+<tr><td>Rework avoided (errors caught before they ship)</td><td style="text-align:right">___</td></tr>
+<tr><td>Risk avoided (state the assumption, don't guess)</td><td style="text-align:right">___</td></tr>
+<tr><td style="font-weight:700">Total return</td><td style="text-align:right;font-weight:700;color:#FFD600">___</td></tr>
+</table></div>
+</div>
+<div class="tip"><strong>💡 On the risk-avoidance line:</strong> resist the temptation to put a large number there. You cannot measure a leak that did not happen. State it as an exposure range with the reasoning attached, or leave it out and win the argument on measured time savings alone. A defensible small number survives scrutiny; an impressive large one invites it.</div>
+</div>
+
+<div class="info-box"><strong>The honest framing for leadership:</strong> the licence does not buy better answers. It buys a contractual position on data handling, admin visibility, and the ability to say yes to Tier 2 work without a two-minute anonymisation step every time. That is a governance purchase, not a productivity one — and it is easier to defend on those terms.</div>
+</div>
+</div>
+
+<!-- ============================================================ -->
+<!-- PART 9: AI USAGE POLICY -->
+<!-- ============================================================ -->
+<div class="section">
+<div class="section-head" onclick="toggle(this)"><h2>📜 Part 9: VEKA AI Usage Policy (Draft)</h2><span class="arrow">▼</span></div>
+<div class="section-body">
+<div class="info-box"><strong>This is a starting draft for discussion, not an approved policy.</strong> It needs review by IT, legal and HR, and sign-off by leadership, before it means anything. Use this session to mark it up.</div>
+<div class="card">
+<h3>Draft AI Usage Policy — VEKA</h3>
+<h4>Section 1: Approved AI Tools</h4>
+<ul><li>Approved enterprise tools — Tier 1 and Tier 2 data</li><li>Consumer or free tools — Tier 1 only, and anonymised Tier 2</li><li>Microsoft Copilot — internal documents within the VEKA tenant</li><li>All other AI tools, browser extensions and plug-ins require IT approval before use</li></ul>
+<h4>Section 2: Data Handling</h4>
+<ul><li>Tier 1 (Public): use freely</li><li>Tier 2 (Internal): must be anonymised before any consumer tool; may be used as-is on approved enterprise tools</li><li>Tier 3 (Confidential): never uploaded to any external AI, including enterprise tools, without specific written approval</li><li>Documents received from customers, developers or suppliers: check the governing agreement before uploading anything</li><li>Default: when unsure, treat it as Tier 2 and anonymise</li></ul>
+<h4>Section 3: Verification Requirements</h4>
+<ul><li>Every AI output used in an official document requires human verification</li><li>Technical claims and standards references → qualified engineer sign-off</li><li>Performance, wind load and structural questions → never AI-answered; escalate</li><li>Commercial figures → cross-checked in Excel or the source system</li><li>Customer-facing documents → reviewed by the named document owner before sending</li><li>Environmental and certification claims → verified by whoever owns sustainability reporting</li></ul>
+<h4>Section 4: Prohibited Uses</h4>
+<ul><li>Uploading compound formulations, extrusion parameters, die or tooling design</li><li>Uploading dealer price lists, discount slabs, rebate schemes or project quotations</li><li>Uploading employee personal data, or candidate CVs</li><li>Uploading customer, developer or supplier contracts and tender documents</li><li>Using AI output as an engineering, structural or safety determination</li><li>Generating certificates, test reports, performance claims or environmental claims that are not backed by a real document</li></ul>
+<h4>Section 5: Accountability</h4>
+<ul><li>The person using AI is fully responsible for verifying the output</li><li>"The AI generated it" is never an acceptable explanation</li><li>Report a suspected data exposure to IT immediately, and without fear of blame — late reporting is the bigger problem</li><li>Every published agent or shared prompt has a named owner</li><li>Quarterly review of AI usage by function heads</li></ul>
+</div>
+
+<div class="exercise">
+<h3>🏋️ Group Exercise: Customise the Policy for YOUR Function</h3>
+<p>In groups of 3–4, add three function-specific rules. They should be specific enough that someone could break them. Examples:</p>
+<div class="grid-2">
+<div class="card"><h4>Technical &amp; Application Engineering</h4><ul><li>"No performance value leaves this team without a named test report and configuration"</li><li>"Clause numbers are copied from the standard document, never from AI"</li><li>"Wind load and structural questions are escalated, never answered from a chat window"</li></ul></div>
+<div class="card"><h4>Sales &amp; Channel</h4><ul><li>"No quotation, discount or rebate figure is ever pasted into any AI tool"</li><li>"Every AI-drafted customer email is read specifically for invented commitments before sending"</li><li>"Tender documents received from a developer are never uploaded — extract the clause instead"</li></ul></div>
+<div class="card"><h4>HR</h4><ul><li>"No CV, ID document or salary figure enters an AI tool, in any form"</li><li>"AI drafts language for difficult conversations; a human decides every outcome"</li><li>"Any AI-assisted screening criteria are reviewed for bias before use"</li></ul></div>
+<div class="card"><h4>Production, Quality &amp; Plant</h4><ul><li>"Formulation and line parameters are Tier 3 permanently — ask process questions generically"</li><li>"Complaint records are anonymised before any analysis"</li><li>"AI never assigns a root cause; it structures the investigation"</li></ul></div>
+</div>
+<div class="tip"><strong>💡 Facilitator:</strong> collect these sheets. The function-written rules are usually sharper than anything a policy document produces centrally, and they are the ones people actually follow because their own team wrote them.</div>
+</div>
+</div>
+</div>
+
+<!-- ============================================================ -->
+<!-- PART 10: IS THIS SAFE QUIZ -->
+<!-- ============================================================ -->
+<div class="section">
+<div class="section-head" onclick="toggle(this)"><h2>🧪 Part 10: "Is This Safe?" — 15 VEKA Scenarios</h2><span class="arrow">▼</span></div>
+<div class="section-body">
+<p style="margin-bottom:15px;opacity:0.8">Run this as a live show-of-hands before revealing the column. For each: <span class="badge badge-safe">SAFE ✓</span> or <span class="badge badge-risky">RISKY ✗</span> or <span class="badge badge-warn">ANONYMIZE ⚠</span></p>
+<table>
+<tr><th>#</th><th>Scenario</th><th>Verdict</th><th>Why</th></tr>
+<tr><td>1</td><td>Ask AI to explain water tightness testing in plain language</td><td><span class="badge badge-safe">SAFE ✓</span></td><td>General technical concept, no VEKA data</td></tr>
+<tr><td>2</td><td>Paste the dealer discount matrix in to format it as a table</td><td><span class="badge badge-risky">RISKY ✗</span></td><td>Tier 3 — your entire commercial floor</td></tr>
+<tr><td>3</td><td>Ask AI to summarise a brochure already on the VEKA website</td><td><span class="badge badge-safe">SAFE ✓</span></td><td>Already public</td></tr>
+<tr><td>4</td><td>Upload 40 candidate CVs to rank against a job description</td><td><span class="badge badge-risky">RISKY ✗</span></td><td>Third-party personal data — DPDP exposure</td></tr>
+<tr><td>5</td><td>Upload sales data with dealers as A/B/C and values indexed</td><td><span class="badge badge-safe">SAFE ✓</span></td><td>Properly anonymised Tier 2</td></tr>
+<tr><td>6</td><td>Upload a developer's full tender pack for a summary</td><td><span class="badge badge-risky">RISKY ✗</span></td><td>Someone else's contract governs it</td></tr>
+<tr><td>7</td><td>Upload site photos with no logos, signage or faces</td><td><span class="badge badge-safe">SAFE ✓</span></td><td>No identifiers present</td></tr>
+<tr><td>8</td><td>Ask AI what U-value our system achieves</td><td><span class="badge badge-risky">RISKY ✗</span></td><td>Unanswerable — it will invent a number anyway</td></tr>
+<tr><td>9</td><td>Paste the compound formulation to troubleshoot a defect</td><td><span class="badge badge-risky">RISKY ✗</span></td><td>Trade secret. Ask the question generically instead.</td></tr>
+<tr><td>10</td><td>Ask AI to draft a dealer follow-up email</td><td><span class="badge badge-warn">ANONYMIZE ⚠</span></td><td>Fine with dealer anonymised — then check for invented commitments</td></tr>
+<tr><td>11</td><td>Paste a project quotation to sanity-check the total</td><td><span class="badge badge-risky">RISKY ✗</span></td><td>Tier 3, and AI arithmetic is unreliable anyway</td></tr>
+<tr><td>12</td><td>Ask AI to compare two opening configurations conceptually</td><td><span class="badge badge-warn">ANONYMIZE ⚠</span></td><td>Fine technically — remove project and customer identity</td></tr>
+<tr><td>13</td><td>Upload a complaint record to structure the investigation</td><td><span class="badge badge-warn">ANONYMIZE ⚠</span></td><td>Remove customer, dealer and individual names first</td></tr>
+<tr><td>14</td><td>Ask whether a configuration is suitable for an 18-floor coastal tower</td><td><span class="badge badge-risky">RISKY ✗</span></td><td>Trust Level 4 — engineer only, never AI</td></tr>
+<tr><td>15</td><td>Ask AI how to structure a technical query list to an architect</td><td><span class="badge badge-safe">SAFE ✓</span></td><td>Generic method question, no company data</td></tr>
+</table>
+<div class="success"><strong>🏆 Scoring:</strong> 13–15 = AI Safety Expert ✅ | 10–12 = Good 🟡 | 7–9 = Practice needed 🟠 | under 7 = Go back to the 3-Tier system 🔴</div>
+<div class="tip"><strong>💡 The two that split most rooms are 8 and 14</strong> — because neither one is about data leaving the company. They are about asking a question that has no valid answer, and getting a confident one. If your room gets those two right, the module landed.</div>
+<div style="margin-top: 25px; padding-top: 20px; border-top: 1px solid var(--border);">
+    <h4 style="margin-bottom: 15px; text-align: center; color: var(--text-muted);">Risk vs Value Radar</h4>
+    <div style="height: 300px; width: 100%; max-width: 500px; margin: 0 auto;">
+        <canvas id="safeAiChart"></canvas>
     </div>
+</div>
+</div>
+</div>
 
-    <div class="card">
-      <h2>🗓️ Agenda</h2>
-      <table class="agenda-table">
-        <tr><th>Part</th><th>Topic</th><th>Minutes</th></tr>
-        <tr><td>0</td><td>Welcome & Learning Objectives</td><td class="mins">5</td></tr>
-        <tr><td>1</td><td>🧠 How AI Actually Works</td><td class="mins">15</td></tr>
-        <tr><td>2</td><td>⚠️ The 5 Categories of AI Risk</td><td class="mins">15</td></tr>
-        <tr><td>3</td><td>🔑 Data Classification — 3 Tiers (Game)</td><td class="mins">20</td></tr>
-        <tr><td>4</td><td>🌍 India's DPDP Act 2023 (Matching Game)</td><td class="mins">15</td></tr>
-        <tr><td>—</td><td>☕ Break</td><td class="mins">10</td></tr>
-        <tr><td>5</td><td>🔒 Anonymising Dealer Data (Redaction Game)</td><td class="mins">20</td></tr>
-        <tr><td>6</td><td>🔍 Spotting AI Hallucinations (Game)</td><td class="mins">20</td></tr>
-        <tr><td>7</td><td>📁 13 VEKA Case Studies</td><td class="mins">30</td></tr>
-        <tr><td>8</td><td>💳 Build Your Personal AI Usage Policy</td><td class="mins">10</td></tr>
-        <tr><td>9</td><td>🗄️ Final Quiz & Certificate</td><td class="mins">20</td></tr>
-        <tr><td>🎮</td><td>Bonus: Game Arcade — 8 mini-games, 50 questions</td><td class="mins">optional</td></tr>
-      </table>
-      <button class="btn" onclick="goTo('part1')">Start Part 1 →</button>
-    </div>
-  </div>
-
-  <!-- ================= PART 1 ================= -->
-  <div class="panel" id="panel-part1">
-    <div class="card">
-      <span class="pill">Part 1</span><span class="time-pill">⏱ 15 min</span>
-      <h2>🧠 How AI Actually Works — Where Does Your Text Go?</h2>
-      <p>Every time you type into an AI tool, more happens behind the scenes than most people realise. Click each step below to see what actually happens to your words.</p>
-
-      <div class="flow" id="flowSteps"></div>
-      <div id="flowDetailBox"></div>
-
-      <div class="game-box">
-        <div class="gtitle">Why this matters at VEKA</div>
-        <p style="margin:0">Free, consumer AI tools were not built with a PVC profile systems manufacturer's confidentiality needs in mind. Unless VEKA IT has approved a tool with a signed data-processing agreement, assume: <strong>anything you type could be stored, reviewed by the provider, or used to train future models.</strong> Treat every AI prompt like an email you can never unsend, forwarded to a stranger you've never met.</p>
-      </div>
-
-      <div class="game-box">
-        <div class="gtitle">🎮 Quick Check</div>
-        <div id="qc1"></div>
-      </div>
-      <div style="text-align:right"><button class="btn" onclick="goTo('part2')">Next: The 5 Risk Categories →</button></div>
-    </div>
-  </div>
-
-  <!-- ================= PART 2 ================= -->
-  <div class="panel" id="panel-part2">
-    <div class="card">
-      <span class="pill">Part 2</span><span class="time-pill">⏱ 15 min</span>
-      <h2>⚠️ The 5 Categories of AI Risk</h2>
-      <p>For a profile systems manufacturer like VEKA — with dealers, formulations, technical standards, and personal data of customers and employees — nearly every AI risk falls into one of five buckets.</p>
-      <div class="risk-grid" id="riskGrid"></div>
-
-      <div class="game-box">
-        <div class="gtitle">🎮 Game: Risk or Not?</div>
-        <p style="margin-top:0">Read each real-world statement. Click the risk category it belongs to. You'll get instant feedback.</p>
-        <div class="score-badge">Score: <span id="riskScore">0</span> / <span id="riskTotal">0</span></div>
-        <div id="riskGame" style="margin-top:14px"></div>
-      </div>
-      <div style="text-align:right"><button class="btn" onclick="goTo('part3')">Next: Data Classification →</button></div>
-    </div>
-  </div>
-
-  <!-- ================= PART 3 ================= -->
-  <div class="panel" id="panel-part3">
-    <div class="card">
-      <span class="pill">Part 3</span><span class="time-pill">⏱ 20 min</span>
-      <h2>🔑 Data Classification — 3 Tiers</h2>
-      <p>Before you type anything into any AI tool, ask: <strong>which tier does this data belong to?</strong></p>
-      <div class="risk-grid">
-        <div class="risk-card" style="--r-color:#2ecc71"><h4>🟢 Public</h4><p>Already published or safe to share with anyone — brochures, website copy, public price lists, press releases.</p></div>
-        <div class="risk-card" style="--r-color:#3aa0ff"><h4>🔵 Internal</h4><p>Not secret, but not for outsiders — SOPs, org charts, internal schedules, non-sensitive meeting notes.</p></div>
-        <div class="risk-card" style="--r-color:#e2231a"><h4>🔴 Confidential</h4><p>Would cause real harm if leaked — formulations, dealer margins, personal data, unpublished financials, vendor bank details.</p></div>
-      </div>
-
-      <div class="game-box">
-        <div class="gtitle">🎮 Game: Classify the Data</div>
-        <p style="margin-top:0">Click a data item, then click the tier bin you think it belongs to. Get all 14 right for a perfect score!</p>
-        <div class="score-badge">Score: <span id="classScore">0</span> / <span id="classTotal">14</span></div>
-        <div class="classify-wrap">
-          <div class="item-pool" id="itemPool"></div>
-          <div class="bins">
-            <div class="bin public" data-tier="public"><h4>🟢 Public</h4><div class="bin-items"></div></div>
-            <div class="bin internal" data-tier="internal"><h4>🔵 Internal</h4><div class="bin-items"></div></div>
-            <div class="bin confidential" data-tier="confidential"><h4>🔴 Confidential</h4><div class="bin-items"></div></div>
-          </div>
-        </div>
-        <button class="btn secondary small" onclick="resetClassifyGame()">↺ Reset Game</button>
-      </div>
-      <div style="text-align:right"><button class="btn" onclick="goTo('part4')">Next: DPDP Act 2023 →</button></div>
-    </div>
-  </div>
-
-  <!-- ================= PART 4 ================= -->
-  <div class="panel" id="panel-part4">
-    <div class="card">
-      <span class="pill">Part 4</span><span class="time-pill">⏱ 15 min</span>
-      <h2>🌍 India's Digital Personal Data Protection Act, 2023 — In Practical Terms</h2>
-      <p>The DPDP Act 2023 is India's data privacy law. VEKA holds personal data of customers, dealers, and employees — so it applies to us. Here's what actually matters day to day:</p>
-      <ul class="obj">
-        <li><strong>VEKA is a "Data Fiduciary"</strong> — the organisation that decides why and how personal data is processed. We're accountable for it.</li>
-        <li><strong>The customer/dealer/employee is the "Data Principal"</strong> — the person the data is about. They have rights over it.</li>
-        <li><strong>Consent matters</strong> — personal data should generally only be collected and used for a clear, notified purpose.</li>
-        <li><strong>Data Principals can request access, correction, or erasure</strong> of their personal data — and VEKA must be able to respond.</li>
-        <li><strong>Data breaches must be reported</strong> — to the Data Protection Board of India and affected individuals, without unreasonable delay.</li>
-        <li><strong>Penalties are serious</strong> — up to ₹250 crore for failing to take reasonable security safeguards.</li>
-        <li><strong>Practical rule of thumb:</strong> anonymised or aggregated data (no way to identify a person) is much lower risk than raw personal data — which is exactly why Part 5 teaches you to anonymise before you prompt.</li>
-      </ul>
-
-      <div class="game-box">
-        <div class="gtitle">🎮 Game: Match the DPDP Term</div>
-        <p style="margin-top:0">Click a term on the left, then its correct definition on the right.</p>
-        <div class="score-badge">Matched: <span id="matchScore">0</span> / <span id="matchTotal">8</span></div>
-        <div class="match-wrap">
-          <div class="match-col" id="matchTerms"></div>
-          <div class="match-col" id="matchDefs"></div>
-        </div>
-      </div>
-      <div style="text-align:right"><button class="btn" onclick="goTo('break')">Take a Break →</button></div>
-    </div>
-  </div>
-
-  <!-- ================= BREAK ================= -->
-  <div class="panel" id="panel-break">
-    <div class="card">
-      <div class="break-banner">
-        <div class="icon">☕</div>
-        <div><strong>10-Minute Break.</strong> Stretch, hydrate, refill your chai. We'll pick up with anonymising real dealer data when you're back.</div>
-      </div>
-      <button class="btn" onclick="goTo('part5')">I'm Back — Continue to Part 5 →</button>
-    </div>
-  </div>
-
-  <!-- ================= PART 5 ================= -->
-  <div class="panel" id="panel-part5">
-    <div class="card">
-      <span class="pill">Part 5</span><span class="time-pill">⏱ 20 min</span>
-      <h2>🔒 Anonymising Dealer Data, Quotations & Reports</h2>
-      <p><strong>Anonymisation</strong> means removing or masking anything that could identify a person or reveal confidential business terms, before you paste text into an AI tool. If you must use AI on real dealer/customer data, strip it first.</p>
-      <ul class="obj">
-        <li>Replace names with roles: "Mr. Rajesh Kumar" → "[the customer]"</li>
-        <li>Remove phone numbers, addresses, ID numbers (Aadhaar/PAN) entirely</li>
-        <li>Remove exact prices, margins, and discount percentages — describe them qualitatively if needed, or add them back yourself after</li>
-        <li>Remove internal codes for dies, formulations, and unpublished drawings</li>
-      </ul>
-
-      <div class="game-box">
-        <div class="gtitle">🎮 Game: Redact Before You Prompt</div>
-        <p style="margin-top:0">This is a real-style dealer email. Click on every word or phrase that should be redacted before this text is pasted into any AI tool. Then check your work.</p>
-        <div class="redact-text" id="redactText"></div>
-        <div style="margin-top:12px">
-          <button class="btn" onclick="checkRedaction()">✓ Check My Redactions</button>
-          <button class="btn secondary" onclick="resetRedaction()">↺ Try Again</button>
-        </div>
-        <div id="redactResult" style="margin-top:12px"></div>
-      </div>
-      <div style="text-align:right"><button class="btn" onclick="goTo('part6')">Next: Spot the Hallucination →</button></div>
-    </div>
-  </div>
-
-  <!-- ================= PART 6 ================= -->
-  <div class="panel" id="panel-part6">
-    <div class="card">
-      <span class="pill">Part 6</span><span class="time-pill">⏱ 20 min</span>
-      <h2>🔍 Detecting AI Hallucinations in Technical Specs, Standards & Calculations</h2>
-      <p>AI models predict plausible-sounding text — they don't "look up" facts unless specifically designed to. This means an AI tool can state a fake standard clause, an invented number, or a wrong calculation with total confidence. For a manufacturer quoting wind-loads, U-values, and BIS/EN standards, this is one of the most dangerous risks.</p>
-      <ul class="obj">
-        <li><strong>Never</strong> quote an AI-generated standard clause number, technical value, or calculation to a customer or architect without independent verification.</li>
-        <li>Cross-check standard numbers against the official BIS/EN source document.</li>
-        <li>Have a qualified engineer re-derive any safety-critical calculation (wind load, U-value, structural rating).</li>
-        <li>Be extra suspicious when an AI answer sounds unusually precise and confident — hallucinations often "feel" the most authoritative.</li>
-      </ul>
-
-      <div class="game-box">
-        <div class="gtitle">🎮 Game: Spot the Hallucination</div>
-        <p style="margin-top:0">Below is an AI-generated technical answer given to a VEKA engineer. Click on every phrase you believe is fabricated or wrong. Round <span id="hRoundNum">1</span> of <span id="hRoundTotal">2</span>.</p>
-        <div class="redact-text" id="hallucText"></div>
-        <div style="margin-top:12px">
-          <button class="btn" onclick="checkHallucination()">✓ Check My Answers</button>
-          <button class="btn secondary" onclick="nextHallucRound()">Next Round →</button>
-        </div>
-        <div id="hallucResult" style="margin-top:12px"></div>
-      </div>
-      <div style="text-align:right"><button class="btn" onclick="goTo('part7')">Next: 13 Case Studies →</button></div>
-    </div>
-  </div>
-
-  <!-- ================= PART 7 ================= -->
-  <div class="panel" id="panel-part7">
-    <div class="card">
-      <span class="pill">Part 7</span><span class="time-pill">⏱ 30 min</span>
-      <h2>📁 13 VEKA Case Studies</h2>
-      <p>Real-world-style scenarios from across VEKA's business. Click a case to open it, choose what you'd do, then reveal the recommended response.</p>
-      <div class="score-badge">Case Study Score: <span id="csScore">0</span> / <span id="csTotal">13</span></div>
-      <div id="caseStudies" style="margin-top:16px"></div>
-      <div style="text-align:right"><button class="btn" onclick="goTo('part8')">Next: Build Your Policy →</button></div>
-    </div>
-  </div>
-
-  <!-- ================= PART 8 ================= -->
-  <div class="panel" id="panel-part8">
-    <div class="card">
-      <span class="pill">Part 8</span><span class="time-pill">⏱ 10 min</span>
-      <h2>💳 Build Your Personal VEKA AI Usage Policy — The 5 T's</h2>
-      <p>Tick each commitment you're making, and we'll generate your personal AI safety commitment card.</p>
-      <div id="policyChecks"></div>
-      <button class="btn" onclick="generatePolicy()">Generate My Commitment Card</button>
-      <div class="policy-summary" id="policySummary"></div>
-      <div style="text-align:right; margin-top:14px"><button class="btn" onclick="goTo('part9')">Next: Final Quiz →</button></div>
-    </div>
-  </div>
-
-  <!-- ================= PART 9 ================= -->
-  <div class="panel" id="panel-part9">
-    <div class="card">
-      <span class="pill">Part 9 · Final Assessment</span><span class="time-pill">⏱ 20 min</span>
-      <h2>🗄️ "Is This Safe?" — Final Quiz</h2>
-      <p>15 scenarios. For each, decide: <strong>Safe</strong> or <strong>Unsafe</strong>. Score 13/15 or higher to pass and unlock your certificate.</p>
-      <div id="finalQuiz"></div>
-      <button class="btn" onclick="submitFinalQuiz()">Submit Final Quiz</button>
-      <div id="finalResult"></div>
-      <div id="certificateBox"></div>
-      <div style="text-align:right; margin-top:14px"><button class="btn secondary" onclick="goTo('arcade')">🎮 Bonus: Play the Game Arcade →</button></div>
-    </div>
-  </div>
-
-  <!-- ================= GAME ARCADE (BONUS) ================= -->
-  <div class="panel" id="panel-arcade">
-    <div class="card">
-      <span class="pill">🎮 Bonus Section</span><span class="time-pill">⏱ Untimed · Optional</span>
-      <h2>🎮 The Safe AI Game Arcade</h2>
-      <p style="color:var(--muted)">Extra practice, purely optional — not part of the timed 180-minute agenda. 8 quick mini-games, <strong>50 practice items</strong> (44 scored questions + 6 flashcards). Play any of them, in any order, as many times as you like.</p>
-      <div class="stat-grid">
-        <div class="stat"><div class="num">8</div><div class="lbl">Mini-Games</div></div>
-        <div class="stat"><div class="num">50</div><div class="lbl">Total Practice Items</div></div>
-        <div class="stat"><div class="num" id="arcadeGrandScore">0</div><div class="lbl">Your Arcade Score</div></div>
-      </div>
-    </div>
-
-    <div class="card">
-      <h3>🃏 Game 1 — Flashcard Flip</h3>
-      <p style="color:var(--muted);margin-top:0">Click a card to flip it and reveal the definition.</p>
-      <div class="flip-grid" id="flashGrid"></div>
-    </div>
-
-    <div class="card">
-      <h3>⚡ Game 2 — True or False Speed Round</h3>
-      <div class="score-badge">Score: <span id="tfScore">0</span> / <span id="tfTotal">0</span></div>
-      <div id="tfGame" style="margin-top:12px"></div>
-    </div>
-
-    <div class="card">
-      <h3>🔤 Game 3 — Emoji Decode</h3>
-      <p style="color:var(--muted);margin-top:0">Guess the AI-safety term from the emoji clue.</p>
-      <div class="score-badge">Score: <span id="emojiScore">0</span> / <span id="emojiTotal">0</span></div>
-      <div id="emojiGame" style="margin-top:12px"></div>
-    </div>
-
-    <div class="card">
-      <h3>✏️ Game 4 — Fill in the Blank</h3>
-      <div class="score-badge">Score: <span id="blankScore">0</span> / <span id="blankTotal">0</span></div>
-      <div id="blankGame" style="margin-top:12px"></div>
-    </div>
-
-    <div class="card">
-      <h3>🚫 Game 5 — Odd One Out</h3>
-      <p style="color:var(--muted);margin-top:0">Click the one item that doesn't belong with the other three.</p>
-      <div class="score-badge">Score: <span id="oddScore">0</span> / <span id="oddTotal">0</span></div>
-      <div id="oddGame" style="margin-top:12px"></div>
-    </div>
-
-    <div class="card">
-      <h3>🔀 Game 6 — Word Scramble</h3>
-      <p style="color:var(--muted);margin-top:0">Unscramble the letters, then pick the correct word.</p>
-      <div class="score-badge">Score: <span id="scrambleScore">0</span> / <span id="scrambleTotal">0</span></div>
-      <div id="scrambleGame" style="margin-top:12px"></div>
-    </div>
-
-    <div class="card">
-      <h3>🎭 Game 7 — Two Truths and a Lie</h3>
-      <p style="color:var(--muted);margin-top:0">Click the one statement in each set that is FALSE.</p>
-      <div class="score-badge">Score: <span id="lieScore">0</span> / <span id="lieTotal">0</span></div>
-      <div id="lieGame" style="margin-top:12px"></div>
-    </div>
-
-    <div class="card">
-      <h3>⚔️ Game 8 — This or That</h3>
-      <p style="color:var(--muted);margin-top:0">Click the SAFER choice of the two.</p>
-      <div class="score-badge">Score: <span id="totScore">0</span> / <span id="totTotal">0</span></div>
-      <div id="totGame" style="margin-top:12px"></div>
-    </div>
-
-    <div class="card" style="text-align:center">
-      <button class="btn secondary" onclick="goTo('objectives')">↺ Back to Objectives</button>
-    </div>
-  </div>
+<!-- ============================================================ -->
+<!-- KEY TAKEAWAYS -->
+<!-- ============================================================ -->
+<div class="section">
+<div class="section-head" onclick="toggle(this)"><h2>🎯 Key Takeaways — 6 Rules to Remember</h2><span class="arrow">▼</span></div>
+<div class="section-body">
+<div class="card">
+<table>
+<tr><th>#</th><th>Rule</th><th>Why It Matters for VEKA</th></tr>
+<tr><td style="font-size:20px;font-weight:800;color:#FFD600">1</td><td><strong>Classify first, share second</strong></td><td>Know your data tier before you open the tool, not after</td></tr>
+<tr><td style="font-size:20px;font-weight:800;color:#FFD600">2</td><td><strong>Anonymise Tier 2</strong></td><td>Replace names, index the numbers — AI needs the shape, not the identity</td></tr>
+<tr><td style="font-size:20px;font-weight:800;color:#FFD600">3</td><td><strong>Never share Tier 3</strong></td><td>Formulation, pricing, quotations, personal data, contracts. No exceptions and no "just this once".</td></tr>
+<tr><td style="font-size:20px;font-weight:800;color:#FFD600">4</td><td><strong>Tag the gaps, then close them</strong></td><td>[confirm] and [assumption] turn silent invention into a visible to-do list</td></tr>
+<tr><td style="font-size:20px;font-weight:800;color:#FFD600">5</td><td><strong>AI assists, humans decide</strong></td><td>You are accountable, not the tool. Air Canada settled that question already.</td></tr>
+<tr><td style="font-size:20px;font-weight:800;color:#FFD600">6</td><td><strong>Some questions have no answer</strong></td><td>Performance, structural and compliance questions will get a confident reply regardless. Escalate them.</td></tr>
+</table>
+</div>
+<div class="stats">
+<div class="stat"><span class="n">12</span><span class="l">Case Studies</span></div>
+<div class="stat"><span class="n">15</span><span class="l">Quiz Scenarios</span></div>
+<div class="stat"><span class="n">5</span><span class="l">Risk Categories</span></div>
+<div class="stat"><span class="n">3</span><span class="l">Data Tiers</span></div>
+</div>
+<div class="info-box"><strong>Next:</strong> Session 4 takes these rules and builds them into an agent, so the safety instructions live in the tool instead of depending on whoever is typing. Bring one recurring task with you.</div>
+</div>
+</div>
 
 </div>
 
-<footer>VEKA GenAI Excellence &middot; Session 3 — Safe AI &middot; Learn AI. Apply AI. Build better workflows.</footer>
-
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
-/* ============ TAB NAVIGATION ============ */
-const TABS = [
-  {id:'objectives', label:'🎯 Objectives'},
-  {id:'part1', label:'🧠 Part 1'},
-  {id:'part2', label:'⚠️ Part 2'},
-  {id:'part3', label:'🔑 Part 3'},
-  {id:'part4', label:'🌍 Part 4'},
-  {id:'break', label:'☕ Break'},
-  {id:'part5', label:'🔒 Part 5'},
-  {id:'part6', label:'🔍 Part 6'},
-  {id:'part7', label:'📁 Part 7'},
-  {id:'part8', label:'💳 Part 8'},
-  {id:'part9', label:'🗄️ Part 9'},
-  {id:'arcade', label:'🎮 Arcade'},
-];
-const visited = new Set(['objectives']);
-function renderTabs(){
-  const bar = document.getElementById('tabBar');
-  bar.innerHTML = '';
-  TABS.forEach(t=>{
-    const b = document.createElement('button');
-    b.className = 'tab-btn' + (visited.has(t.id)?' visited':'');
-    b.id = 'tabbtn-'+t.id;
-    b.innerHTML = t.label + ' <span class="chk">✓</span>';
-    b.onclick = ()=>goTo(t.id);
-    bar.appendChild(b);
-  });
-}
-function goTo(id){
-  visited.add(id);
-  document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
-  document.getElementById('panel-'+id).classList.add('active');
-  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
-  document.getElementById('tabbtn-'+id).classList.add('active');
-  renderTabs();
-  document.getElementById('tabbtn-'+id).classList.add('active');
-  window.scrollTo({top:0, behavior:'smooth'});
-}
-renderTabs();
-document.getElementById('tabbtn-objectives').classList.add('active');
+function toggle(el){document.querySelectorAll('.section').forEach(s => {if(s !== el.parentElement) s.classList.remove('open');}); el.parentElement.classList.toggle('open'); setTimeout(() => window.dispatchEvent(new Event('resize')), 50);}
+function toggleCS(el){if(el.classList.contains('case-study'))el.classList.toggle('cs-open')}
+function copyPrompt(btn,ev){var t=btn.parentElement.textContent.replace('📋 Copy','').trim();
+if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(t).then(function(){btn.textContent='✓ Copied!';setTimeout(function(){btn.textContent='📋 Copy'},2000)})}
+else{var ta=document.createElement('textarea');ta.value=t;ta.style.position='fixed';ta.style.opacity='0';document.body.appendChild(ta);ta.select();try{document.execCommand('copy')}catch(e){}document.body.removeChild(ta);btn.textContent='✓ Copied!';setTimeout(function(){btn.textContent='📋 Copy'},2000)}
+if(ev&&ev.stopPropagation)ev.stopPropagation()}
 
-/* ============ TIMER ============ */
-let seconds=0, timerInterval=null;
-function tick(){
-  seconds++;
-  const m = String(Math.floor(seconds/60)).padStart(2,'0');
-  const s = String(seconds%60).padStart(2,'0');
-  document.getElementById('clockDisplay').textContent = m+':'+s;
-}
-function timerStart(){ if(!timerInterval) timerInterval = setInterval(tick,1000); }
-function timerPause(){ clearInterval(timerInterval); timerInterval=null; }
-function timerReset(){ timerPause(); seconds=0; document.getElementById('clockDisplay').textContent='00:00'; }
-
-/* ============ PART 1: FLOW ============ */
-const FLOW = [
-  {t:"You type", d:"You write a prompt — a question, a paragraph, a document to summarise. It feels like a private notepad, but it isn't one."},
-  {t:"Broken into tokens", d:"Your text is split into small chunks called 'tokens' so the AI model can process it. Every word, name, and number becomes tokens."},
-  {t:"Sent to a server", d:"For most tools (ChatGPT, Gemini, Copilot, etc.), your tokens travel over the internet to the provider's servers — often located outside India."},
-  {t:"Processed by the model", d:"The model predicts the most likely next words to generate a response. It does not 'understand' confidentiality — it just generates text."},
-  {t:"Response returned", d:"You see an answer. Looks instant and disposable — but the trip already happened."},
-  {t:"Possibly logged & stored", d:"Unless you're on an enterprise plan with a data-processing agreement (or the tool is on-prem/VEKA-approved), conversations may be retained for weeks or longer, reviewed for safety, or used to improve future models."},
-];
-function renderFlow(){
-  const box = document.getElementById('flowSteps');
-  FLOW.forEach((f,i)=>{
-    const el = document.createElement('div');
-    el.className='flow-step';
-    el.innerHTML = `<div class="fnum">STEP ${i+1}</div><div class="ftitle">${f.t}</div><div style="font-size:0.75rem;color:var(--muted)">Click to reveal →</div>`;
-    el.onclick = ()=>showFlowDetail(i);
-    box.appendChild(el);
-  });
-}
-function showFlowDetail(i){
-  const f = FLOW[i];
-  document.getElementById('flowDetailBox').innerHTML = `<div class="flow-detail show"><strong>Step ${i+1}: ${f.t}</strong><br>${f.d}</div>`;
-}
-renderFlow();
-
-/* Part 1 quick check */
-const qc1Data = [
-  {q:"Free AI chatbots may use your chats to train future AI models.", a:true},
-  {q:"AI automatically knows which data is private and protects it.", a:false},
-  {q:"A VEKA-approved AI tool is just as risky as any free app.", a:false},
-];
-function renderQC1(){
-  const box = document.getElementById('qc1');
-  qc1Data.forEach((item,i)=>{
-    const d = document.createElement('div');
-    d.style.marginBottom='10px';
-    d.innerHTML = `<div style="margin-bottom:6px">${i+1}. ${item.q}</div>
-      <button class="btn small" onclick="qcAnswer(this,${item.a},true)">True</button>
-      <button class="btn small secondary" onclick="qcAnswer(this,${item.a},false)">False</button>
-      <span class="qc-fb" style="margin-left:10px;font-size:0.85rem"></span>`;
-    box.appendChild(d);
-  });
-}
-function qcAnswer(btn, correctAns, chosen){
-  const fb = btn.parentElement.querySelector('.qc-fb');
-  if(chosen===correctAns){ fb.textContent='✓ Correct'; fb.style.color='var(--safe)'; }
-  else { fb.textContent='✗ Not quite — correct answer: '+(correctAns?'True':'False'); fb.style.color='var(--unsafe)'; }
-}
-renderQC1();
-
-/* ============ PART 2: RISK CATEGORIES + GAME ============ */
-const RISKS = [
-  {key:'confidentiality', color:'var(--c1)', icon:'🔐', name:'Confidentiality & IP Leakage', desc:'Formulations, die drawings, pricing, or strategy exposed to outside tools.'},
-  {key:'privacy', color:'var(--c2)', icon:'🪪', name:'Personal Data & Privacy', desc:'Customer, dealer, or employee personal data exposed — DPDP territory.'},
-  {key:'accuracy', color:'var(--c3)', icon:'🎭', name:'Accuracy & Hallucination', desc:'AI invents specs, standards, or numbers with total confidence.'},
-  {key:'regulatory', color:'var(--c4)', icon:'⚖️', name:'Regulatory & Compliance', desc:'DPDP 2023, BIS/EN standards, contractual confidentiality clauses.'},
-  {key:'vendor', color:'var(--c5)', icon:'🧩', name:'Third-Party & Vendor Risk', desc:'Unvetted tools, browser extensions, shadow AI, unclear data residency.'},
-];
-function renderRisks(){
-  const box = document.getElementById('riskGrid');
-  RISKS.forEach(r=>{
-    const el = document.createElement('div');
-    el.className='risk-card';
-    el.style.setProperty('--r-color', r.color);
-    el.innerHTML = `<h4>${r.icon} ${r.name}</h4><p>${r.desc}</p>`;
-    box.appendChild(el);
-  });
-}
-renderRisks();
-
-const RISK_GAME = [
-  {s:"An engineer pastes VEKA's secret window formula into a free AI chatbot.", ans:'confidentiality'},
-  {s:"Someone sends a customer's Aadhaar number to AI to write a reply.", ans:'privacy'},
-  {s:"AI gives a wind-load number that doesn't match the real safety standard.", ans:'accuracy'},
-  {s:"A team ignores a customer's data-deletion request for months.", ans:'regulatory'},
-  {s:"An employee installs an unapproved AI extension that reads everything they browse.", ans:'vendor'},
-  {s:"A sales exec uploads the dealer margin sheet to a personal AI app.", ans:'confidentiality'},
-  {s:"HR asks AI to write a review that mentions an employee's illness.", ans:'privacy'},
-  {s:"AI writes a brochure line claiming a certificate VEKA doesn't actually have.", ans:'accuracy'},
-  {s:"A free AI notetaker stores your board meeting audio with no contract in place.", ans:'vendor'},
-  {s:"An office delays reporting a data leak to the government regulator.", ans:'regulatory'},
-];
-let riskScore=0, riskAnswered=0;
-function renderRiskGame(){
-  document.getElementById('riskTotal').textContent = RISK_GAME.length;
-  const box = document.getElementById('riskGame');
-  RISK_GAME.forEach((item,i)=>{
-    const d = document.createElement('div');
-    d.style.cssText='background:#0d0d0d;border:1px solid var(--border);border-radius:8px;padding:14px;margin-bottom:10px;';
-    let btns = RISKS.map(r=>`<button class="btn small secondary" style="margin:3px" onclick="riskAnswer(${i},'${r.key}',this)">${r.icon} ${r.name.split(' ')[0]}</button>`).join('');
-    d.innerHTML = `<div style="margin-bottom:8px">${i+1}. ${item.s}</div><div>${btns}</div><div class="rg-fb" style="margin-top:8px;font-size:0.85rem"></div>`;
-    box.appendChild(d);
-  });
-}
-function riskAnswer(i, chosen, btn){
-  const row = btn.closest('div').parentElement;
-  if(row.dataset.done) return;
-  row.dataset.done='1';
-  const correct = RISK_GAME[i].ans;
-  const fb = row.querySelector('.rg-fb');
-  riskAnswered++;
-  if(chosen===correct){
-    riskScore++;
-    fb.innerHTML = '✓ Correct! This is a <strong>'+RISKS.find(r=>r.key===correct).name+'</strong> risk.';
-    fb.style.color='var(--safe)';
-  } else {
-    fb.innerHTML = '✗ Actually, this is a <strong>'+RISKS.find(r=>r.key===correct).name+'</strong> risk.';
-    fb.style.color='var(--unsafe)';
-  }
-  document.getElementById('riskScore').textContent = riskScore;
-}
-renderRiskGame();
-
-/* ============ PART 3: DATA CLASSIFICATION GAME ============ */
-const DATA_ITEMS = [
-  {t:"VEKA's product brochure", tier:'public'},
-  {t:"Price list already on VEKA's website", tier:'public'},
-  {t:"VEKA's published sustainability report", tier:'public'},
-  {t:"Window care instructions for customers", tier:'public'},
-  {t:"Internal steps for handling a warranty claim", tier:'internal'},
-  {t:"Company org chart", tier:'internal'},
-  {t:"Dealer training schedule", tier:'internal'},
-  {t:"Notes from a routine internal meeting", tier:'internal'},
-  {t:"Dealer margin & discount numbers", tier:'confidential'},
-  {t:"VEKA's window formula and die specs", tier:'confidential'},
-  {t:"A customer's Aadhaar number and home address", tier:'confidential'},
-  {t:"Unpublished company financial results", tier:'confidential'},
-  {t:"A vendor's bank account and PAN details", tier:'confidential'},
-  {t:"An employee's medical records", tier:'confidential'},
-];
-let classScore=0, classPlaced=0;
-function shuffle(arr){ return arr.map(v=>[Math.random(),v]).sort((a,b)=>a[0]-b[0]).map(v=>v[1]); }
-let selectedItem=null;
-function renderClassifyGame(){
-  const pool = document.getElementById('itemPool');
-  pool.innerHTML='';
-  document.querySelectorAll('.bin .bin-items').forEach(b=>b.innerHTML='');
-  classScore=0; classPlaced=0;
-  document.getElementById('classScore').textContent=0;
-  shuffle(DATA_ITEMS).forEach((item,idx)=>{
-    const el = document.createElement('div');
-    el.className='data-item';
-    el.textContent = item.t;
-    el.dataset.tier = item.tier;
-    el.onclick = ()=>selectItem(el);
-    pool.appendChild(el);
-  });
-  document.querySelectorAll('.bin').forEach(bin=>{
-    bin.onclick = (e)=>{ if(e.target.closest('.bin-items')) return; placeSelected(bin); };
-  });
-}
-function selectItem(el){
-  if(el.classList.contains('placed')) return;
-  document.querySelectorAll('.data-item.selected').forEach(x=>x.classList.remove('selected'));
-  el.classList.add('selected');
-  selectedItem = el;
-}
-function placeSelected(bin){
-  if(!selectedItem) return;
-  const tier = bin.dataset.tier;
-  const correct = selectedItem.dataset.tier === tier;
-  const p = document.createElement('div');
-  p.className = 'placed-item ' + (correct?'correct':'wrong');
-  p.textContent = selectedItem.textContent + (correct?' ✓':' ✗ (should be '+selectedItem.dataset.tier+')');
-  bin.querySelector('.bin-items').appendChild(p);
-  selectedItem.classList.add('placed');
-  selectedItem.classList.remove('selected');
-  classPlaced++;
-  if(correct) classScore++;
-  document.getElementById('classScore').textContent = classScore;
-  selectedItem = null;
-}
-function resetClassifyGame(){ renderClassifyGame(); }
-renderClassifyGame();
-
-/* ============ PART 4: DPDP MATCHING GAME ============ */
-const DPDP_PAIRS = [
-  {term:"Data Principal", def:"The person the data is about — like a customer, dealer, or employee."},
-  {term:"Data Fiduciary", def:"VEKA — the company that decides how personal data is used."},
-  {term:"Consent", def:"Clear permission from a person before using their personal data."},
-  {term:"Right to Erasure", def:"A person's right to ask VEKA to delete their data."},
-  {term:"Data Breach", def:"When personal data is lost, leaked, or accessed without permission."},
-  {term:"Data Protection Board of India", def:"The government body that enforces India's data privacy law."},
-  {term:"Significant Data Fiduciary", def:"A company that handles very large amounts of personal data."},
-  {term:"Purpose Limitation", def:"Personal data should only be used for the reason it was collected."},
-];
-let matchScore=0, matchSelTerm=null, matchSelDef=null;
-function renderMatchGame(){
-  document.getElementById('matchTotal').textContent = DPDP_PAIRS.length;
-  const termsBox = document.getElementById('matchTerms');
-  const defsBox = document.getElementById('matchDefs');
-  termsBox.innerHTML=''; defsBox.innerHTML=''; matchScore=0;
-  document.getElementById('matchScore').textContent=0;
-  const shuffledTerms = shuffle(DPDP_PAIRS.map((p,i)=>({...p, idx:i})));
-  const shuffledDefs = shuffle(DPDP_PAIRS.map((p,i)=>({...p, idx:i})));
-  shuffledTerms.forEach(p=>{
-    const el = document.createElement('div');
-    el.className='match-item'; el.textContent=p.term; el.dataset.idx=p.idx;
-    el.onclick=()=>selectMatch(el,'term');
-    termsBox.appendChild(el);
-  });
-  shuffledDefs.forEach(p=>{
-    const el = document.createElement('div');
-    el.className='match-item'; el.textContent=p.def; el.dataset.idx=p.idx;
-    el.onclick=()=>selectMatch(el,'def');
-    defsBox.appendChild(el);
-  });
-}
-function selectMatch(el, kind){
-  if(el.classList.contains('matched')) return;
-  if(kind==='term'){
-    if(matchSelTerm) matchSelTerm.classList.remove('sel');
-    matchSelTerm = el; el.classList.add('sel');
-  } else {
-    if(matchSelDef) matchSelDef.classList.remove('sel');
-    matchSelDef = el; el.classList.add('sel');
-  }
-  if(matchSelTerm && matchSelDef){
-    if(matchSelTerm.dataset.idx === matchSelDef.dataset.idx){
-      matchSelTerm.classList.add('matched'); matchSelDef.classList.add('matched');
-      matchSelTerm.classList.remove('sel'); matchSelDef.classList.remove('sel');
-      matchScore++;
-      document.getElementById('matchScore').textContent = matchScore;
-      matchSelTerm=null; matchSelDef=null;
-    } else {
-      matchSelTerm.classList.add('flash-wrong'); matchSelDef.classList.add('flash-wrong');
-      setTimeout(()=>{
-        matchSelTerm && matchSelTerm.classList.remove('sel','flash-wrong');
-        matchSelDef && matchSelDef.classList.remove('sel','flash-wrong');
-        matchSelTerm=null; matchSelDef=null;
-      },500);
+document.addEventListener('DOMContentLoaded', function() {
+    const ctx = document.getElementById('safeAiChart');
+    if(ctx) {
+        new Chart(ctx, {
+            type: 'radar',
+            data: {
+                labels: ['Data Privacy', 'Hallucination Checks', 'Brand Tone', 'Technical Accuracy', 'Fact Checking'],
+                datasets: [
+                    {
+                        label: 'Safe AI Expert',
+                        data: [100, 95, 90, 85, 95],
+                        backgroundColor: 'rgba(76, 175, 80, 0.2)',
+                        borderColor: 'rgba(76, 175, 80, 1)',
+                        pointBackgroundColor: 'rgba(76, 175, 80, 1)'
+                    },
+                    {
+                        label: 'Untrained User',
+                        data: [40, 20, 60, 30, 10],
+                        backgroundColor: 'rgba(228, 0, 43, 0.2)',
+                        borderColor: 'rgba(228, 0, 43, 1)',
+                        pointBackgroundColor: 'rgba(228, 0, 43, 1)'
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: { legend: { labels: { color: '#F8FAFC' } } },
+                scales: {
+                    r: {
+                        angleLines: { color: 'rgba(255, 255, 255, 0.1)' },
+                        grid: { color: 'rgba(255, 255, 255, 0.1)' },
+                        pointLabels: { color: '#94A3B8' },
+                        ticks: { display: false }
+                    }
+                }
+            }
+        });
     }
-  }
-}
-renderMatchGame();
+});
 
-/* ============ PART 5: REDACTION GAME ============ */
-const REDACT_SEGMENTS = [
-  {text:"Hi team, please prepare a quote for ", sens:false},
-  {text:"Mr. Rajesh Kumar", sens:true},
-  {text:" (Mobile: ", sens:false},
-  {text:"98765 43210", sens:true},
-  {text:", Aadhaar ending ", sens:false},
-  {text:"1234", sens:true},
-  {text:") residing at ", sens:false},
-  {text:"14/2 MG Road, Pune", sens:true},
-  {text:" who wants 12 uPVC casement windows. Our dealer margin on this SKU is ", sens:false},
-  {text:"22%", sens:true},
-  {text:", and internal cost price is ", sens:false},
-  {text:"₹410 per sq ft", sens:true},
-  {text:". Please don't share the margin with the customer. Also attach our extrusion profile drawing, ", sens:false},
-  {text:"Die No. VK-2201", sens:true},
-  {text:", for internal reference only.", sens:false},
-];
-function renderRedactText(){
-  const box = document.getElementById('redactText');
-  box.innerHTML='';
-  REDACT_SEGMENTS.forEach((seg,i)=>{
-    if(seg.sens){
-      const span = document.createElement('span');
-      span.className='sens'; span.textContent=seg.text; span.dataset.i=i;
-      span.onclick=()=>span.classList.toggle('marked');
-      box.appendChild(span);
-    } else {
-      box.appendChild(document.createTextNode(seg.text));
-    }
-  });
-}
-function checkRedaction(){
-  let correct=0, missed=0, falsePos=0, totalSens=0;
-  document.querySelectorAll('#redactText .sens').forEach(span=>{
-    totalSens++;
-    const marked = span.classList.contains('marked');
-    if(marked){ correct++; span.classList.add('reveal-correct'); }
-    else { missed++; span.classList.add('reveal-missed'); }
-  });
-  const result = document.getElementById('redactResult');
-  const pct = Math.round((correct/totalSens)*100);
-  result.innerHTML = `<div class="score-badge">You redacted ${correct} of ${totalSens} sensitive items (${pct}%)</div>
-    <p style="color:var(--muted);margin-top:8px">Green = correctly redacted. Yellow = you missed this one — it should have been removed before pasting into AI.</p>`;
-}
-function resetRedaction(){ renderRedactText(); document.getElementById('redactResult').innerHTML=''; }
-renderRedactText();
-
-/* ============ PART 6: HALLUCINATION SPOTTING GAME ============ */
-const HALLUC_ROUNDS = [
-  [
-    {text:"For a residential uPVC casement window, ", fake:false},
-    {text:"IS 4021:2020 Clause 12.3", fake:true},
-    {text:" specifies a minimum wind pressure resistance rating. ", fake:false},
-    {text:"In practice, the actual applicable wind load must be calculated per the project's location and height using IS 875 (Part 3), and verified by a structural engineer", fake:false},
-    {text:". The AI further claims the profile achieves a U-value of ", fake:false},
-    {text:"exactly 0.8 W/m²K under all glazing configurations", fake:true},
-    {text:", which is not possible — U-value varies significantly by glazing type and must be calculated per configuration, not quoted as a single fixed number.", fake:false},
-  ],
-  [
-    {text:"The AI states that ", fake:false},
-    {text:"EN 12608 Clause 9.4 sets a maximum lead content of 0.1% for PVC profiles", fake:true},
-    {text:", and cites this as the reason VEKA profiles are compliant. ", fake:false},
-    {text:"Lead content compliance should always be verified against the current official standard document and VEKA's own certified test reports", fake:false},
-    {text:", not an AI-generated clause number. The AI also asserts that ", fake:false},
-    {text:"this specific clause number guarantees fire resistance", fake:true},
-    {text:" — lead content and fire resistance are unrelated properties.", fake:false},
-  ],
-];
-let hRound=0;
-function renderHallucRound(){
-  document.getElementById('hRoundNum').textContent = hRound+1;
-  document.getElementById('hRoundTotal').textContent = HALLUC_ROUNDS.length;
-  const box = document.getElementById('hallucText');
-  box.innerHTML='';
-  HALLUC_ROUNDS[hRound].forEach((seg,i)=>{
-    if(seg.fake){
-      const span=document.createElement('span');
-      span.className='sens'; span.textContent=seg.text; span.dataset.i=i;
-      span.onclick=()=>span.classList.toggle('marked');
-      box.appendChild(span);
-    } else {
-      box.appendChild(document.createTextNode(seg.text));
-    }
-  });
-  document.getElementById('hallucResult').innerHTML='';
-}
-function checkHallucination(){
-  let correct=0, total=0;
-  document.querySelectorAll('#hallucText .sens').forEach(span=>{
-    total++;
-    if(span.classList.contains('marked')){ correct++; span.classList.add('reveal-correct'); }
-    else { span.classList.add('reveal-missed'); }
-  });
-  document.getElementById('hallucResult').innerHTML = `<div class="score-badge">Spotted ${correct} of ${total} fabricated claims this round.</div>`;
-}
-function nextHallucRound(){
-  hRound = (hRound+1) % HALLUC_ROUNDS.length;
-  renderHallucRound();
-}
-renderHallucRound();
-
-/* ============ PART 7: CASE STUDIES ============ */
-const CASE_STUDIES = [
-  {title:"1. The WhatsApp Quotation", tag:"Privacy", color:"var(--c2)",
-   scenario:"A dealer sends you a customer's Aadhaar number by mistake, asking for a quick quotation reply. You want AI to help write it fast.",
-   options:["Paste everything into a free AI chatbot to write the reply.","Remove the Aadhaar number first, then let AI draft a simple reply.","Ask the dealer to resend it without the Aadhaar number.","Skip AI and write the reply yourself."],
-   correct:1, explain:"Always remove ID numbers and personal details before typing anything into AI."},
-  {title:"2. The Extrusion Formula", tag:"Confidentiality", color:"var(--c1)",
-   scenario:"An engineer wants to paste VEKA's secret window formula into a free AI tool to fix a defect.",
-   options:["Paste it in — it's just a technical question.","Use only an approved AI tool, or ask about the defect without sharing the exact formula.","Ask a colleague instead of using AI.","Post the formula on a public forum for faster help."],
-   correct:1, explain:"Never share VEKA's secret formulas with tools that aren't approved."},
-  {title:"3. The Confident Wind-Load Number", tag:"Accuracy", color:"var(--c3)",
-   scenario:"AI gives you an exact wind-load number for a tall building. An architect is waiting for it.",
-   options:["Send it right away — AI sounded very sure.","Have an engineer check the number before sending it.","Round the number to be safe.","Ask another AI tool and average the two answers."],
-   correct:1, explain:"Never trust an AI safety number without checking it yourself."},
-  {title:"4. The Margin Sheet Mix-up", tag:"Confidentiality", color:"var(--c1)",
-   scenario:"A sales exec uploads the dealer margin sheet to a personal AI app to make a quick chart.",
-   options:["This is fine, it's only for a chart.","This is unsafe — use an approved tool, or make the chart by hand.","Only unsafe if dealers see the chart.","Unsafe only for large files."],
-   correct:1, explain:"Margin and pricing data should never go into personal AI apps."},
-  {title:"5. The Sensitive HR Draft", tag:"Privacy", color:"var(--c2)",
-   scenario:"HR asks AI to write a performance review, including that the employee was sick and on leave.",
-   options:["This is fine, HR already knows this.","Remove the health details first — write the review using only work facts.","Only remove it if the employee complains.","Ask AI to keep it private."],
-   correct:1, explain:"Health information should never be typed into AI."},
-  {title:"6. The Fake Standard", tag:"Accuracy", color:"var(--c3)",
-   scenario:"VEKA's website chatbot tells a customer about a safety standard clause that nobody has actually checked.",
-   options:["No issue, customers won't check it.","Fix it right away — check the real standard before publishing anything.","Only a problem if a competitor notices.","Use a different clause number instead."],
-   correct:1, explain:"Always verify standards before publishing them anywhere."},
-  {title:"7. The Translation Trail", tag:"Privacy", color:"var(--c2)",
-   scenario:"A manager uses AI to translate a customer complaint that includes the customer's home address, then shares it outside VEKA.",
-   options:["Fine, it's just a translation.","Remove the address first, before translating or sharing it.","Only a concern if the vendor is abroad.","Get an NDA signed after sharing it."],
-   correct:1, explain:"Remove personal details before translating or sharing any document."},
-  {title:"8. The Wrong U-Value", tag:"Accuracy", color:"var(--c3)",
-   scenario:"AI gives a technical number for a window's glass performance, and it's quoted straight to an architect.",
-   options:["Fine, the number looked reasonable.","Have someone on the team verify the exact number first.","Only check it if the architect asks.","Add a disclaimer instead of checking it."],
-   correct:1, explain:"Always double-check technical numbers before quoting them to a customer."},
-  {title:"9. The Chat History Surprise", tag:"Vendor Risk", color:"var(--c5)",
-   scenario:"An audit finds old price quotes sitting in an employee's personal AI chat history.",
-   options:["No action needed, it's old data.","Report it, delete the history, and remind everyone: no company data in personal AI accounts.","Only a concern if the account gets hacked.","Just ask the employee to change their password."],
-   correct:1, explain:"Old company data left in a personal AI account is still a real risk."},
-  {title:"10. The Vendor Onboarding Shortcut", tag:"Regulatory", color:"var(--c4)",
-   scenario:"Procurement pastes a vendor's bank and ID details into a free AI tool to fill out a contract faster.",
-   options:["Fine, it's vendor data, not customer data.","Unsafe — use an approved tool, or fill it out by hand.","Only unsafe for vendors outside India.","Fine, as long as the contract is deleted later."],
-   correct:1, explain:"Vendor bank and ID details need the same care as customer data."},
-  {title:"11. The Erasure Request", tag:"Regulatory", color:"var(--c4)",
-   scenario:"A customer asks VEKA to delete their data. You want AI to help write the reply.",
-   options:["Paste the customer's full record into AI to write a personal reply.","Give AI only the customer's name and date — enough for a simple reply.","Ignore the request, AI replies aren't official.","Send the whole customer database to AI to check."],
-   correct:1, explain:"Only give AI the small amount of information it actually needs."},
-  {title:"12. The Boardroom Notetaker", tag:"Vendor Risk", color:"var(--c5)",
-   scenario:"For a private meeting about a big company decision, someone wants to use a free AI notetaker.",
-   options:["Great idea, it saves time.","Don't use a free AI tool for this — use an approved tool or take notes by hand.","Use it, but ask everyone to speak quietly.","Use it, then delete the recording after."],
-   correct:1, explain:"Private, high-stakes meetings should never use free AI tools."},
-  {title:"13. The Brochure Image", tag:"Accuracy", color:"var(--c3)",
-   scenario:"AI creates a brochure image, but it accidentally includes a logo that looks like a competitor's.",
-   options:["Publish it anyway, nobody will notice.","Check every AI-made image carefully before publishing it.","Just blur the logo a little.","Only a concern if it's a similar product."],
-   correct:1, explain:"Always check AI-made images closely before using them publicly."},
-];
-let csScore=0;
-function renderCaseStudies(){
-  const box = document.getElementById('caseStudies');
-  document.getElementById('csTotal').textContent = CASE_STUDIES.length;
-  CASE_STUDIES.forEach((cs,i)=>{
-    const card = document.createElement('div');
-    card.className='cs-card';
-    card.innerHTML = `
-      <div class="cs-head" onclick="toggleCase(${i})">
-        <span class="cs-title">${cs.title}</span>
-        <span class="cs-tag" style="background:${cs.color};color:#000">${cs.tag}</span>
-      </div>
-      <div class="cs-body" id="cs-body-${i}">
-        <p>${cs.scenario}</p>
-        <div class="cs-options" id="cs-opts-${i}">
-          ${cs.options.map((o,oi)=>`<label id="cs-opt-${i}-${oi}"><input type="radio" name="cs${i}" onclick="chooseCase(${i},${oi})">${o}</label>`).join('')}
-        </div>
-        <button class="btn small" onclick="revealCase(${i})">Reveal Recommended Answer</button>
-        <div class="cs-feedback" id="cs-fb-${i}"></div>
-      </div>`;
-    box.appendChild(card);
-  });
-}
-let caseChoices = {};
-function toggleCase(i){
-  document.getElementById('cs-body-'+i).classList.toggle('open');
-}
-function chooseCase(i,oi){
-  caseChoices[i]=oi;
-  for(let k=0;k<CASE_STUDIES[i].options.length;k++){
-    document.getElementById(`cs-opt-${i}-${k}`).classList.toggle('chosen', k===oi);
-  }
-}
-function revealCase(i){
-  const cs = CASE_STUDIES[i];
-  const fb = document.getElementById('cs-fb-'+i);
-  const chosen = caseChoices[i];
-  if(chosen===undefined){ fb.className='cs-feedback incorrect'; fb.innerHTML='Please choose an option first.'; return; }
-  if(!fb.dataset.scored){
-    fb.dataset.scored='1';
-    if(chosen===cs.correct) { csScore++; document.getElementById('csScore').textContent=csScore; }
-  }
-  const isCorrect = chosen===cs.correct;
-  fb.className = 'cs-feedback ' + (isCorrect?'correct':'incorrect');
-  fb.innerHTML = `<strong>${isCorrect?'✓ Correct.':'✗ Recommended approach:'}</strong> ${cs.options[cs.correct]}<br><br>${cs.explain}`;
-}
-renderCaseStudies();
-
-/* ============ PART 8: POLICY BUILDER ============ */
-const POLICY_ITEMS = [
-  {t:"Tool", d:"I will only use VEKA-approved AI tools for anything above Public-tier data."},
-  {t:"Tier", d:"I will pause and classify data as Public, Internal, or Confidential before typing it into any AI tool."},
-  {t:"Trim", d:"I will remove names, contact details, IDs, and exact commercial figures before pasting real data into AI."},
-  {t:"Trust but Verify", d:"I will independently verify any technical spec, standard, or calculation before using it externally."},
-  {t:"Tell", d:"I will immediately report any suspected data exposure or AI-related incident to IT/the Data Protection Officer."},
-];
-function renderPolicyChecks(){
-  const box = document.getElementById('policyChecks');
-  POLICY_ITEMS.forEach((p,i)=>{
-    const d = document.createElement('div');
-    d.className='policy-check';
-    d.innerHTML = `<input type="checkbox" id="pol${i}"><label for="pol${i}"><strong>${p.t}.</strong> ${p.d}</label>`;
-    box.appendChild(d);
-  });
-}
-function generatePolicy(){
-  const name = "You";
-  let lines = [`MY VEKA AI SAFETY COMMITMENT — THE 5 T's`, ``];
-  POLICY_ITEMS.forEach((p,i)=>{
-    const checked = document.getElementById('pol'+i).checked;
-    lines.push((checked?'[✓] ':'[ ] ') + p.t + ' — ' + p.d);
-  });
-  const box = document.getElementById('policySummary');
-  box.style.display='block';
-  box.textContent = lines.join('\n');
-}
-renderPolicyChecks();
-
-/* ============ PART 9: FINAL QUIZ ============ */
-const FINAL_QUIZ = [
-  {q:"You paste a customer's phone number and address into a free AI chatbot to write a reply.", a:'unsafe', why:"Personal data should not go into a free, unapproved AI tool."},
-  {q:"You ask AI to summarise VEKA's public report for a LinkedIn post.", a:'safe', why:"This is public information — safe to use."},
-  {q:"AI gives you a wind-load number for a tall building. You send it to the architect without checking.", a:'unsafe', why:"Always check safety numbers before sharing them."},
-  {q:"You use VEKA's approved AI tool to write a simple internal process document.", a:'safe', why:"Approved tool, and no private data was used."},
-  {q:"You paste the dealer margin sheet into a personal AI app to make a chart.", a:'unsafe', why:"Margin data should not go into personal AI apps."},
-  {q:"You remove the customer's name and phone number, then ask AI to translate their complaint.", a:'safe', why:"You removed the personal details first — that's the right approach."},
-  {q:"You ask AI to write a simple job description for an open role, with no company data.", a:'safe', why:"No private or company data was used."},
-  {q:"AI gives you a standard's clause number, and you use it in a document without checking it.", a:'unsafe', why:"AI can invent clause numbers — always check the real standard first."},
-  {q:"An employee shares their AI tool password with three coworkers.", a:'unsafe', why:"Never share your AI tool login with others."},
-  {q:"You ask AI to brainstorm taglines for a new product, with no company data involved.", a:'safe', why:"Just brainstorming — no private data was used."},
-  {q:"You upload a vendor's contract with bank and ID details to a free AI tool.", a:'unsafe', why:"Bank and ID details should never go into free AI tools."},
-  {q:"You ask AI to outline a presentation on a general topic, with no company data included.", a:'safe', why:"General topic, no private data used."},
-  {q:"You give AI only a customer's first name and date to write a simple reply.", a:'safe', why:"You gave AI only the small amount of information it needed."},
-  {q:"AI states a specific rule number. You're not sure it's real, but you use it anyway.", a:'unsafe', why:"If you're not sure it's real, always check before using it."},
-  {q:"You use a free AI notetaker to record a private meeting about a big company decision.", a:'unsafe', why:"Private, high-stakes meetings should not use free AI tools."},
-];
-let fqAnswers = new Array(FINAL_QUIZ.length).fill(null);
-function renderFinalQuiz(){
-  const box = document.getElementById('finalQuiz');
-  FINAL_QUIZ.forEach((item,i)=>{
-    const d = document.createElement('div');
-    d.className='fq-item';
-    d.innerHTML = `<div class="fq-q">${i+1}. ${item.q}</div>
-      <div class="fq-options">
-        <button id="fq-${i}-safe" onclick="fqChoose(${i},'safe')">✅ Safe</button>
-        <button id="fq-${i}-unsafe" onclick="fqChoose(${i},'unsafe')">🚫 Unsafe</button>
-      </div>
-      <div class="fq-explain" id="fq-explain-${i}"></div>`;
-    box.appendChild(d);
-  });
-}
-function fqChoose(i, val){
-  fqAnswers[i]=val;
-  document.getElementById(`fq-${i}-safe`).classList.toggle('chosen-safe', val==='safe');
-  document.getElementById(`fq-${i}-unsafe`).classList.toggle('chosen-unsafe', val==='unsafe');
-}
-function submitFinalQuiz(){
-  let score=0;
-  FINAL_QUIZ.forEach((item,i)=>{
-    const exp = document.getElementById('fq-explain-'+i);
-    exp.style.display='block';
-    const chosen = fqAnswers[i];
-    const correct = chosen===item.a;
-    if(correct) score++;
-    exp.style.color = correct? 'var(--safe)' : 'var(--unsafe)';
-    exp.innerHTML = (chosen? (correct? '✓ Correct. ':'✗ Actually '+ (item.a==='safe'?'Safe':'Unsafe') + '. ') : '⚠ Not answered. Correct answer: '+(item.a==='safe'?'Safe':'Unsafe')+'. ') + item.why;
-  });
-  const pass = score>=13;
-  const resBox = document.getElementById('finalResult');
-  resBox.innerHTML = `<div class="result-box ${pass?'pass':'fail'}">
-    <div class="big">${score} / 15</div>
-    <div style="font-size:1.1rem;margin-top:8px">${pass? '🎉 Passed! You can now generate your certificate below.' : 'Not yet at 13/15 — review the explanations above and retake the quiz.'}</div>
-    ${!pass? '<button class="btn secondary" style="margin-top:14px" onclick="retakeFinalQuiz()">↺ Retake Quiz</button>':''}
-  </div>`;
-  if(pass) renderCertificate();
-  else document.getElementById('certificateBox').innerHTML='';
-  resBox.scrollIntoView({behavior:'smooth'});
-}
-function retakeFinalQuiz(){
-  fqAnswers = new Array(FINAL_QUIZ.length).fill(null);
-  document.getElementById('finalQuiz').innerHTML='';
-  document.getElementById('finalResult').innerHTML='';
-  document.getElementById('certificateBox').innerHTML='';
-  renderFinalQuiz();
-}
-function renderCertificate(){
-  document.getElementById('certificateBox').innerHTML = `
-    <div class="certificate">
-      <div style="font-size:2.2rem">🛡️</div>
-      <h2>Certificate of Completion</h2>
-      <div style="color:var(--muted);margin-top:4px">VEKA GenAI Excellence &middot; Session 3 — Safe AI</div>
-      <input class="name-input" id="certName" placeholder="Type your full name">
-      <div style="color:var(--muted);font-size:0.9rem">has successfully completed the Safe AI workshop and passed the "Is This Safe?" assessment.</div>
-      <div style="margin-top:18px;color:var(--muted);font-size:0.8rem">Date: ${new Date().toLocaleDateString('en-IN',{day:'numeric',month:'long',year:'numeric'})}</div>
-      <button class="btn no-print" style="margin-top:20px" onclick="window.print()">🖨️ Print / Save Certificate</button>
-    </div>`;
-}
-renderFinalQuiz();
-
-/* ============ GAME ARCADE (BONUS) ============ */
-let arcadeScore = 0;
-function bumpArcadeScore(n){
-  arcadeScore += n;
-  document.getElementById('arcadeGrandScore').textContent = arcadeScore;
-}
-
-/* --- Game 1: Flashcard Flip --- */
-const FLASHCARDS = [
-  {front:"Token", back:"The small pieces your text is broken into before AI processes it."},
-  {front:"Hallucination", back:"When AI states something false with full confidence."},
-  {front:"Anonymise", back:"Removing personal or confidential details before using AI."},
-  {front:"Data Fiduciary", back:"The organisation (VEKA) responsible for personal data."},
-  {front:"Data Principal", back:"The person the data belongs to — customer, dealer, or employee."},
-  {front:"Confidential Tier", back:"Data that would cause real harm to VEKA if it leaked."},
-];
-function renderFlashcards(){
-  const box = document.getElementById('flashGrid');
-  FLASHCARDS.forEach(c=>{
-    const el = document.createElement('div');
-    el.className='flip-card';
-    el.innerHTML = `<div class="front">${c.front}<br><span style="font-size:0.72rem;color:var(--muted);font-weight:400">(tap to flip)</span></div><div class="back">${c.back}</div>`;
-    el.onclick = ()=>el.classList.toggle('flipped');
-    box.appendChild(el);
-  });
-}
-renderFlashcards();
-
-/* --- Generic MCQ renderer used by Games 3 & 4 --- */
-function renderMCQGame(containerId, data, scoreId, totalId, scoreVarSetter, scoreVarGetter){
-  document.getElementById(totalId).textContent = data.length;
-  const box = document.getElementById(containerId);
-  data.forEach((item,i)=>{
-    const row = document.createElement('div');
-    row.className='mcq-row';
-    const opts = item.options.map((o,oi)=>`<button class="opt" onclick="mcqAnswer('${containerId}',${i},${oi},${item.correct},'${scoreId}')">${o}</button>`).join('');
-    row.innerHTML = `<div class="mcq-q">${i+1}. ${item.q}</div><div class="mcq-opts" id="${containerId}-row-${i}">${opts}</div><div class="mcq-fb" id="${containerId}-fb-${i}"></div>`;
-    box.appendChild(row);
-  });
-}
-const mcqState = {};
-function mcqAnswer(containerId, i, chosen, correct, scoreId){
-  const key = containerId+'-'+i;
-  if(mcqState[key]) return;
-  mcqState[key]=true;
-  const row = document.getElementById(containerId+'-row-'+i);
-  const btns = row.querySelectorAll('button.opt');
-  btns[correct].classList.add('right');
-  if(chosen!==correct) btns[chosen].classList.add('wrong');
-  const fb = document.getElementById(containerId+'-fb-'+i);
-  const ok = chosen===correct;
-  fb.style.color = ok? 'var(--safe)':'var(--unsafe)';
-  fb.textContent = ok? '✓ Correct' : '✗ Not quite';
-  const scoreEl = document.getElementById(scoreId);
-  scoreEl.textContent = (parseInt(scoreEl.textContent)||0) + (ok?1:0);
-  bumpArcadeScore(ok?1:0);
-}
-
-/* --- Game 2: True or False Speed Round --- */
-const TF_GAME = [
-  {q:"AI tools always tell you when they're not sure about an answer.", a:false},
-  {q:"You should verify technical numbers before quoting them to a customer.", a:true},
-  {q:"Deleting a chat on a free AI app always erases it instantly from the provider's servers.", a:false},
-  {q:"VEKA employees can be personally responsible for data safety mistakes.", a:true},
-  {q:"DPDP 2023 only applies to VEKA's IT department.", a:false},
-  {q:"Anonymising data means removing names, IDs, and other identifying details.", a:true},
-  {q:"It's fine to use any AI tool as long as the task feels small.", a:false},
-  {q:"Reporting a suspected data leak quickly is better than staying quiet.", a:true},
-];
-function renderTFGame(){
-  document.getElementById('tfTotal').textContent = TF_GAME.length;
-  const box = document.getElementById('tfGame');
-  TF_GAME.forEach((item,i)=>{
-    const row = document.createElement('div');
-    row.className='mcq-row';
-    row.innerHTML = `<div class="mcq-q">${i+1}. ${item.q}</div>
-      <div class="mcq-opts" id="tf-row-${i}">
-        <button class="opt" onclick="tfAnswer(${i},true,${item.a})">True</button>
-        <button class="opt" onclick="tfAnswer(${i},false,${item.a})">False</button>
-      </div>
-      <div class="mcq-fb" id="tf-fb-${i}"></div>`;
-    box.appendChild(row);
-  });
-}
-const tfDone = {};
-function tfAnswer(i, chosen, correct){
-  if(tfDone[i]) return;
-  tfDone[i]=true;
-  const row = document.getElementById('tf-row-'+i);
-  const btns = row.querySelectorAll('button.opt');
-  btns[correct? 0:1].classList.add('right');
-  if(chosen!==correct) btns[chosen?0:1].classList.add('wrong');
-  const fb = document.getElementById('tf-fb-'+i);
-  const ok = chosen===correct;
-  fb.style.color = ok?'var(--safe)':'var(--unsafe)';
-  fb.textContent = ok?'✓ Correct':'✗ Correct answer: '+(correct?'True':'False');
-  const el = document.getElementById('tfScore');
-  el.textContent = (parseInt(el.textContent)||0)+(ok?1:0);
-  bumpArcadeScore(ok?1:0);
-}
-renderTFGame();
-
-/* --- Game 3: Emoji Decode --- */
-const EMOJI_GAME = [
-  {q:"🔒📄 = ?", options:["Confidential Document","Public Brochure","Internal Memo","Spam Email"], correct:0},
-  {q:"🎭🤖 = ?", options:["Encryption","Hallucination","Consent","Anonymisation"], correct:1},
-  {q:"🪪🚫 = ?", options:["Signature","Certification","Anonymisation","Warranty"], correct:2},
-  {q:"⚖️🇮🇳 = ?", options:["GST Act","DPDP Act","Companies Act","IT Act"], correct:1},
-  {q:"🗑️🙋 = ?", options:["Right to Information","Right of Way","Right to Erasure","Copyright"], correct:2},
-  {q:"🧩🏢 = ?", options:["Internal Audit","Public Relations","Sales Pipeline","Third-Party Vendor Risk"], correct:3},
-];
-renderMCQGame('emojiGame', EMOJI_GAME, 'emojiScore', 'emojiTotal');
-
-/* --- Game 4: Fill in the Blank --- */
-const BLANK_GAME = [
-  {q:"Before typing data into AI, always check its ___ level (Public, Internal, or Confidential).", options:["classification","temperature","font","currency"], correct:0},
-  {q:"AI can ___ facts — meaning it states something false very confidently.", options:["encrypt","hallucinate","anonymise","translate"], correct:1},
-  {q:"Under DPDP, VEKA is called a Data ___.", options:["Broker","Vendor","Fiduciary","Auditor"], correct:2},
-  {q:"You should always ___ personal details before pasting dealer data into AI.", options:["highlight","bold","remove","translate"], correct:2},
-  {q:"A wind-load number from AI must be ___ by an engineer before use.", options:["ignored","rounded","hidden","verified"], correct:3},
-  {q:"If you suspect a data leak, you should ___ it immediately.", options:["delete","forward","report","ignore"], correct:2},
-];
-renderMCQGame('blankGame', BLANK_GAME, 'blankScore', 'blankTotal');
-
-/* --- Game 5: Odd One Out --- */
-const ODD_GAME = [
-  {items:["Dealer margin sheet","Customer Aadhaar number","Unpublished financials","Published brochure"], odd:3},
-  {items:["Consent","Data Principal","Purpose Limitation","Extrusion Die"], odd:3},
-  {items:["Hallucination","Wrong wind-load","Fake standard clause","Approved SOP"], odd:3},
-  {items:["Free consumer chatbot","Personal AI app","Unapproved browser extension","VEKA-approved enterprise tool"], odd:3},
-  {items:["Org chart","Training schedule","Internal SOP","Vendor bank details"], odd:3},
-];
-function renderOddGame(){
-  document.getElementById('oddTotal').textContent = ODD_GAME.length;
-  const box = document.getElementById('oddGame');
-  ODD_GAME.forEach((set,i)=>{
-    const wrap = document.createElement('div');
-    wrap.style.marginBottom='14px';
-    wrap.innerHTML = `<div style="margin-bottom:6px;color:var(--muted);font-size:0.82rem">Round ${i+1} — click the odd one out:</div>
-      <div class="odd-grid" id="odd-row-${i}">
-        ${set.items.map((it,ii)=>`<div class="odd-chip" onclick="oddAnswer(${i},${ii},${set.odd})">${it}</div>`).join('')}
-      </div>`;
-    box.appendChild(wrap);
-  });
-}
-const oddDone = {};
-function oddAnswer(i, chosen, correct){
-  if(oddDone[i]) return;
-  oddDone[i]=true;
-  const row = document.getElementById('odd-row-'+i);
-  const chips = row.querySelectorAll('.odd-chip');
-  chips[correct].classList.add('right');
-  if(chosen!==correct) chips[chosen].classList.add('wrong');
-  const ok = chosen===correct;
-  const el = document.getElementById('oddScore');
-  el.textContent = (parseInt(el.textContent)||0)+(ok?1:0);
-  bumpArcadeScore(ok?1:0);
-}
-renderOddGame();
-
-/* --- Game 6: Word Scramble --- */
-const SCRAMBLE_GAME = [
-  {scrambled:"N E K O T", options:["TOKEN","VENDOR","CONSENT","BREACH"], correct:0},
-  {scrambled:"H C A E R B", options:["STANDARD","BREACH","PRIVACY","ERASURE"], correct:1},
-  {scrambled:"E R U S A R E", options:["TOKEN","VENDOR","ERASURE","BREACH"], correct:2},
-  {scrambled:"R O D N E V", options:["VENDOR","PRIVACY","STANDARD","CONSENT"], correct:0},
-  {scrambled:"D R A D N A T S", options:["BREACH","ERASURE","VENDOR","STANDARD"], correct:3},
-  {scrambled:"C A V I R P Y", options:["PRIVACY","TOKEN","STANDARD","VENDOR"], correct:0},
-];
-renderMCQGame('scrambleGame', SCRAMBLE_GAME.map(s=>({q:"Unscramble: "+s.scrambled, options:s.options, correct:s.correct})), 'scrambleScore', 'scrambleTotal');
-
-/* --- Game 7: Two Truths and a Lie --- */
-const LIE_GAME = [
-  {stmts:["AI tools can invent fake standard numbers.","VEKA-approved AI tools have signed data agreements.","Free AI chatbots never store your conversations."], lie:2},
-  {stmts:["DPDP 2023 gives people the right to request data erasure.","Only IT staff need to worry about AI data safety.","Data breaches must be reported to the Data Protection Board."], lie:1},
-  {stmts:["Dealer margins are Confidential-tier data.","Published brochures are Public-tier data.","Internal SOPs carry the same risk level as Confidential data."], lie:2},
-  {stmts:["You should verify AI-generated technical numbers before using them.","Health information is sensitive personal data under DPDP.","Sharing your AI tool password with coworkers is totally fine."], lie:2},
-  {stmts:["Anonymising data means removing identifying details before using AI.","AI hallucinations always sound uncertain and hesitant.","A structural calculation from AI should be checked by an engineer."], lie:1},
-];
-function renderLieGame(){
-  document.getElementById('lieTotal').textContent = LIE_GAME.length;
-  const box = document.getElementById('lieGame');
-  LIE_GAME.forEach((set,i)=>{
-    const wrap = document.createElement('div');
-    wrap.className='mcq-row';
-    wrap.innerHTML = `<div class="mcq-q">Round ${i+1} — which one is FALSE?</div>
-      <div class="mcq-opts" id="lie-row-${i}" style="flex-direction:column;align-items:stretch">
-        ${set.stmts.map((s,si)=>`<button class="opt" style="text-align:left" onclick="lieAnswer(${i},${si},${set.lie})">${String.fromCharCode(65+si)}. ${s}</button>`).join('')}
-      </div>
-      <div class="mcq-fb" id="lie-fb-${i}"></div>`;
-    box.appendChild(wrap);
-  });
-}
-const lieDone = {};
-function lieAnswer(i, chosen, correct){
-  if(lieDone[i]) return;
-  lieDone[i]=true;
-  const row = document.getElementById('lie-row-'+i);
-  const btns = row.querySelectorAll('button.opt');
-  btns[correct].classList.add('right');
-  if(chosen!==correct) btns[chosen].classList.add('wrong');
-  const ok = chosen===correct;
-  const fb = document.getElementById('lie-fb-'+i);
-  fb.style.color = ok?'var(--safe)':'var(--unsafe)';
-  fb.textContent = ok?'✓ Correct — that was the lie.':'✗ Not quite.';
-  const el = document.getElementById('lieScore');
-  el.textContent = (parseInt(el.textContent)||0)+(ok?1:0);
-  bumpArcadeScore(ok?1:0);
-}
-renderLieGame();
-
-/* --- Game 8: This or That --- */
-const TOT_GAME = [
-  {a:"Paste the customer's address into a free AI tool", b:"Remove the address, then use the free AI tool", correct:'b'},
-  {a:"Use a VEKA-approved tool for a confidential draft", b:"Use a personal AI app for a confidential draft", correct:'a'},
-  {a:"Verify AI's wind-load number with an engineer", b:"Quote AI's wind-load number directly to the client", correct:'a'},
-  {a:"Report a suspected data leak immediately", b:"Wait and see if anyone notices", correct:'a'},
-  {a:"Share your AI login with teammates to save cost", b:"Each person uses their own licensed account", correct:'b'},
-  {a:"Publish an AI-generated image without checking it", b:"Review the AI-generated image for hidden logos or errors first", correct:'b'},
-  {a:"Trust an AI-cited standard clause without checking", b:"Cross-check the clause against the real standard", correct:'b'},
-  {a:"Use the minimum data necessary in an AI prompt", b:"Paste the customer's full record just in case", correct:'a'},
-];
-function renderTotGame(){
-  document.getElementById('totTotal').textContent = TOT_GAME.length;
-  const box = document.getElementById('totGame');
-  TOT_GAME.forEach((item,i)=>{
-    const wrap = document.createElement('div');
-    wrap.style.marginBottom='12px';
-    wrap.innerHTML = `<div style="margin-bottom:6px;color:var(--muted);font-size:0.82rem">Round ${i+1} — click the SAFER choice:</div>
-      <div class="tot-row" id="tot-row-${i}">
-        <div class="tot-btn" onclick="totAnswer(${i},'a','${item.correct}')">${item.a}</div>
-        <div class="tot-vs">VS</div>
-        <div class="tot-btn" onclick="totAnswer(${i},'b','${item.correct}')">${item.b}</div>
-      </div>`;
-    box.appendChild(wrap);
-  });
-}
-const totDone = {};
-function totAnswer(i, chosen, correct){
-  if(totDone[i]) return;
-  totDone[i]=true;
-  const row = document.getElementById('tot-row-'+i);
-  const btns = row.querySelectorAll('.tot-btn');
-  const rightBtn = correct==='a'? btns[0]:btns[1];
-  const wrongBtn = correct==='a'? btns[1]:btns[0];
-  rightBtn.classList.add('right');
-  if(chosen!==correct) wrongBtn.classList.add('wrong');
-  const ok = chosen===correct;
-  const el = document.getElementById('totScore');
-  el.textContent = (parseInt(el.textContent)||0)+(ok?1:0);
-  bumpArcadeScore(ok?1:0);
-}
-renderTotGame();
-</script>
-<button id="scrollTopBtn" title="Go to top" style="display: none; position: fixed; bottom: 20px; right: 20px; z-index: 99; font-size: 24px; border: none; outline: none; background-color: var(--accent); color: white; cursor: pointer; width: 50px; height: 50px; border-radius: 50%; box-shadow: 0 4px 12px rgba(0,0,0,0.5); transition: opacity 0.3s, transform 0.3s; display: flex; align-items: center; justify-content: center; opacity: 0; pointer-events: none;" onmouseover="this.style.transform='scale(1.1)'" onmouseout="this.style.transform='scale(1)'">
-  ↑
+document.addEventListener('DOMContentLoaded', function() {
+    // Progressive Disclosure for Flow Diagrams
+    document.querySelectorAll('.flow').forEach(flow => {
+        if(flow.textContent.includes('vs') && flow.children.length === 3) return;
+        const children = Array.from(flow.children);
+        for(let i = 1; i < children.length; i++) {
+            children[i].style.opacity = '0.15';
+            children[i].style.pointerEvents = 'none';
+            children[i].style.transition = 'all 0.4s ease';
+            children[i].style.transform = 'translateX(-10px)';
+        }
+        children[0].style.cursor = 'pointer';
+        children[0].style.transition = 'all 0.3s ease';
+        children[0].title = 'Click to reveal next step';
+        children.forEach((child, index) => {
+            if(child.classList.contains('node')) {
+                child.addEventListener('click', () => {
+                    child.style.borderColor = 'var(--accent)';
+                    child.style.background = 'rgba(228, 0, 43, 0.1)';
+                    child.style.boxShadow = '0 0 15px rgba(228, 0, 43, 0.2)';
+                    if(index + 1 < children.length) {
+                        children[index + 1].style.opacity = '1';
+                        children[index + 1].style.transform = 'translateX(0)';
+                    }
+                    if(index + 2 < children.length) {
+                        children[index + 2].style.opacity = '1';
+                        children[index + 2].style.pointerEvents = 'auto';
+                        children[index + 2].style.cursor = 'pointer';
+                        children[index + 2].style.transform = 'translateX(0)';
+                        children[index + 2].title = 'Click to reveal next step';
+                    }
+                });
+            }
+        });
+    });
+});</script>
+<button id="back-to-top" title="Back to Top" style="position: fixed; bottom: 30px; right: 30px; z-index: 999; background: var(--accent, #E4002B); color: white; width: 45px; height: 45px; border: none; border-radius: 50%; display: none; align-items: center; justify-content: center; box-shadow: 0 4px 15px rgba(0,0,0,0.3); transition: opacity 0.3s, transform 0.3s; opacity: 0; transform: translateY(10px); cursor: pointer;">
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5M5 12l7-7 7 7"/></svg>
 </button>
-
 <script>
-  const scrollTopBtn = document.getElementById("scrollTopBtn");
-  window.addEventListener('scroll', function() {
-    if (document.body.scrollTop > 200 || document.documentElement.scrollTop > 200) {
-      scrollTopBtn.style.opacity = "1";
-      scrollTopBtn.style.pointerEvents = "auto";
-    } else {
-      scrollTopBtn.style.opacity = "0";
-      scrollTopBtn.style.pointerEvents = "none";
+document.addEventListener('DOMContentLoaded', function() {
+    var backToTopBtn = document.getElementById('back-to-top');
+    if (backToTopBtn) {
+        window.addEventListener('scroll', function() {
+            if (window.scrollY > 300) {
+                backToTopBtn.style.display = 'flex';
+                setTimeout(function() { backToTopBtn.style.opacity = '1'; backToTopBtn.style.transform = 'translateY(0)'; }, 10);
+            } else {
+                backToTopBtn.style.opacity = '0';
+                backToTopBtn.style.transform = 'translateY(10px)';
+                setTimeout(function() { if (window.scrollY <= 300) backToTopBtn.style.display = 'none'; }, 300);
+            }
+        });
+        backToTopBtn.addEventListener('click', function() {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        });
     }
-  });
-  scrollTopBtn.addEventListener('click', function() {
-    window.scrollTo({top: 0, behavior: 'smooth'});
-  });
+});
+</script>
+<script>
+// Dynamic Scroll Animations
+document.addEventListener('DOMContentLoaded', () => {
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.style.opacity = '1';
+                entry.target.style.transform = 'translateY(0)';
+            }
+        });
+    }, { threshold: 0.1 });
+
+    document.querySelectorAll('.card, .section, .flip-container, .qcard').forEach(el => {
+        el.style.opacity = '0';
+        el.style.transform = 'translateY(20px)';
+        el.style.transition = 'opacity 0.6s ease-out, transform 0.6s ease-out';
+        observer.observe(el);
+    });
+});
 </script>
 
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    if(document.querySelector('.quick-nav')) {
+        document.querySelector('.quick-nav').remove();
+    }
+    const nav = document.createElement('div');
+    nav.className = 'quick-nav';
+    const sections = document.querySelectorAll('.section');
+    
+    // Ensure only the first section is open by default
+    sections.forEach((sec, i) => {
+        if(i === 0) sec.classList.add('open');
+        else sec.classList.remove('open');
+    });
+
+    sections.forEach((sec, index) => {
+        const h2 = sec.querySelector('.section-head h2');
+        if (h2) {
+            sec.id = 'section-' + index;
+            const btn = document.createElement('button');
+            let text = h2.innerText || h2.textContent;
+            let shortText = text.split(':')[0].split('—')[0].split('-')[0].trim();
+            btn.innerText = shortText;
+            
+            if(index === 0) btn.classList.add('active');
+
+            btn.onclick = () => {
+                // Close all
+                sections.forEach(s => s.classList.remove('open'));
+                document.querySelectorAll('.quick-nav button').forEach(b => b.classList.remove('active'));
+                
+                // Open this
+                sec.classList.add('open');
+                btn.classList.add('active');
+                
+                // Scroll to top
+                window.scrollTo({top: 0, behavior: 'instant'});
+            };
+            nav.appendChild(btn);
+        }
+    });
+    const header = document.querySelector('.module-header');
+    if (header) {
+        header.parentNode.insertBefore(nav, header.nextSibling);
+    }
+});
+</script>
 </body>
-</html>
+
+
+
+
+
+
+
