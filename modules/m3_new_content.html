@@ -1,0 +1,1504 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>VEKA GenAI Excellence — Session 3: Safe AI</title>
+<style>
+  :root{
+    --bg:#0a0a0a;
+    --panel:#141414;
+    --panel2:#1b1b1b;
+    --border:#2a2a2a;
+    --text:#eaeaea;
+    --muted:#9a9a9a;
+    --accent:#e2231a;
+    --accent-dim:#5c110d;
+    --safe:#2ecc71;
+    --unsafe:#e2231a;
+    --warn:#f1c40f;
+    --c1:#e2231a; /* confidentiality */
+    --c2:#3aa0ff; /* privacy/dpdp */
+    --c3:#f1c40f; /* hallucination */
+    --c4:#a76bff; /* regulatory */
+    --c5:#2ecc71; /* vendor */
+    --radius:12px;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    background:var(--bg);
+    color:var(--text);
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    line-height:1.55;
+  }
+  a{color:var(--accent);}
+  .topbar{
+    position:sticky; top:0; z-index:50;
+    background:#000; border-bottom:1px solid var(--border);
+    padding:16px 20px;
+    display:flex; align-items:center; justify-content:space-between; gap:16px; flex-wrap:wrap;
+  }
+  .topbar h1{font-size:1.25rem; margin:0; font-weight:700;}
+  .topbar .sub{color:var(--muted); font-size:0.82rem; margin-top:2px;}
+  .timer-box{
+    display:flex; align-items:center; gap:10px;
+    background:var(--panel); border:1px solid var(--border); border-radius:999px;
+    padding:8px 14px;
+  }
+  .timer-box .clock{font-variant-numeric:tabular-nums; font-weight:700; font-size:1.05rem; min-width:64px; text-align:center;}
+  .timer-box button{
+    background:var(--accent); color:#fff; border:none; border-radius:999px;
+    padding:6px 12px; font-size:0.78rem; font-weight:600; cursor:pointer;
+  }
+  .timer-box button.secondary{background:#333;}
+  .timer-box button:hover{filter:brightness(1.1);}
+
+  .container{max-width:1100px; margin:0 auto; padding:20px 16px 80px;}
+
+  .tabs{
+    display:flex; gap:8px; overflow-x:auto; padding:14px 0 18px;
+    border-bottom:1px solid var(--border); margin-bottom:22px;
+    scrollbar-width:thin;
+  }
+  .tab-btn{
+    flex:0 0 auto;
+    background:var(--panel); color:var(--text); border:1px solid var(--border);
+    border-radius:999px; padding:10px 16px; font-size:0.86rem; font-weight:600;
+    cursor:pointer; white-space:nowrap; display:flex; align-items:center; gap:6px;
+    transition:all .15s;
+  }
+  .tab-btn .chk{color:var(--safe); font-size:0.8rem; display:none;}
+  .tab-btn.visited .chk{display:inline;}
+  .tab-btn:hover{border-color:var(--accent);}
+  .tab-btn.active{background:var(--accent); border-color:var(--accent); color:#fff;}
+
+  .panel{display:none; animation:fade .25s ease;}
+  .panel.active{display:block;}
+  @keyframes fade{from{opacity:0; transform:translateY(4px);} to{opacity:1; transform:translateY(0);}}
+
+  .card{
+    background:var(--panel); border:1px solid var(--border); border-radius:var(--radius);
+    padding:24px; margin-bottom:20px;
+  }
+  .card h2{margin-top:0; font-size:1.4rem; display:flex; align-items:center; gap:10px;}
+  .card h3{font-size:1.1rem; margin-bottom:8px;}
+  .pill{
+    display:inline-block; background:var(--accent-dim); color:#ff8f88; border:1px solid var(--accent);
+    border-radius:999px; padding:2px 10px; font-size:0.72rem; font-weight:700; letter-spacing:.03em;
+    text-transform:uppercase; margin-bottom:10px;
+  }
+  .time-pill{
+    display:inline-block; background:#1c1c1c; color:var(--muted); border:1px solid var(--border);
+    border-radius:999px; padding:2px 10px; font-size:0.75rem; margin-left:8px;
+  }
+
+  .stat-grid{display:grid; grid-template-columns:repeat(auto-fit,minmax(130px,1fr)); gap:14px; margin:20px 0;}
+  .stat{background:var(--panel2); border:1px solid var(--border); border-radius:var(--radius); padding:18px 10px; text-align:center;}
+  .stat .num{font-size:2rem; font-weight:800; color:var(--accent);}
+  .stat .lbl{color:var(--muted); font-size:0.82rem; margin-top:4px;}
+
+  ul.obj{list-style:none; padding:0; margin:0;}
+  ul.obj li{padding:8px 0 8px 26px; position:relative; border-bottom:1px dashed var(--border);}
+  ul.obj li:last-child{border-bottom:none;}
+  ul.obj li::before{content:"▶"; color:var(--accent); position:absolute; left:0; top:9px; font-size:0.7rem;}
+
+  .agenda-table{width:100%; border-collapse:collapse; margin-top:10px;}
+  .agenda-table td, .agenda-table th{padding:10px 8px; border-bottom:1px solid var(--border); font-size:0.9rem; text-align:left;}
+  .agenda-table th{color:var(--muted); font-weight:600; font-size:0.78rem; text-transform:uppercase;}
+  .agenda-table td.mins{color:var(--accent); font-weight:700; white-space:nowrap;}
+
+  .risk-grid{display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); gap:14px; margin:18px 0;}
+  .risk-card{border-radius:var(--radius); padding:16px; border:1px solid var(--border); background:var(--panel2); border-left:4px solid var(--r-color,var(--accent));}
+  .risk-card h4{margin:0 0 6px; font-size:1rem;}
+  .risk-card p{margin:0; color:var(--muted); font-size:0.86rem;}
+
+  .btn{
+    background:var(--accent); color:#fff; border:none; border-radius:8px;
+    padding:10px 18px; font-size:0.9rem; font-weight:700; cursor:pointer; margin-top:8px;
+  }
+  .btn:hover{filter:brightness(1.12);}
+  .btn.secondary{background:#2a2a2a; color:var(--text);}
+  .btn.small{padding:6px 12px; font-size:0.8rem;}
+  .btn:disabled{opacity:.45; cursor:not-allowed;}
+
+  .game-box{background:#0d0d0d; border:1px dashed var(--accent); border-radius:var(--radius); padding:20px; margin-top:16px;}
+  .game-box .gtitle{color:var(--accent); font-weight:800; font-size:0.78rem; text-transform:uppercase; letter-spacing:.05em; margin-bottom:6px;}
+
+  .score-badge{
+    display:inline-flex; align-items:center; gap:6px; background:var(--panel2); border:1px solid var(--border);
+    border-radius:999px; padding:6px 14px; font-weight:700; font-size:0.85rem;
+  }
+
+  /* Part 1 flow */
+  .flow{display:flex; flex-wrap:wrap; gap:10px; margin:16px 0;}
+  .flow-step{
+    flex:1 1 140px; background:var(--panel2); border:1px solid var(--border); border-radius:var(--radius);
+    padding:14px; cursor:pointer; text-align:center; transition:.15s;
+  }
+  .flow-step:hover{border-color:var(--accent);}
+  .flow-step .fnum{color:var(--accent); font-weight:800; font-size:0.75rem;}
+  .flow-step .ftitle{font-weight:700; margin:6px 0 4px; font-size:0.92rem;}
+  .flow-detail{
+    display:none; background:#0d0d0d; border-left:3px solid var(--accent); border-radius:8px;
+    padding:14px 16px; margin-top:10px; font-size:0.88rem; color:var(--muted);
+  }
+  .flow-detail.show{display:block;}
+
+  /* classification game */
+  .classify-wrap{display:grid; grid-template-columns:1fr; gap:16px; margin-top:14px;}
+  .item-pool{display:flex; flex-wrap:wrap; gap:10px;}
+  .data-item{
+    background:var(--panel2); border:1px solid var(--border); border-radius:8px; padding:10px 14px;
+    font-size:0.86rem; cursor:pointer; transition:.15s;
+  }
+  .data-item.selected{border-color:var(--accent); box-shadow:0 0 0 2px var(--accent-dim);}
+  .data-item.placed{opacity:.35; cursor:default; text-decoration:line-through;}
+  .bins{display:grid; grid-template-columns:repeat(auto-fit,minmax(200px,1fr)); gap:12px;}
+  .bin{
+    border:2px dashed var(--border); border-radius:var(--radius); padding:12px; min-height:130px;
+    background:var(--panel);
+  }
+  .bin h4{margin:0 0 8px; font-size:0.95rem;}
+  .bin.public h4{color:#2ecc71;}
+  .bin.internal h4{color:#3aa0ff;}
+  .bin.confidential h4{color:#e2231a;}
+  .bin .placed-item{background:#0d0d0d; border:1px solid var(--border); border-radius:6px; padding:6px 10px; font-size:0.8rem; margin-bottom:6px;}
+  .bin .placed-item.correct{border-color:var(--safe); color:#bdf5cf;}
+  .bin .placed-item.wrong{border-color:var(--unsafe); color:#ffc6c2;}
+
+  /* matching game */
+  .match-wrap{display:grid; grid-template-columns:1fr 1fr; gap:24px; margin-top:14px;}
+  @media (max-width:640px){.match-wrap{grid-template-columns:1fr;}}
+  .match-col .match-item{
+    background:var(--panel2); border:1px solid var(--border); border-radius:8px; padding:10px 14px;
+    margin-bottom:8px; cursor:pointer; font-size:0.86rem;
+  }
+  .match-item.sel{border-color:var(--accent); box-shadow:0 0 0 2px var(--accent-dim);}
+  .match-item.matched{opacity:.35; cursor:default; border-color:var(--safe);}
+  .match-item.flash-wrong{border-color:var(--unsafe); animation:shake .3s;}
+  @keyframes shake{0%,100%{transform:translateX(0);}25%{transform:translateX(-4px);}75%{transform:translateX(4px);}}
+
+  /* redaction / hallucination text games */
+  .redact-text{font-size:0.98rem; line-height:1.9; background:#0d0d0d; border-radius:8px; padding:18px; border:1px solid var(--border);}
+  .redact-text span.sens{cursor:pointer; padding:1px 3px; border-radius:3px;}
+  .redact-text span.sens:hover{background:#2a2a2a;}
+  .redact-text span.marked{background:#000; color:#000; border-radius:3px;}
+  .redact-text span.marked::selection{background:#000;}
+  .redact-text span.reveal-correct{background:var(--safe); color:#00250f;}
+  .redact-text span.reveal-missed{background:var(--warn); color:#3a2c00;}
+  .redact-text span.reveal-false{background:var(--unsafe); color:#fff; text-decoration:line-through;}
+
+  /* case studies */
+  .cs-card{border:1px solid var(--border); border-radius:var(--radius); margin-bottom:14px; overflow:hidden; background:var(--panel2);}
+  .cs-head{padding:16px 18px; cursor:pointer; display:flex; justify-content:space-between; align-items:center; gap:10px;}
+  .cs-head:hover{background:#202020;}
+  .cs-head .cs-title{font-weight:700;}
+  .cs-tag{font-size:0.68rem; padding:3px 9px; border-radius:999px; text-transform:uppercase; font-weight:700; letter-spacing:.03em; white-space:nowrap;}
+  .cs-body{display:none; padding:0 18px 18px;}
+  .cs-body.open{display:block;}
+  .cs-options label{
+    display:block; background:#0d0d0d; border:1px solid var(--border); border-radius:8px;
+    padding:10px 14px; margin-bottom:8px; cursor:pointer; font-size:0.88rem;
+  }
+  .cs-options label:hover{border-color:var(--accent);}
+  .cs-options label.chosen{border-color:var(--accent);}
+  .cs-options input{margin-right:8px;}
+  .cs-feedback{display:none; margin-top:12px; padding:14px; border-radius:8px; font-size:0.88rem;}
+  .cs-feedback.correct{display:block; background:#0e2016; border:1px solid var(--safe); color:#bdf5cf;}
+  .cs-feedback.incorrect{display:block; background:#2a0e0c; border:1px solid var(--unsafe); color:#ffc6c2;}
+
+  /* policy builder */
+  .policy-check{display:flex; align-items:flex-start; gap:12px; padding:12px 0; border-bottom:1px dashed var(--border);}
+  .policy-check input{margin-top:4px; width:18px; height:18px;}
+  .policy-summary{white-space:pre-wrap; background:#0d0d0d; border:1px solid var(--border); border-radius:8px; padding:16px; font-size:0.88rem; margin-top:14px; display:none;}
+
+  /* final quiz */
+  .fq-item{border:1px solid var(--border); border-radius:var(--radius); padding:16px 18px; margin-bottom:14px; background:var(--panel2);}
+  .fq-item .fq-q{font-weight:600; margin-bottom:10px;}
+  .fq-options{display:flex; gap:10px; flex-wrap:wrap;}
+  .fq-options button{
+    background:#0d0d0d; border:1px solid var(--border); color:var(--text); border-radius:8px;
+    padding:8px 18px; cursor:pointer; font-weight:700; font-size:0.85rem;
+  }
+  .fq-options button.chosen-safe{border-color:var(--safe); background:#0e2016;}
+  .fq-options button.chosen-unsafe{border-color:var(--unsafe); background:#2a0e0c;}
+  .fq-explain{display:none; margin-top:10px; font-size:0.85rem; color:var(--muted); border-left:3px solid var(--border); padding-left:10px;}
+
+  /* arcade */
+  .flip-grid{display:grid; grid-template-columns:repeat(auto-fit,minmax(180px,1fr)); gap:14px; margin-top:10px;}
+  .flip-card{
+    background:var(--panel2); border:1px solid var(--border); border-radius:var(--radius);
+    padding:20px 16px; min-height:100px; cursor:pointer; text-align:center; display:flex;
+    align-items:center; justify-content:center; transition:background .2s;
+  }
+  .flip-card:hover{border-color:var(--accent);}
+  .flip-card .front{font-weight:700; font-size:0.95rem;}
+  .flip-card .back{font-size:0.85rem; color:var(--muted); display:none;}
+  .flip-card.flipped .front{display:none;}
+  .flip-card.flipped .back{display:block;}
+  .flip-card.flipped{border-color:var(--accent);}
+
+  .mcq-row{background:#0d0d0d; border:1px solid var(--border); border-radius:8px; padding:14px; margin-bottom:10px;}
+  .mcq-row .mcq-q{margin-bottom:8px; font-weight:600;}
+  .mcq-row .mcq-opts{display:flex; flex-wrap:wrap; gap:8px;}
+  .mcq-row button.opt{background:var(--panel2); border:1px solid var(--border); color:var(--text); border-radius:8px; padding:7px 14px; font-size:0.84rem; cursor:pointer;}
+  .mcq-row button.opt:hover{border-color:var(--accent);}
+  .mcq-row button.opt.right{border-color:var(--safe); background:#0e2016;}
+  .mcq-row button.opt.wrong{border-color:var(--unsafe); background:#2a0e0c;}
+  .mcq-row .mcq-fb{margin-top:8px; font-size:0.82rem;}
+
+  .odd-grid{display:grid; grid-template-columns:repeat(auto-fit,minmax(140px,1fr)); gap:8px; margin-top:8px;}
+  .odd-chip{background:var(--panel2); border:1px solid var(--border); border-radius:8px; padding:12px; text-align:center; cursor:pointer; font-size:0.85rem;}
+  .odd-chip:hover{border-color:var(--accent);}
+  .odd-chip.right{border-color:var(--safe); background:#0e2016;}
+  .odd-chip.wrong{border-color:var(--unsafe); background:#2a0e0c;}
+
+  .tot-row{display:flex; gap:12px; align-items:stretch; flex-wrap:wrap;}
+  .tot-btn{flex:1 1 220px; background:#0d0d0d; border:1px solid var(--border); border-radius:8px; padding:16px; cursor:pointer; font-size:0.86rem; text-align:center;}
+  .tot-btn:hover{border-color:var(--accent);}
+  .tot-btn.right{border-color:var(--safe); background:#0e2016;}
+  .tot-btn.wrong{border-color:var(--unsafe); background:#2a0e0c;}
+  .tot-vs{align-self:center; color:var(--muted); font-weight:800; padding:0 4px;}
+
+  .result-box{text-align:center; padding:30px; border-radius:var(--radius); margin-top:20px;}
+  .result-box.pass{background:#0e2016; border:1px solid var(--safe);}
+  .result-box.fail{background:#2a0e0c; border:1px solid var(--unsafe);}
+  .result-box .big{font-size:2.6rem; font-weight:800;}
+
+  .certificate{
+    border:3px solid var(--accent); border-radius:var(--radius); padding:40px; text-align:center;
+    background:radial-gradient(circle at top, #1a1010, #0a0a0a); margin-top:20px;
+  }
+  .certificate h2{font-size:1.8rem; margin-bottom:0; color:#fff;}
+  .certificate .name-input{
+    background:transparent; border:none; border-bottom:2px solid var(--accent); color:#fff;
+    font-size:1.4rem; text-align:center; padding:6px 10px; margin:14px 0; width:80%; max-width:420px;
+    font-family:inherit;
+  }
+  .certificate .name-input::placeholder{color:#555;}
+
+  footer{text-align:center; color:var(--muted); font-size:0.8rem; padding:30px 0 10px;}
+  .break-banner{
+    background:linear-gradient(90deg, var(--accent-dim), transparent); border:1px solid var(--accent);
+    border-radius:var(--radius); padding:16px 20px; margin:20px 0; display:flex; align-items:center; gap:14px;
+  }
+  .break-banner .icon{font-size:1.6rem;}
+  @media print{
+    .topbar,.tabs,footer,.no-print{display:none !important;}
+    .panel{display:none !important;}
+    #panel-part9{display:block !important;}
+    body{background:#fff; color:#000;}
+  }
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div>
+    <h1>🛡️ Session 3 — Safe AI</h1>
+    <div class="sub">VEKA GenAI Excellence · Learn AI. Apply AI. Protect what matters.</div>
+  </div>
+  <div class="timer-box no-print">
+    <span class="clock" id="clockDisplay">00:00</span>
+    <button onclick="timerStart()">▶ Start</button>
+    <button class="secondary" onclick="timerPause()">⏸ Pause</button>
+    <button class="secondary" onclick="timerReset()">↺ Reset</button>
+  </div>
+</div>
+
+<div class="container">
+
+  <div class="tabs" id="tabBar"></div>
+
+  <!-- ================= OBJECTIVES ================= -->
+  <div class="panel active" id="panel-objectives">
+    <div class="card">
+      <span class="pill">🎯 Learning Objectives</span>
+      <h2>Session 3 — Safe AI</h2>
+      <p style="color:var(--muted)">A 3-hour, hands-on workshop for every VEKA employee who uses AI tools — sales, dealers desk, technical, HR, marketing, and production. By the end, you'll know exactly what's safe to type into an AI tool, what isn't, and what to do when you're not sure.</p>
+
+      <div class="stat-grid">
+        <div class="stat"><div class="num">180</div><div class="lbl">Minutes</div></div>
+        <div class="stat"><div class="num">13</div><div class="lbl">Case Studies</div></div>
+        <div class="stat"><div class="num">15</div><div class="lbl">Final Quiz Scenarios</div></div>
+        <div class="stat"><div class="num">3</div><div class="lbl">Data Tiers</div></div>
+        <div class="stat"><div class="num">7</div><div class="lbl">Core Interactive Games</div></div>
+        <div class="stat"><div class="num">50+</div><div class="lbl">Bonus Arcade Questions</div></div>
+      </div>
+
+      <h3>By the end of this module, you will:</h3>
+      <ul class="obj">
+        <li>Understand how AI actually processes and stores what you type into it</li>
+        <li>Know the 5 categories of AI risk relevant to a profile systems manufacturer</li>
+        <li>Classify any VEKA data into 3 tiers: Public, Internal, Confidential</li>
+        <li>Anonymise dealer data, quotations and reports before using AI</li>
+        <li>Detect AI hallucinations in technical specifications, standards and calculations</li>
+        <li>Understand India's Digital Personal Data Protection Act (DPDP 2023) in practical terms</li>
+        <li>Apply your own draft VEKA AI usage policy (the "5 T's") to your daily work</li>
+        <li>Score 13+ out of 15 on the final "Is This Safe?" quiz and earn your certificate</li>
+      </ul>
+    </div>
+
+    <div class="card">
+      <h2>🗓️ Agenda</h2>
+      <table class="agenda-table">
+        <tr><th>Part</th><th>Topic</th><th>Minutes</th></tr>
+        <tr><td>0</td><td>Welcome & Learning Objectives</td><td class="mins">5</td></tr>
+        <tr><td>1</td><td>🧠 How AI Actually Works</td><td class="mins">15</td></tr>
+        <tr><td>2</td><td>⚠️ The 5 Categories of AI Risk</td><td class="mins">15</td></tr>
+        <tr><td>3</td><td>🔑 Data Classification — 3 Tiers (Game)</td><td class="mins">20</td></tr>
+        <tr><td>4</td><td>🌍 India's DPDP Act 2023 (Matching Game)</td><td class="mins">15</td></tr>
+        <tr><td>—</td><td>☕ Break</td><td class="mins">10</td></tr>
+        <tr><td>5</td><td>🔒 Anonymising Dealer Data (Redaction Game)</td><td class="mins">20</td></tr>
+        <tr><td>6</td><td>🔍 Spotting AI Hallucinations (Game)</td><td class="mins">20</td></tr>
+        <tr><td>7</td><td>📁 13 VEKA Case Studies</td><td class="mins">30</td></tr>
+        <tr><td>8</td><td>💳 Build Your Personal AI Usage Policy</td><td class="mins">10</td></tr>
+        <tr><td>9</td><td>🗄️ Final Quiz & Certificate</td><td class="mins">20</td></tr>
+        <tr><td>🎮</td><td>Bonus: Game Arcade — 8 mini-games, 50 questions</td><td class="mins">optional</td></tr>
+      </table>
+      <button class="btn" onclick="goTo('part1')">Start Part 1 →</button>
+    </div>
+  </div>
+
+  <!-- ================= PART 1 ================= -->
+  <div class="panel" id="panel-part1">
+    <div class="card">
+      <span class="pill">Part 1</span><span class="time-pill">⏱ 15 min</span>
+      <h2>🧠 How AI Actually Works — Where Does Your Text Go?</h2>
+      <p>Every time you type into an AI tool, more happens behind the scenes than most people realise. Click each step below to see what actually happens to your words.</p>
+
+      <div class="flow" id="flowSteps"></div>
+      <div id="flowDetailBox"></div>
+
+      <div class="game-box">
+        <div class="gtitle">Why this matters at VEKA</div>
+        <p style="margin:0">Free, consumer AI tools were not built with a PVC profile systems manufacturer's confidentiality needs in mind. Unless VEKA IT has approved a tool with a signed data-processing agreement, assume: <strong>anything you type could be stored, reviewed by the provider, or used to train future models.</strong> Treat every AI prompt like an email you can never unsend, forwarded to a stranger you've never met.</p>
+      </div>
+
+      <div class="game-box">
+        <div class="gtitle">🎮 Quick Check</div>
+        <div id="qc1"></div>
+      </div>
+      <div style="text-align:right"><button class="btn" onclick="goTo('part2')">Next: The 5 Risk Categories →</button></div>
+    </div>
+  </div>
+
+  <!-- ================= PART 2 ================= -->
+  <div class="panel" id="panel-part2">
+    <div class="card">
+      <span class="pill">Part 2</span><span class="time-pill">⏱ 15 min</span>
+      <h2>⚠️ The 5 Categories of AI Risk</h2>
+      <p>For a profile systems manufacturer like VEKA — with dealers, formulations, technical standards, and personal data of customers and employees — nearly every AI risk falls into one of five buckets.</p>
+      <div class="risk-grid" id="riskGrid"></div>
+
+      <div class="game-box">
+        <div class="gtitle">🎮 Game: Risk or Not?</div>
+        <p style="margin-top:0">Read each real-world statement. Click the risk category it belongs to. You'll get instant feedback.</p>
+        <div class="score-badge">Score: <span id="riskScore">0</span> / <span id="riskTotal">0</span></div>
+        <div id="riskGame" style="margin-top:14px"></div>
+      </div>
+      <div style="text-align:right"><button class="btn" onclick="goTo('part3')">Next: Data Classification →</button></div>
+    </div>
+  </div>
+
+  <!-- ================= PART 3 ================= -->
+  <div class="panel" id="panel-part3">
+    <div class="card">
+      <span class="pill">Part 3</span><span class="time-pill">⏱ 20 min</span>
+      <h2>🔑 Data Classification — 3 Tiers</h2>
+      <p>Before you type anything into any AI tool, ask: <strong>which tier does this data belong to?</strong></p>
+      <div class="risk-grid">
+        <div class="risk-card" style="--r-color:#2ecc71"><h4>🟢 Public</h4><p>Already published or safe to share with anyone — brochures, website copy, public price lists, press releases.</p></div>
+        <div class="risk-card" style="--r-color:#3aa0ff"><h4>🔵 Internal</h4><p>Not secret, but not for outsiders — SOPs, org charts, internal schedules, non-sensitive meeting notes.</p></div>
+        <div class="risk-card" style="--r-color:#e2231a"><h4>🔴 Confidential</h4><p>Would cause real harm if leaked — formulations, dealer margins, personal data, unpublished financials, vendor bank details.</p></div>
+      </div>
+
+      <div class="game-box">
+        <div class="gtitle">🎮 Game: Classify the Data</div>
+        <p style="margin-top:0">Click a data item, then click the tier bin you think it belongs to. Get all 14 right for a perfect score!</p>
+        <div class="score-badge">Score: <span id="classScore">0</span> / <span id="classTotal">14</span></div>
+        <div class="classify-wrap">
+          <div class="item-pool" id="itemPool"></div>
+          <div class="bins">
+            <div class="bin public" data-tier="public"><h4>🟢 Public</h4><div class="bin-items"></div></div>
+            <div class="bin internal" data-tier="internal"><h4>🔵 Internal</h4><div class="bin-items"></div></div>
+            <div class="bin confidential" data-tier="confidential"><h4>🔴 Confidential</h4><div class="bin-items"></div></div>
+          </div>
+        </div>
+        <button class="btn secondary small" onclick="resetClassifyGame()">↺ Reset Game</button>
+      </div>
+      <div style="text-align:right"><button class="btn" onclick="goTo('part4')">Next: DPDP Act 2023 →</button></div>
+    </div>
+  </div>
+
+  <!-- ================= PART 4 ================= -->
+  <div class="panel" id="panel-part4">
+    <div class="card">
+      <span class="pill">Part 4</span><span class="time-pill">⏱ 15 min</span>
+      <h2>🌍 India's Digital Personal Data Protection Act, 2023 — In Practical Terms</h2>
+      <p>The DPDP Act 2023 is India's data privacy law. VEKA holds personal data of customers, dealers, and employees — so it applies to us. Here's what actually matters day to day:</p>
+      <ul class="obj">
+        <li><strong>VEKA is a "Data Fiduciary"</strong> — the organisation that decides why and how personal data is processed. We're accountable for it.</li>
+        <li><strong>The customer/dealer/employee is the "Data Principal"</strong> — the person the data is about. They have rights over it.</li>
+        <li><strong>Consent matters</strong> — personal data should generally only be collected and used for a clear, notified purpose.</li>
+        <li><strong>Data Principals can request access, correction, or erasure</strong> of their personal data — and VEKA must be able to respond.</li>
+        <li><strong>Data breaches must be reported</strong> — to the Data Protection Board of India and affected individuals, without unreasonable delay.</li>
+        <li><strong>Penalties are serious</strong> — up to ₹250 crore for failing to take reasonable security safeguards.</li>
+        <li><strong>Practical rule of thumb:</strong> anonymised or aggregated data (no way to identify a person) is much lower risk than raw personal data — which is exactly why Part 5 teaches you to anonymise before you prompt.</li>
+      </ul>
+
+      <div class="game-box">
+        <div class="gtitle">🎮 Game: Match the DPDP Term</div>
+        <p style="margin-top:0">Click a term on the left, then its correct definition on the right.</p>
+        <div class="score-badge">Matched: <span id="matchScore">0</span> / <span id="matchTotal">8</span></div>
+        <div class="match-wrap">
+          <div class="match-col" id="matchTerms"></div>
+          <div class="match-col" id="matchDefs"></div>
+        </div>
+      </div>
+      <div style="text-align:right"><button class="btn" onclick="goTo('break')">Take a Break →</button></div>
+    </div>
+  </div>
+
+  <!-- ================= BREAK ================= -->
+  <div class="panel" id="panel-break">
+    <div class="card">
+      <div class="break-banner">
+        <div class="icon">☕</div>
+        <div><strong>10-Minute Break.</strong> Stretch, hydrate, refill your chai. We'll pick up with anonymising real dealer data when you're back.</div>
+      </div>
+      <button class="btn" onclick="goTo('part5')">I'm Back — Continue to Part 5 →</button>
+    </div>
+  </div>
+
+  <!-- ================= PART 5 ================= -->
+  <div class="panel" id="panel-part5">
+    <div class="card">
+      <span class="pill">Part 5</span><span class="time-pill">⏱ 20 min</span>
+      <h2>🔒 Anonymising Dealer Data, Quotations & Reports</h2>
+      <p><strong>Anonymisation</strong> means removing or masking anything that could identify a person or reveal confidential business terms, before you paste text into an AI tool. If you must use AI on real dealer/customer data, strip it first.</p>
+      <ul class="obj">
+        <li>Replace names with roles: "Mr. Rajesh Kumar" → "[the customer]"</li>
+        <li>Remove phone numbers, addresses, ID numbers (Aadhaar/PAN) entirely</li>
+        <li>Remove exact prices, margins, and discount percentages — describe them qualitatively if needed, or add them back yourself after</li>
+        <li>Remove internal codes for dies, formulations, and unpublished drawings</li>
+      </ul>
+
+      <div class="game-box">
+        <div class="gtitle">🎮 Game: Redact Before You Prompt</div>
+        <p style="margin-top:0">This is a real-style dealer email. Click on every word or phrase that should be redacted before this text is pasted into any AI tool. Then check your work.</p>
+        <div class="redact-text" id="redactText"></div>
+        <div style="margin-top:12px">
+          <button class="btn" onclick="checkRedaction()">✓ Check My Redactions</button>
+          <button class="btn secondary" onclick="resetRedaction()">↺ Try Again</button>
+        </div>
+        <div id="redactResult" style="margin-top:12px"></div>
+      </div>
+      <div style="text-align:right"><button class="btn" onclick="goTo('part6')">Next: Spot the Hallucination →</button></div>
+    </div>
+  </div>
+
+  <!-- ================= PART 6 ================= -->
+  <div class="panel" id="panel-part6">
+    <div class="card">
+      <span class="pill">Part 6</span><span class="time-pill">⏱ 20 min</span>
+      <h2>🔍 Detecting AI Hallucinations in Technical Specs, Standards & Calculations</h2>
+      <p>AI models predict plausible-sounding text — they don't "look up" facts unless specifically designed to. This means an AI tool can state a fake standard clause, an invented number, or a wrong calculation with total confidence. For a manufacturer quoting wind-loads, U-values, and BIS/EN standards, this is one of the most dangerous risks.</p>
+      <ul class="obj">
+        <li><strong>Never</strong> quote an AI-generated standard clause number, technical value, or calculation to a customer or architect without independent verification.</li>
+        <li>Cross-check standard numbers against the official BIS/EN source document.</li>
+        <li>Have a qualified engineer re-derive any safety-critical calculation (wind load, U-value, structural rating).</li>
+        <li>Be extra suspicious when an AI answer sounds unusually precise and confident — hallucinations often "feel" the most authoritative.</li>
+      </ul>
+
+      <div class="game-box">
+        <div class="gtitle">🎮 Game: Spot the Hallucination</div>
+        <p style="margin-top:0">Below is an AI-generated technical answer given to a VEKA engineer. Click on every phrase you believe is fabricated or wrong. Round <span id="hRoundNum">1</span> of <span id="hRoundTotal">2</span>.</p>
+        <div class="redact-text" id="hallucText"></div>
+        <div style="margin-top:12px">
+          <button class="btn" onclick="checkHallucination()">✓ Check My Answers</button>
+          <button class="btn secondary" onclick="nextHallucRound()">Next Round →</button>
+        </div>
+        <div id="hallucResult" style="margin-top:12px"></div>
+      </div>
+      <div style="text-align:right"><button class="btn" onclick="goTo('part7')">Next: 13 Case Studies →</button></div>
+    </div>
+  </div>
+
+  <!-- ================= PART 7 ================= -->
+  <div class="panel" id="panel-part7">
+    <div class="card">
+      <span class="pill">Part 7</span><span class="time-pill">⏱ 30 min</span>
+      <h2>📁 13 VEKA Case Studies</h2>
+      <p>Real-world-style scenarios from across VEKA's business. Click a case to open it, choose what you'd do, then reveal the recommended response.</p>
+      <div class="score-badge">Case Study Score: <span id="csScore">0</span> / <span id="csTotal">13</span></div>
+      <div id="caseStudies" style="margin-top:16px"></div>
+      <div style="text-align:right"><button class="btn" onclick="goTo('part8')">Next: Build Your Policy →</button></div>
+    </div>
+  </div>
+
+  <!-- ================= PART 8 ================= -->
+  <div class="panel" id="panel-part8">
+    <div class="card">
+      <span class="pill">Part 8</span><span class="time-pill">⏱ 10 min</span>
+      <h2>💳 Build Your Personal VEKA AI Usage Policy — The 5 T's</h2>
+      <p>Tick each commitment you're making, and we'll generate your personal AI safety commitment card.</p>
+      <div id="policyChecks"></div>
+      <button class="btn" onclick="generatePolicy()">Generate My Commitment Card</button>
+      <div class="policy-summary" id="policySummary"></div>
+      <div style="text-align:right; margin-top:14px"><button class="btn" onclick="goTo('part9')">Next: Final Quiz →</button></div>
+    </div>
+  </div>
+
+  <!-- ================= PART 9 ================= -->
+  <div class="panel" id="panel-part9">
+    <div class="card">
+      <span class="pill">Part 9 · Final Assessment</span><span class="time-pill">⏱ 20 min</span>
+      <h2>🗄️ "Is This Safe?" — Final Quiz</h2>
+      <p>15 scenarios. For each, decide: <strong>Safe</strong> or <strong>Unsafe</strong>. Score 13/15 or higher to pass and unlock your certificate.</p>
+      <div id="finalQuiz"></div>
+      <button class="btn" onclick="submitFinalQuiz()">Submit Final Quiz</button>
+      <div id="finalResult"></div>
+      <div id="certificateBox"></div>
+      <div style="text-align:right; margin-top:14px"><button class="btn secondary" onclick="goTo('arcade')">🎮 Bonus: Play the Game Arcade →</button></div>
+    </div>
+  </div>
+
+  <!-- ================= GAME ARCADE (BONUS) ================= -->
+  <div class="panel" id="panel-arcade">
+    <div class="card">
+      <span class="pill">🎮 Bonus Section</span><span class="time-pill">⏱ Untimed · Optional</span>
+      <h2>🎮 The Safe AI Game Arcade</h2>
+      <p style="color:var(--muted)">Extra practice, purely optional — not part of the timed 180-minute agenda. 8 quick mini-games, <strong>50 practice items</strong> (44 scored questions + 6 flashcards). Play any of them, in any order, as many times as you like.</p>
+      <div class="stat-grid">
+        <div class="stat"><div class="num">8</div><div class="lbl">Mini-Games</div></div>
+        <div class="stat"><div class="num">50</div><div class="lbl">Total Practice Items</div></div>
+        <div class="stat"><div class="num" id="arcadeGrandScore">0</div><div class="lbl">Your Arcade Score</div></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3>🃏 Game 1 — Flashcard Flip</h3>
+      <p style="color:var(--muted);margin-top:0">Click a card to flip it and reveal the definition.</p>
+      <div class="flip-grid" id="flashGrid"></div>
+    </div>
+
+    <div class="card">
+      <h3>⚡ Game 2 — True or False Speed Round</h3>
+      <div class="score-badge">Score: <span id="tfScore">0</span> / <span id="tfTotal">0</span></div>
+      <div id="tfGame" style="margin-top:12px"></div>
+    </div>
+
+    <div class="card">
+      <h3>🔤 Game 3 — Emoji Decode</h3>
+      <p style="color:var(--muted);margin-top:0">Guess the AI-safety term from the emoji clue.</p>
+      <div class="score-badge">Score: <span id="emojiScore">0</span> / <span id="emojiTotal">0</span></div>
+      <div id="emojiGame" style="margin-top:12px"></div>
+    </div>
+
+    <div class="card">
+      <h3>✏️ Game 4 — Fill in the Blank</h3>
+      <div class="score-badge">Score: <span id="blankScore">0</span> / <span id="blankTotal">0</span></div>
+      <div id="blankGame" style="margin-top:12px"></div>
+    </div>
+
+    <div class="card">
+      <h3>🚫 Game 5 — Odd One Out</h3>
+      <p style="color:var(--muted);margin-top:0">Click the one item that doesn't belong with the other three.</p>
+      <div class="score-badge">Score: <span id="oddScore">0</span> / <span id="oddTotal">0</span></div>
+      <div id="oddGame" style="margin-top:12px"></div>
+    </div>
+
+    <div class="card">
+      <h3>🔀 Game 6 — Word Scramble</h3>
+      <p style="color:var(--muted);margin-top:0">Unscramble the letters, then pick the correct word.</p>
+      <div class="score-badge">Score: <span id="scrambleScore">0</span> / <span id="scrambleTotal">0</span></div>
+      <div id="scrambleGame" style="margin-top:12px"></div>
+    </div>
+
+    <div class="card">
+      <h3>🎭 Game 7 — Two Truths and a Lie</h3>
+      <p style="color:var(--muted);margin-top:0">Click the one statement in each set that is FALSE.</p>
+      <div class="score-badge">Score: <span id="lieScore">0</span> / <span id="lieTotal">0</span></div>
+      <div id="lieGame" style="margin-top:12px"></div>
+    </div>
+
+    <div class="card">
+      <h3>⚔️ Game 8 — This or That</h3>
+      <p style="color:var(--muted);margin-top:0">Click the SAFER choice of the two.</p>
+      <div class="score-badge">Score: <span id="totScore">0</span> / <span id="totTotal">0</span></div>
+      <div id="totGame" style="margin-top:12px"></div>
+    </div>
+
+    <div class="card" style="text-align:center">
+      <button class="btn secondary" onclick="goTo('objectives')">↺ Back to Objectives</button>
+    </div>
+  </div>
+
+</div>
+
+<footer>VEKA GenAI Excellence &middot; Session 3 — Safe AI &middot; Learn AI. Apply AI. Build better workflows.</footer>
+
+<script>
+/* ============ TAB NAVIGATION ============ */
+const TABS = [
+  {id:'objectives', label:'🎯 Objectives'},
+  {id:'part1', label:'🧠 Part 1'},
+  {id:'part2', label:'⚠️ Part 2'},
+  {id:'part3', label:'🔑 Part 3'},
+  {id:'part4', label:'🌍 Part 4'},
+  {id:'break', label:'☕ Break'},
+  {id:'part5', label:'🔒 Part 5'},
+  {id:'part6', label:'🔍 Part 6'},
+  {id:'part7', label:'📁 Part 7'},
+  {id:'part8', label:'💳 Part 8'},
+  {id:'part9', label:'🗄️ Part 9'},
+  {id:'arcade', label:'🎮 Arcade'},
+];
+const visited = new Set(['objectives']);
+function renderTabs(){
+  const bar = document.getElementById('tabBar');
+  bar.innerHTML = '';
+  TABS.forEach(t=>{
+    const b = document.createElement('button');
+    b.className = 'tab-btn' + (visited.has(t.id)?' visited':'');
+    b.id = 'tabbtn-'+t.id;
+    b.innerHTML = t.label + ' <span class="chk">✓</span>';
+    b.onclick = ()=>goTo(t.id);
+    bar.appendChild(b);
+  });
+}
+function goTo(id){
+  visited.add(id);
+  document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
+  document.getElementById('panel-'+id).classList.add('active');
+  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+  document.getElementById('tabbtn-'+id).classList.add('active');
+  renderTabs();
+  document.getElementById('tabbtn-'+id).classList.add('active');
+  window.scrollTo({top:0, behavior:'smooth'});
+}
+renderTabs();
+document.getElementById('tabbtn-objectives').classList.add('active');
+
+/* ============ TIMER ============ */
+let seconds=0, timerInterval=null;
+function tick(){
+  seconds++;
+  const m = String(Math.floor(seconds/60)).padStart(2,'0');
+  const s = String(seconds%60).padStart(2,'0');
+  document.getElementById('clockDisplay').textContent = m+':'+s;
+}
+function timerStart(){ if(!timerInterval) timerInterval = setInterval(tick,1000); }
+function timerPause(){ clearInterval(timerInterval); timerInterval=null; }
+function timerReset(){ timerPause(); seconds=0; document.getElementById('clockDisplay').textContent='00:00'; }
+
+/* ============ PART 1: FLOW ============ */
+const FLOW = [
+  {t:"You type", d:"You write a prompt — a question, a paragraph, a document to summarise. It feels like a private notepad, but it isn't one."},
+  {t:"Broken into tokens", d:"Your text is split into small chunks called 'tokens' so the AI model can process it. Every word, name, and number becomes tokens."},
+  {t:"Sent to a server", d:"For most tools (ChatGPT, Gemini, Copilot, etc.), your tokens travel over the internet to the provider's servers — often located outside India."},
+  {t:"Processed by the model", d:"The model predicts the most likely next words to generate a response. It does not 'understand' confidentiality — it just generates text."},
+  {t:"Response returned", d:"You see an answer. Looks instant and disposable — but the trip already happened."},
+  {t:"Possibly logged & stored", d:"Unless you're on an enterprise plan with a data-processing agreement (or the tool is on-prem/VEKA-approved), conversations may be retained for weeks or longer, reviewed for safety, or used to improve future models."},
+];
+function renderFlow(){
+  const box = document.getElementById('flowSteps');
+  FLOW.forEach((f,i)=>{
+    const el = document.createElement('div');
+    el.className='flow-step';
+    el.innerHTML = `<div class="fnum">STEP ${i+1}</div><div class="ftitle">${f.t}</div><div style="font-size:0.75rem;color:var(--muted)">Click to reveal →</div>`;
+    el.onclick = ()=>showFlowDetail(i);
+    box.appendChild(el);
+  });
+}
+function showFlowDetail(i){
+  const f = FLOW[i];
+  document.getElementById('flowDetailBox').innerHTML = `<div class="flow-detail show"><strong>Step ${i+1}: ${f.t}</strong><br>${f.d}</div>`;
+}
+renderFlow();
+
+/* Part 1 quick check */
+const qc1Data = [
+  {q:"Free AI chatbots may use your chats to train future AI models.", a:true},
+  {q:"AI automatically knows which data is private and protects it.", a:false},
+  {q:"A VEKA-approved AI tool is just as risky as any free app.", a:false},
+];
+function renderQC1(){
+  const box = document.getElementById('qc1');
+  qc1Data.forEach((item,i)=>{
+    const d = document.createElement('div');
+    d.style.marginBottom='10px';
+    d.innerHTML = `<div style="margin-bottom:6px">${i+1}. ${item.q}</div>
+      <button class="btn small" onclick="qcAnswer(this,${item.a},true)">True</button>
+      <button class="btn small secondary" onclick="qcAnswer(this,${item.a},false)">False</button>
+      <span class="qc-fb" style="margin-left:10px;font-size:0.85rem"></span>`;
+    box.appendChild(d);
+  });
+}
+function qcAnswer(btn, correctAns, chosen){
+  const fb = btn.parentElement.querySelector('.qc-fb');
+  if(chosen===correctAns){ fb.textContent='✓ Correct'; fb.style.color='var(--safe)'; }
+  else { fb.textContent='✗ Not quite — correct answer: '+(correctAns?'True':'False'); fb.style.color='var(--unsafe)'; }
+}
+renderQC1();
+
+/* ============ PART 2: RISK CATEGORIES + GAME ============ */
+const RISKS = [
+  {key:'confidentiality', color:'var(--c1)', icon:'🔐', name:'Confidentiality & IP Leakage', desc:'Formulations, die drawings, pricing, or strategy exposed to outside tools.'},
+  {key:'privacy', color:'var(--c2)', icon:'🪪', name:'Personal Data & Privacy', desc:'Customer, dealer, or employee personal data exposed — DPDP territory.'},
+  {key:'accuracy', color:'var(--c3)', icon:'🎭', name:'Accuracy & Hallucination', desc:'AI invents specs, standards, or numbers with total confidence.'},
+  {key:'regulatory', color:'var(--c4)', icon:'⚖️', name:'Regulatory & Compliance', desc:'DPDP 2023, BIS/EN standards, contractual confidentiality clauses.'},
+  {key:'vendor', color:'var(--c5)', icon:'🧩', name:'Third-Party & Vendor Risk', desc:'Unvetted tools, browser extensions, shadow AI, unclear data residency.'},
+];
+function renderRisks(){
+  const box = document.getElementById('riskGrid');
+  RISKS.forEach(r=>{
+    const el = document.createElement('div');
+    el.className='risk-card';
+    el.style.setProperty('--r-color', r.color);
+    el.innerHTML = `<h4>${r.icon} ${r.name}</h4><p>${r.desc}</p>`;
+    box.appendChild(el);
+  });
+}
+renderRisks();
+
+const RISK_GAME = [
+  {s:"An engineer pastes VEKA's secret window formula into a free AI chatbot.", ans:'confidentiality'},
+  {s:"Someone sends a customer's Aadhaar number to AI to write a reply.", ans:'privacy'},
+  {s:"AI gives a wind-load number that doesn't match the real safety standard.", ans:'accuracy'},
+  {s:"A team ignores a customer's data-deletion request for months.", ans:'regulatory'},
+  {s:"An employee installs an unapproved AI extension that reads everything they browse.", ans:'vendor'},
+  {s:"A sales exec uploads the dealer margin sheet to a personal AI app.", ans:'confidentiality'},
+  {s:"HR asks AI to write a review that mentions an employee's illness.", ans:'privacy'},
+  {s:"AI writes a brochure line claiming a certificate VEKA doesn't actually have.", ans:'accuracy'},
+  {s:"A free AI notetaker stores your board meeting audio with no contract in place.", ans:'vendor'},
+  {s:"An office delays reporting a data leak to the government regulator.", ans:'regulatory'},
+];
+let riskScore=0, riskAnswered=0;
+function renderRiskGame(){
+  document.getElementById('riskTotal').textContent = RISK_GAME.length;
+  const box = document.getElementById('riskGame');
+  RISK_GAME.forEach((item,i)=>{
+    const d = document.createElement('div');
+    d.style.cssText='background:#0d0d0d;border:1px solid var(--border);border-radius:8px;padding:14px;margin-bottom:10px;';
+    let btns = RISKS.map(r=>`<button class="btn small secondary" style="margin:3px" onclick="riskAnswer(${i},'${r.key}',this)">${r.icon} ${r.name.split(' ')[0]}</button>`).join('');
+    d.innerHTML = `<div style="margin-bottom:8px">${i+1}. ${item.s}</div><div>${btns}</div><div class="rg-fb" style="margin-top:8px;font-size:0.85rem"></div>`;
+    box.appendChild(d);
+  });
+}
+function riskAnswer(i, chosen, btn){
+  const row = btn.closest('div').parentElement;
+  if(row.dataset.done) return;
+  row.dataset.done='1';
+  const correct = RISK_GAME[i].ans;
+  const fb = row.querySelector('.rg-fb');
+  riskAnswered++;
+  if(chosen===correct){
+    riskScore++;
+    fb.innerHTML = '✓ Correct! This is a <strong>'+RISKS.find(r=>r.key===correct).name+'</strong> risk.';
+    fb.style.color='var(--safe)';
+  } else {
+    fb.innerHTML = '✗ Actually, this is a <strong>'+RISKS.find(r=>r.key===correct).name+'</strong> risk.';
+    fb.style.color='var(--unsafe)';
+  }
+  document.getElementById('riskScore').textContent = riskScore;
+}
+renderRiskGame();
+
+/* ============ PART 3: DATA CLASSIFICATION GAME ============ */
+const DATA_ITEMS = [
+  {t:"VEKA's product brochure", tier:'public'},
+  {t:"Price list already on VEKA's website", tier:'public'},
+  {t:"VEKA's published sustainability report", tier:'public'},
+  {t:"Window care instructions for customers", tier:'public'},
+  {t:"Internal steps for handling a warranty claim", tier:'internal'},
+  {t:"Company org chart", tier:'internal'},
+  {t:"Dealer training schedule", tier:'internal'},
+  {t:"Notes from a routine internal meeting", tier:'internal'},
+  {t:"Dealer margin & discount numbers", tier:'confidential'},
+  {t:"VEKA's window formula and die specs", tier:'confidential'},
+  {t:"A customer's Aadhaar number and home address", tier:'confidential'},
+  {t:"Unpublished company financial results", tier:'confidential'},
+  {t:"A vendor's bank account and PAN details", tier:'confidential'},
+  {t:"An employee's medical records", tier:'confidential'},
+];
+let classScore=0, classPlaced=0;
+function shuffle(arr){ return arr.map(v=>[Math.random(),v]).sort((a,b)=>a[0]-b[0]).map(v=>v[1]); }
+let selectedItem=null;
+function renderClassifyGame(){
+  const pool = document.getElementById('itemPool');
+  pool.innerHTML='';
+  document.querySelectorAll('.bin .bin-items').forEach(b=>b.innerHTML='');
+  classScore=0; classPlaced=0;
+  document.getElementById('classScore').textContent=0;
+  shuffle(DATA_ITEMS).forEach((item,idx)=>{
+    const el = document.createElement('div');
+    el.className='data-item';
+    el.textContent = item.t;
+    el.dataset.tier = item.tier;
+    el.onclick = ()=>selectItem(el);
+    pool.appendChild(el);
+  });
+  document.querySelectorAll('.bin').forEach(bin=>{
+    bin.onclick = (e)=>{ if(e.target.closest('.bin-items')) return; placeSelected(bin); };
+  });
+}
+function selectItem(el){
+  if(el.classList.contains('placed')) return;
+  document.querySelectorAll('.data-item.selected').forEach(x=>x.classList.remove('selected'));
+  el.classList.add('selected');
+  selectedItem = el;
+}
+function placeSelected(bin){
+  if(!selectedItem) return;
+  const tier = bin.dataset.tier;
+  const correct = selectedItem.dataset.tier === tier;
+  const p = document.createElement('div');
+  p.className = 'placed-item ' + (correct?'correct':'wrong');
+  p.textContent = selectedItem.textContent + (correct?' ✓':' ✗ (should be '+selectedItem.dataset.tier+')');
+  bin.querySelector('.bin-items').appendChild(p);
+  selectedItem.classList.add('placed');
+  selectedItem.classList.remove('selected');
+  classPlaced++;
+  if(correct) classScore++;
+  document.getElementById('classScore').textContent = classScore;
+  selectedItem = null;
+}
+function resetClassifyGame(){ renderClassifyGame(); }
+renderClassifyGame();
+
+/* ============ PART 4: DPDP MATCHING GAME ============ */
+const DPDP_PAIRS = [
+  {term:"Data Principal", def:"The person the data is about — like a customer, dealer, or employee."},
+  {term:"Data Fiduciary", def:"VEKA — the company that decides how personal data is used."},
+  {term:"Consent", def:"Clear permission from a person before using their personal data."},
+  {term:"Right to Erasure", def:"A person's right to ask VEKA to delete their data."},
+  {term:"Data Breach", def:"When personal data is lost, leaked, or accessed without permission."},
+  {term:"Data Protection Board of India", def:"The government body that enforces India's data privacy law."},
+  {term:"Significant Data Fiduciary", def:"A company that handles very large amounts of personal data."},
+  {term:"Purpose Limitation", def:"Personal data should only be used for the reason it was collected."},
+];
+let matchScore=0, matchSelTerm=null, matchSelDef=null;
+function renderMatchGame(){
+  document.getElementById('matchTotal').textContent = DPDP_PAIRS.length;
+  const termsBox = document.getElementById('matchTerms');
+  const defsBox = document.getElementById('matchDefs');
+  termsBox.innerHTML=''; defsBox.innerHTML=''; matchScore=0;
+  document.getElementById('matchScore').textContent=0;
+  const shuffledTerms = shuffle(DPDP_PAIRS.map((p,i)=>({...p, idx:i})));
+  const shuffledDefs = shuffle(DPDP_PAIRS.map((p,i)=>({...p, idx:i})));
+  shuffledTerms.forEach(p=>{
+    const el = document.createElement('div');
+    el.className='match-item'; el.textContent=p.term; el.dataset.idx=p.idx;
+    el.onclick=()=>selectMatch(el,'term');
+    termsBox.appendChild(el);
+  });
+  shuffledDefs.forEach(p=>{
+    const el = document.createElement('div');
+    el.className='match-item'; el.textContent=p.def; el.dataset.idx=p.idx;
+    el.onclick=()=>selectMatch(el,'def');
+    defsBox.appendChild(el);
+  });
+}
+function selectMatch(el, kind){
+  if(el.classList.contains('matched')) return;
+  if(kind==='term'){
+    if(matchSelTerm) matchSelTerm.classList.remove('sel');
+    matchSelTerm = el; el.classList.add('sel');
+  } else {
+    if(matchSelDef) matchSelDef.classList.remove('sel');
+    matchSelDef = el; el.classList.add('sel');
+  }
+  if(matchSelTerm && matchSelDef){
+    if(matchSelTerm.dataset.idx === matchSelDef.dataset.idx){
+      matchSelTerm.classList.add('matched'); matchSelDef.classList.add('matched');
+      matchSelTerm.classList.remove('sel'); matchSelDef.classList.remove('sel');
+      matchScore++;
+      document.getElementById('matchScore').textContent = matchScore;
+      matchSelTerm=null; matchSelDef=null;
+    } else {
+      matchSelTerm.classList.add('flash-wrong'); matchSelDef.classList.add('flash-wrong');
+      setTimeout(()=>{
+        matchSelTerm && matchSelTerm.classList.remove('sel','flash-wrong');
+        matchSelDef && matchSelDef.classList.remove('sel','flash-wrong');
+        matchSelTerm=null; matchSelDef=null;
+      },500);
+    }
+  }
+}
+renderMatchGame();
+
+/* ============ PART 5: REDACTION GAME ============ */
+const REDACT_SEGMENTS = [
+  {text:"Hi team, please prepare a quote for ", sens:false},
+  {text:"Mr. Rajesh Kumar", sens:true},
+  {text:" (Mobile: ", sens:false},
+  {text:"98765 43210", sens:true},
+  {text:", Aadhaar ending ", sens:false},
+  {text:"1234", sens:true},
+  {text:") residing at ", sens:false},
+  {text:"14/2 MG Road, Pune", sens:true},
+  {text:" who wants 12 uPVC casement windows. Our dealer margin on this SKU is ", sens:false},
+  {text:"22%", sens:true},
+  {text:", and internal cost price is ", sens:false},
+  {text:"₹410 per sq ft", sens:true},
+  {text:". Please don't share the margin with the customer. Also attach our extrusion profile drawing, ", sens:false},
+  {text:"Die No. VK-2201", sens:true},
+  {text:", for internal reference only.", sens:false},
+];
+function renderRedactText(){
+  const box = document.getElementById('redactText');
+  box.innerHTML='';
+  REDACT_SEGMENTS.forEach((seg,i)=>{
+    if(seg.sens){
+      const span = document.createElement('span');
+      span.className='sens'; span.textContent=seg.text; span.dataset.i=i;
+      span.onclick=()=>span.classList.toggle('marked');
+      box.appendChild(span);
+    } else {
+      box.appendChild(document.createTextNode(seg.text));
+    }
+  });
+}
+function checkRedaction(){
+  let correct=0, missed=0, falsePos=0, totalSens=0;
+  document.querySelectorAll('#redactText .sens').forEach(span=>{
+    totalSens++;
+    const marked = span.classList.contains('marked');
+    if(marked){ correct++; span.classList.add('reveal-correct'); }
+    else { missed++; span.classList.add('reveal-missed'); }
+  });
+  const result = document.getElementById('redactResult');
+  const pct = Math.round((correct/totalSens)*100);
+  result.innerHTML = `<div class="score-badge">You redacted ${correct} of ${totalSens} sensitive items (${pct}%)</div>
+    <p style="color:var(--muted);margin-top:8px">Green = correctly redacted. Yellow = you missed this one — it should have been removed before pasting into AI.</p>`;
+}
+function resetRedaction(){ renderRedactText(); document.getElementById('redactResult').innerHTML=''; }
+renderRedactText();
+
+/* ============ PART 6: HALLUCINATION SPOTTING GAME ============ */
+const HALLUC_ROUNDS = [
+  [
+    {text:"For a residential uPVC casement window, ", fake:false},
+    {text:"IS 4021:2020 Clause 12.3", fake:true},
+    {text:" specifies a minimum wind pressure resistance rating. ", fake:false},
+    {text:"In practice, the actual applicable wind load must be calculated per the project's location and height using IS 875 (Part 3), and verified by a structural engineer", fake:false},
+    {text:". The AI further claims the profile achieves a U-value of ", fake:false},
+    {text:"exactly 0.8 W/m²K under all glazing configurations", fake:true},
+    {text:", which is not possible — U-value varies significantly by glazing type and must be calculated per configuration, not quoted as a single fixed number.", fake:false},
+  ],
+  [
+    {text:"The AI states that ", fake:false},
+    {text:"EN 12608 Clause 9.4 sets a maximum lead content of 0.1% for PVC profiles", fake:true},
+    {text:", and cites this as the reason VEKA profiles are compliant. ", fake:false},
+    {text:"Lead content compliance should always be verified against the current official standard document and VEKA's own certified test reports", fake:false},
+    {text:", not an AI-generated clause number. The AI also asserts that ", fake:false},
+    {text:"this specific clause number guarantees fire resistance", fake:true},
+    {text:" — lead content and fire resistance are unrelated properties.", fake:false},
+  ],
+];
+let hRound=0;
+function renderHallucRound(){
+  document.getElementById('hRoundNum').textContent = hRound+1;
+  document.getElementById('hRoundTotal').textContent = HALLUC_ROUNDS.length;
+  const box = document.getElementById('hallucText');
+  box.innerHTML='';
+  HALLUC_ROUNDS[hRound].forEach((seg,i)=>{
+    if(seg.fake){
+      const span=document.createElement('span');
+      span.className='sens'; span.textContent=seg.text; span.dataset.i=i;
+      span.onclick=()=>span.classList.toggle('marked');
+      box.appendChild(span);
+    } else {
+      box.appendChild(document.createTextNode(seg.text));
+    }
+  });
+  document.getElementById('hallucResult').innerHTML='';
+}
+function checkHallucination(){
+  let correct=0, total=0;
+  document.querySelectorAll('#hallucText .sens').forEach(span=>{
+    total++;
+    if(span.classList.contains('marked')){ correct++; span.classList.add('reveal-correct'); }
+    else { span.classList.add('reveal-missed'); }
+  });
+  document.getElementById('hallucResult').innerHTML = `<div class="score-badge">Spotted ${correct} of ${total} fabricated claims this round.</div>`;
+}
+function nextHallucRound(){
+  hRound = (hRound+1) % HALLUC_ROUNDS.length;
+  renderHallucRound();
+}
+renderHallucRound();
+
+/* ============ PART 7: CASE STUDIES ============ */
+const CASE_STUDIES = [
+  {title:"1. The WhatsApp Quotation", tag:"Privacy", color:"var(--c2)",
+   scenario:"A dealer sends you a customer's Aadhaar number by mistake, asking for a quick quotation reply. You want AI to help write it fast.",
+   options:["Paste everything into a free AI chatbot to write the reply.","Remove the Aadhaar number first, then let AI draft a simple reply.","Ask the dealer to resend it without the Aadhaar number.","Skip AI and write the reply yourself."],
+   correct:1, explain:"Always remove ID numbers and personal details before typing anything into AI."},
+  {title:"2. The Extrusion Formula", tag:"Confidentiality", color:"var(--c1)",
+   scenario:"An engineer wants to paste VEKA's secret window formula into a free AI tool to fix a defect.",
+   options:["Paste it in — it's just a technical question.","Use only an approved AI tool, or ask about the defect without sharing the exact formula.","Ask a colleague instead of using AI.","Post the formula on a public forum for faster help."],
+   correct:1, explain:"Never share VEKA's secret formulas with tools that aren't approved."},
+  {title:"3. The Confident Wind-Load Number", tag:"Accuracy", color:"var(--c3)",
+   scenario:"AI gives you an exact wind-load number for a tall building. An architect is waiting for it.",
+   options:["Send it right away — AI sounded very sure.","Have an engineer check the number before sending it.","Round the number to be safe.","Ask another AI tool and average the two answers."],
+   correct:1, explain:"Never trust an AI safety number without checking it yourself."},
+  {title:"4. The Margin Sheet Mix-up", tag:"Confidentiality", color:"var(--c1)",
+   scenario:"A sales exec uploads the dealer margin sheet to a personal AI app to make a quick chart.",
+   options:["This is fine, it's only for a chart.","This is unsafe — use an approved tool, or make the chart by hand.","Only unsafe if dealers see the chart.","Unsafe only for large files."],
+   correct:1, explain:"Margin and pricing data should never go into personal AI apps."},
+  {title:"5. The Sensitive HR Draft", tag:"Privacy", color:"var(--c2)",
+   scenario:"HR asks AI to write a performance review, including that the employee was sick and on leave.",
+   options:["This is fine, HR already knows this.","Remove the health details first — write the review using only work facts.","Only remove it if the employee complains.","Ask AI to keep it private."],
+   correct:1, explain:"Health information should never be typed into AI."},
+  {title:"6. The Fake Standard", tag:"Accuracy", color:"var(--c3)",
+   scenario:"VEKA's website chatbot tells a customer about a safety standard clause that nobody has actually checked.",
+   options:["No issue, customers won't check it.","Fix it right away — check the real standard before publishing anything.","Only a problem if a competitor notices.","Use a different clause number instead."],
+   correct:1, explain:"Always verify standards before publishing them anywhere."},
+  {title:"7. The Translation Trail", tag:"Privacy", color:"var(--c2)",
+   scenario:"A manager uses AI to translate a customer complaint that includes the customer's home address, then shares it outside VEKA.",
+   options:["Fine, it's just a translation.","Remove the address first, before translating or sharing it.","Only a concern if the vendor is abroad.","Get an NDA signed after sharing it."],
+   correct:1, explain:"Remove personal details before translating or sharing any document."},
+  {title:"8. The Wrong U-Value", tag:"Accuracy", color:"var(--c3)",
+   scenario:"AI gives a technical number for a window's glass performance, and it's quoted straight to an architect.",
+   options:["Fine, the number looked reasonable.","Have someone on the team verify the exact number first.","Only check it if the architect asks.","Add a disclaimer instead of checking it."],
+   correct:1, explain:"Always double-check technical numbers before quoting them to a customer."},
+  {title:"9. The Chat History Surprise", tag:"Vendor Risk", color:"var(--c5)",
+   scenario:"An audit finds old price quotes sitting in an employee's personal AI chat history.",
+   options:["No action needed, it's old data.","Report it, delete the history, and remind everyone: no company data in personal AI accounts.","Only a concern if the account gets hacked.","Just ask the employee to change their password."],
+   correct:1, explain:"Old company data left in a personal AI account is still a real risk."},
+  {title:"10. The Vendor Onboarding Shortcut", tag:"Regulatory", color:"var(--c4)",
+   scenario:"Procurement pastes a vendor's bank and ID details into a free AI tool to fill out a contract faster.",
+   options:["Fine, it's vendor data, not customer data.","Unsafe — use an approved tool, or fill it out by hand.","Only unsafe for vendors outside India.","Fine, as long as the contract is deleted later."],
+   correct:1, explain:"Vendor bank and ID details need the same care as customer data."},
+  {title:"11. The Erasure Request", tag:"Regulatory", color:"var(--c4)",
+   scenario:"A customer asks VEKA to delete their data. You want AI to help write the reply.",
+   options:["Paste the customer's full record into AI to write a personal reply.","Give AI only the customer's name and date — enough for a simple reply.","Ignore the request, AI replies aren't official.","Send the whole customer database to AI to check."],
+   correct:1, explain:"Only give AI the small amount of information it actually needs."},
+  {title:"12. The Boardroom Notetaker", tag:"Vendor Risk", color:"var(--c5)",
+   scenario:"For a private meeting about a big company decision, someone wants to use a free AI notetaker.",
+   options:["Great idea, it saves time.","Don't use a free AI tool for this — use an approved tool or take notes by hand.","Use it, but ask everyone to speak quietly.","Use it, then delete the recording after."],
+   correct:1, explain:"Private, high-stakes meetings should never use free AI tools."},
+  {title:"13. The Brochure Image", tag:"Accuracy", color:"var(--c3)",
+   scenario:"AI creates a brochure image, but it accidentally includes a logo that looks like a competitor's.",
+   options:["Publish it anyway, nobody will notice.","Check every AI-made image carefully before publishing it.","Just blur the logo a little.","Only a concern if it's a similar product."],
+   correct:1, explain:"Always check AI-made images closely before using them publicly."},
+];
+let csScore=0;
+function renderCaseStudies(){
+  const box = document.getElementById('caseStudies');
+  document.getElementById('csTotal').textContent = CASE_STUDIES.length;
+  CASE_STUDIES.forEach((cs,i)=>{
+    const card = document.createElement('div');
+    card.className='cs-card';
+    card.innerHTML = `
+      <div class="cs-head" onclick="toggleCase(${i})">
+        <span class="cs-title">${cs.title}</span>
+        <span class="cs-tag" style="background:${cs.color};color:#000">${cs.tag}</span>
+      </div>
+      <div class="cs-body" id="cs-body-${i}">
+        <p>${cs.scenario}</p>
+        <div class="cs-options" id="cs-opts-${i}">
+          ${cs.options.map((o,oi)=>`<label id="cs-opt-${i}-${oi}"><input type="radio" name="cs${i}" onclick="chooseCase(${i},${oi})">${o}</label>`).join('')}
+        </div>
+        <button class="btn small" onclick="revealCase(${i})">Reveal Recommended Answer</button>
+        <div class="cs-feedback" id="cs-fb-${i}"></div>
+      </div>`;
+    box.appendChild(card);
+  });
+}
+let caseChoices = {};
+function toggleCase(i){
+  document.getElementById('cs-body-'+i).classList.toggle('open');
+}
+function chooseCase(i,oi){
+  caseChoices[i]=oi;
+  for(let k=0;k<CASE_STUDIES[i].options.length;k++){
+    document.getElementById(`cs-opt-${i}-${k}`).classList.toggle('chosen', k===oi);
+  }
+}
+function revealCase(i){
+  const cs = CASE_STUDIES[i];
+  const fb = document.getElementById('cs-fb-'+i);
+  const chosen = caseChoices[i];
+  if(chosen===undefined){ fb.className='cs-feedback incorrect'; fb.innerHTML='Please choose an option first.'; return; }
+  if(!fb.dataset.scored){
+    fb.dataset.scored='1';
+    if(chosen===cs.correct) { csScore++; document.getElementById('csScore').textContent=csScore; }
+  }
+  const isCorrect = chosen===cs.correct;
+  fb.className = 'cs-feedback ' + (isCorrect?'correct':'incorrect');
+  fb.innerHTML = `<strong>${isCorrect?'✓ Correct.':'✗ Recommended approach:'}</strong> ${cs.options[cs.correct]}<br><br>${cs.explain}`;
+}
+renderCaseStudies();
+
+/* ============ PART 8: POLICY BUILDER ============ */
+const POLICY_ITEMS = [
+  {t:"Tool", d:"I will only use VEKA-approved AI tools for anything above Public-tier data."},
+  {t:"Tier", d:"I will pause and classify data as Public, Internal, or Confidential before typing it into any AI tool."},
+  {t:"Trim", d:"I will remove names, contact details, IDs, and exact commercial figures before pasting real data into AI."},
+  {t:"Trust but Verify", d:"I will independently verify any technical spec, standard, or calculation before using it externally."},
+  {t:"Tell", d:"I will immediately report any suspected data exposure or AI-related incident to IT/the Data Protection Officer."},
+];
+function renderPolicyChecks(){
+  const box = document.getElementById('policyChecks');
+  POLICY_ITEMS.forEach((p,i)=>{
+    const d = document.createElement('div');
+    d.className='policy-check';
+    d.innerHTML = `<input type="checkbox" id="pol${i}"><label for="pol${i}"><strong>${p.t}.</strong> ${p.d}</label>`;
+    box.appendChild(d);
+  });
+}
+function generatePolicy(){
+  const name = "You";
+  let lines = [`MY VEKA AI SAFETY COMMITMENT — THE 5 T's`, ``];
+  POLICY_ITEMS.forEach((p,i)=>{
+    const checked = document.getElementById('pol'+i).checked;
+    lines.push((checked?'[✓] ':'[ ] ') + p.t + ' — ' + p.d);
+  });
+  const box = document.getElementById('policySummary');
+  box.style.display='block';
+  box.textContent = lines.join('\n');
+}
+renderPolicyChecks();
+
+/* ============ PART 9: FINAL QUIZ ============ */
+const FINAL_QUIZ = [
+  {q:"You paste a customer's phone number and address into a free AI chatbot to write a reply.", a:'unsafe', why:"Personal data should not go into a free, unapproved AI tool."},
+  {q:"You ask AI to summarise VEKA's public report for a LinkedIn post.", a:'safe', why:"This is public information — safe to use."},
+  {q:"AI gives you a wind-load number for a tall building. You send it to the architect without checking.", a:'unsafe', why:"Always check safety numbers before sharing them."},
+  {q:"You use VEKA's approved AI tool to write a simple internal process document.", a:'safe', why:"Approved tool, and no private data was used."},
+  {q:"You paste the dealer margin sheet into a personal AI app to make a chart.", a:'unsafe', why:"Margin data should not go into personal AI apps."},
+  {q:"You remove the customer's name and phone number, then ask AI to translate their complaint.", a:'safe', why:"You removed the personal details first — that's the right approach."},
+  {q:"You ask AI to write a simple job description for an open role, with no company data.", a:'safe', why:"No private or company data was used."},
+  {q:"AI gives you a standard's clause number, and you use it in a document without checking it.", a:'unsafe', why:"AI can invent clause numbers — always check the real standard first."},
+  {q:"An employee shares their AI tool password with three coworkers.", a:'unsafe', why:"Never share your AI tool login with others."},
+  {q:"You ask AI to brainstorm taglines for a new product, with no company data involved.", a:'safe', why:"Just brainstorming — no private data was used."},
+  {q:"You upload a vendor's contract with bank and ID details to a free AI tool.", a:'unsafe', why:"Bank and ID details should never go into free AI tools."},
+  {q:"You ask AI to outline a presentation on a general topic, with no company data included.", a:'safe', why:"General topic, no private data used."},
+  {q:"You give AI only a customer's first name and date to write a simple reply.", a:'safe', why:"You gave AI only the small amount of information it needed."},
+  {q:"AI states a specific rule number. You're not sure it's real, but you use it anyway.", a:'unsafe', why:"If you're not sure it's real, always check before using it."},
+  {q:"You use a free AI notetaker to record a private meeting about a big company decision.", a:'unsafe', why:"Private, high-stakes meetings should not use free AI tools."},
+];
+let fqAnswers = new Array(FINAL_QUIZ.length).fill(null);
+function renderFinalQuiz(){
+  const box = document.getElementById('finalQuiz');
+  FINAL_QUIZ.forEach((item,i)=>{
+    const d = document.createElement('div');
+    d.className='fq-item';
+    d.innerHTML = `<div class="fq-q">${i+1}. ${item.q}</div>
+      <div class="fq-options">
+        <button id="fq-${i}-safe" onclick="fqChoose(${i},'safe')">✅ Safe</button>
+        <button id="fq-${i}-unsafe" onclick="fqChoose(${i},'unsafe')">🚫 Unsafe</button>
+      </div>
+      <div class="fq-explain" id="fq-explain-${i}"></div>`;
+    box.appendChild(d);
+  });
+}
+function fqChoose(i, val){
+  fqAnswers[i]=val;
+  document.getElementById(`fq-${i}-safe`).classList.toggle('chosen-safe', val==='safe');
+  document.getElementById(`fq-${i}-unsafe`).classList.toggle('chosen-unsafe', val==='unsafe');
+}
+function submitFinalQuiz(){
+  let score=0;
+  FINAL_QUIZ.forEach((item,i)=>{
+    const exp = document.getElementById('fq-explain-'+i);
+    exp.style.display='block';
+    const chosen = fqAnswers[i];
+    const correct = chosen===item.a;
+    if(correct) score++;
+    exp.style.color = correct? 'var(--safe)' : 'var(--unsafe)';
+    exp.innerHTML = (chosen? (correct? '✓ Correct. ':'✗ Actually '+ (item.a==='safe'?'Safe':'Unsafe') + '. ') : '⚠ Not answered. Correct answer: '+(item.a==='safe'?'Safe':'Unsafe')+'. ') + item.why;
+  });
+  const pass = score>=13;
+  const resBox = document.getElementById('finalResult');
+  resBox.innerHTML = `<div class="result-box ${pass?'pass':'fail'}">
+    <div class="big">${score} / 15</div>
+    <div style="font-size:1.1rem;margin-top:8px">${pass? '🎉 Passed! You can now generate your certificate below.' : 'Not yet at 13/15 — review the explanations above and retake the quiz.'}</div>
+    ${!pass? '<button class="btn secondary" style="margin-top:14px" onclick="retakeFinalQuiz()">↺ Retake Quiz</button>':''}
+  </div>`;
+  if(pass) renderCertificate();
+  else document.getElementById('certificateBox').innerHTML='';
+  resBox.scrollIntoView({behavior:'smooth'});
+}
+function retakeFinalQuiz(){
+  fqAnswers = new Array(FINAL_QUIZ.length).fill(null);
+  document.getElementById('finalQuiz').innerHTML='';
+  document.getElementById('finalResult').innerHTML='';
+  document.getElementById('certificateBox').innerHTML='';
+  renderFinalQuiz();
+}
+function renderCertificate(){
+  document.getElementById('certificateBox').innerHTML = `
+    <div class="certificate">
+      <div style="font-size:2.2rem">🛡️</div>
+      <h2>Certificate of Completion</h2>
+      <div style="color:var(--muted);margin-top:4px">VEKA GenAI Excellence &middot; Session 3 — Safe AI</div>
+      <input class="name-input" id="certName" placeholder="Type your full name">
+      <div style="color:var(--muted);font-size:0.9rem">has successfully completed the Safe AI workshop and passed the "Is This Safe?" assessment.</div>
+      <div style="margin-top:18px;color:var(--muted);font-size:0.8rem">Date: ${new Date().toLocaleDateString('en-IN',{day:'numeric',month:'long',year:'numeric'})}</div>
+      <button class="btn no-print" style="margin-top:20px" onclick="window.print()">🖨️ Print / Save Certificate</button>
+    </div>`;
+}
+renderFinalQuiz();
+
+/* ============ GAME ARCADE (BONUS) ============ */
+let arcadeScore = 0;
+function bumpArcadeScore(n){
+  arcadeScore += n;
+  document.getElementById('arcadeGrandScore').textContent = arcadeScore;
+}
+
+/* --- Game 1: Flashcard Flip --- */
+const FLASHCARDS = [
+  {front:"Token", back:"The small pieces your text is broken into before AI processes it."},
+  {front:"Hallucination", back:"When AI states something false with full confidence."},
+  {front:"Anonymise", back:"Removing personal or confidential details before using AI."},
+  {front:"Data Fiduciary", back:"The organisation (VEKA) responsible for personal data."},
+  {front:"Data Principal", back:"The person the data belongs to — customer, dealer, or employee."},
+  {front:"Confidential Tier", back:"Data that would cause real harm to VEKA if it leaked."},
+];
+function renderFlashcards(){
+  const box = document.getElementById('flashGrid');
+  FLASHCARDS.forEach(c=>{
+    const el = document.createElement('div');
+    el.className='flip-card';
+    el.innerHTML = `<div class="front">${c.front}<br><span style="font-size:0.72rem;color:var(--muted);font-weight:400">(tap to flip)</span></div><div class="back">${c.back}</div>`;
+    el.onclick = ()=>el.classList.toggle('flipped');
+    box.appendChild(el);
+  });
+}
+renderFlashcards();
+
+/* --- Generic MCQ renderer used by Games 3 & 4 --- */
+function renderMCQGame(containerId, data, scoreId, totalId, scoreVarSetter, scoreVarGetter){
+  document.getElementById(totalId).textContent = data.length;
+  const box = document.getElementById(containerId);
+  data.forEach((item,i)=>{
+    const row = document.createElement('div');
+    row.className='mcq-row';
+    const opts = item.options.map((o,oi)=>`<button class="opt" onclick="mcqAnswer('${containerId}',${i},${oi},${item.correct},'${scoreId}')">${o}</button>`).join('');
+    row.innerHTML = `<div class="mcq-q">${i+1}. ${item.q}</div><div class="mcq-opts" id="${containerId}-row-${i}">${opts}</div><div class="mcq-fb" id="${containerId}-fb-${i}"></div>`;
+    box.appendChild(row);
+  });
+}
+const mcqState = {};
+function mcqAnswer(containerId, i, chosen, correct, scoreId){
+  const key = containerId+'-'+i;
+  if(mcqState[key]) return;
+  mcqState[key]=true;
+  const row = document.getElementById(containerId+'-row-'+i);
+  const btns = row.querySelectorAll('button.opt');
+  btns[correct].classList.add('right');
+  if(chosen!==correct) btns[chosen].classList.add('wrong');
+  const fb = document.getElementById(containerId+'-fb-'+i);
+  const ok = chosen===correct;
+  fb.style.color = ok? 'var(--safe)':'var(--unsafe)';
+  fb.textContent = ok? '✓ Correct' : '✗ Not quite';
+  const scoreEl = document.getElementById(scoreId);
+  scoreEl.textContent = (parseInt(scoreEl.textContent)||0) + (ok?1:0);
+  bumpArcadeScore(ok?1:0);
+}
+
+/* --- Game 2: True or False Speed Round --- */
+const TF_GAME = [
+  {q:"AI tools always tell you when they're not sure about an answer.", a:false},
+  {q:"You should verify technical numbers before quoting them to a customer.", a:true},
+  {q:"Deleting a chat on a free AI app always erases it instantly from the provider's servers.", a:false},
+  {q:"VEKA employees can be personally responsible for data safety mistakes.", a:true},
+  {q:"DPDP 2023 only applies to VEKA's IT department.", a:false},
+  {q:"Anonymising data means removing names, IDs, and other identifying details.", a:true},
+  {q:"It's fine to use any AI tool as long as the task feels small.", a:false},
+  {q:"Reporting a suspected data leak quickly is better than staying quiet.", a:true},
+];
+function renderTFGame(){
+  document.getElementById('tfTotal').textContent = TF_GAME.length;
+  const box = document.getElementById('tfGame');
+  TF_GAME.forEach((item,i)=>{
+    const row = document.createElement('div');
+    row.className='mcq-row';
+    row.innerHTML = `<div class="mcq-q">${i+1}. ${item.q}</div>
+      <div class="mcq-opts" id="tf-row-${i}">
+        <button class="opt" onclick="tfAnswer(${i},true,${item.a})">True</button>
+        <button class="opt" onclick="tfAnswer(${i},false,${item.a})">False</button>
+      </div>
+      <div class="mcq-fb" id="tf-fb-${i}"></div>`;
+    box.appendChild(row);
+  });
+}
+const tfDone = {};
+function tfAnswer(i, chosen, correct){
+  if(tfDone[i]) return;
+  tfDone[i]=true;
+  const row = document.getElementById('tf-row-'+i);
+  const btns = row.querySelectorAll('button.opt');
+  btns[correct? 0:1].classList.add('right');
+  if(chosen!==correct) btns[chosen?0:1].classList.add('wrong');
+  const fb = document.getElementById('tf-fb-'+i);
+  const ok = chosen===correct;
+  fb.style.color = ok?'var(--safe)':'var(--unsafe)';
+  fb.textContent = ok?'✓ Correct':'✗ Correct answer: '+(correct?'True':'False');
+  const el = document.getElementById('tfScore');
+  el.textContent = (parseInt(el.textContent)||0)+(ok?1:0);
+  bumpArcadeScore(ok?1:0);
+}
+renderTFGame();
+
+/* --- Game 3: Emoji Decode --- */
+const EMOJI_GAME = [
+  {q:"🔒📄 = ?", options:["Confidential Document","Public Brochure","Internal Memo","Spam Email"], correct:0},
+  {q:"🎭🤖 = ?", options:["Encryption","Hallucination","Consent","Anonymisation"], correct:1},
+  {q:"🪪🚫 = ?", options:["Signature","Certification","Anonymisation","Warranty"], correct:2},
+  {q:"⚖️🇮🇳 = ?", options:["GST Act","DPDP Act","Companies Act","IT Act"], correct:1},
+  {q:"🗑️🙋 = ?", options:["Right to Information","Right of Way","Right to Erasure","Copyright"], correct:2},
+  {q:"🧩🏢 = ?", options:["Internal Audit","Public Relations","Sales Pipeline","Third-Party Vendor Risk"], correct:3},
+];
+renderMCQGame('emojiGame', EMOJI_GAME, 'emojiScore', 'emojiTotal');
+
+/* --- Game 4: Fill in the Blank --- */
+const BLANK_GAME = [
+  {q:"Before typing data into AI, always check its ___ level (Public, Internal, or Confidential).", options:["classification","temperature","font","currency"], correct:0},
+  {q:"AI can ___ facts — meaning it states something false very confidently.", options:["encrypt","hallucinate","anonymise","translate"], correct:1},
+  {q:"Under DPDP, VEKA is called a Data ___.", options:["Broker","Vendor","Fiduciary","Auditor"], correct:2},
+  {q:"You should always ___ personal details before pasting dealer data into AI.", options:["highlight","bold","remove","translate"], correct:2},
+  {q:"A wind-load number from AI must be ___ by an engineer before use.", options:["ignored","rounded","hidden","verified"], correct:3},
+  {q:"If you suspect a data leak, you should ___ it immediately.", options:["delete","forward","report","ignore"], correct:2},
+];
+renderMCQGame('blankGame', BLANK_GAME, 'blankScore', 'blankTotal');
+
+/* --- Game 5: Odd One Out --- */
+const ODD_GAME = [
+  {items:["Dealer margin sheet","Customer Aadhaar number","Unpublished financials","Published brochure"], odd:3},
+  {items:["Consent","Data Principal","Purpose Limitation","Extrusion Die"], odd:3},
+  {items:["Hallucination","Wrong wind-load","Fake standard clause","Approved SOP"], odd:3},
+  {items:["Free consumer chatbot","Personal AI app","Unapproved browser extension","VEKA-approved enterprise tool"], odd:3},
+  {items:["Org chart","Training schedule","Internal SOP","Vendor bank details"], odd:3},
+];
+function renderOddGame(){
+  document.getElementById('oddTotal').textContent = ODD_GAME.length;
+  const box = document.getElementById('oddGame');
+  ODD_GAME.forEach((set,i)=>{
+    const wrap = document.createElement('div');
+    wrap.style.marginBottom='14px';
+    wrap.innerHTML = `<div style="margin-bottom:6px;color:var(--muted);font-size:0.82rem">Round ${i+1} — click the odd one out:</div>
+      <div class="odd-grid" id="odd-row-${i}">
+        ${set.items.map((it,ii)=>`<div class="odd-chip" onclick="oddAnswer(${i},${ii},${set.odd})">${it}</div>`).join('')}
+      </div>`;
+    box.appendChild(wrap);
+  });
+}
+const oddDone = {};
+function oddAnswer(i, chosen, correct){
+  if(oddDone[i]) return;
+  oddDone[i]=true;
+  const row = document.getElementById('odd-row-'+i);
+  const chips = row.querySelectorAll('.odd-chip');
+  chips[correct].classList.add('right');
+  if(chosen!==correct) chips[chosen].classList.add('wrong');
+  const ok = chosen===correct;
+  const el = document.getElementById('oddScore');
+  el.textContent = (parseInt(el.textContent)||0)+(ok?1:0);
+  bumpArcadeScore(ok?1:0);
+}
+renderOddGame();
+
+/* --- Game 6: Word Scramble --- */
+const SCRAMBLE_GAME = [
+  {scrambled:"N E K O T", options:["TOKEN","VENDOR","CONSENT","BREACH"], correct:0},
+  {scrambled:"H C A E R B", options:["STANDARD","BREACH","PRIVACY","ERASURE"], correct:1},
+  {scrambled:"E R U S A R E", options:["TOKEN","VENDOR","ERASURE","BREACH"], correct:2},
+  {scrambled:"R O D N E V", options:["VENDOR","PRIVACY","STANDARD","CONSENT"], correct:0},
+  {scrambled:"D R A D N A T S", options:["BREACH","ERASURE","VENDOR","STANDARD"], correct:3},
+  {scrambled:"C A V I R P Y", options:["PRIVACY","TOKEN","STANDARD","VENDOR"], correct:0},
+];
+renderMCQGame('scrambleGame', SCRAMBLE_GAME.map(s=>({q:"Unscramble: "+s.scrambled, options:s.options, correct:s.correct})), 'scrambleScore', 'scrambleTotal');
+
+/* --- Game 7: Two Truths and a Lie --- */
+const LIE_GAME = [
+  {stmts:["AI tools can invent fake standard numbers.","VEKA-approved AI tools have signed data agreements.","Free AI chatbots never store your conversations."], lie:2},
+  {stmts:["DPDP 2023 gives people the right to request data erasure.","Only IT staff need to worry about AI data safety.","Data breaches must be reported to the Data Protection Board."], lie:1},
+  {stmts:["Dealer margins are Confidential-tier data.","Published brochures are Public-tier data.","Internal SOPs carry the same risk level as Confidential data."], lie:2},
+  {stmts:["You should verify AI-generated technical numbers before using them.","Health information is sensitive personal data under DPDP.","Sharing your AI tool password with coworkers is totally fine."], lie:2},
+  {stmts:["Anonymising data means removing identifying details before using AI.","AI hallucinations always sound uncertain and hesitant.","A structural calculation from AI should be checked by an engineer."], lie:1},
+];
+function renderLieGame(){
+  document.getElementById('lieTotal').textContent = LIE_GAME.length;
+  const box = document.getElementById('lieGame');
+  LIE_GAME.forEach((set,i)=>{
+    const wrap = document.createElement('div');
+    wrap.className='mcq-row';
+    wrap.innerHTML = `<div class="mcq-q">Round ${i+1} — which one is FALSE?</div>
+      <div class="mcq-opts" id="lie-row-${i}" style="flex-direction:column;align-items:stretch">
+        ${set.stmts.map((s,si)=>`<button class="opt" style="text-align:left" onclick="lieAnswer(${i},${si},${set.lie})">${String.fromCharCode(65+si)}. ${s}</button>`).join('')}
+      </div>
+      <div class="mcq-fb" id="lie-fb-${i}"></div>`;
+    box.appendChild(wrap);
+  });
+}
+const lieDone = {};
+function lieAnswer(i, chosen, correct){
+  if(lieDone[i]) return;
+  lieDone[i]=true;
+  const row = document.getElementById('lie-row-'+i);
+  const btns = row.querySelectorAll('button.opt');
+  btns[correct].classList.add('right');
+  if(chosen!==correct) btns[chosen].classList.add('wrong');
+  const ok = chosen===correct;
+  const fb = document.getElementById('lie-fb-'+i);
+  fb.style.color = ok?'var(--safe)':'var(--unsafe)';
+  fb.textContent = ok?'✓ Correct — that was the lie.':'✗ Not quite.';
+  const el = document.getElementById('lieScore');
+  el.textContent = (parseInt(el.textContent)||0)+(ok?1:0);
+  bumpArcadeScore(ok?1:0);
+}
+renderLieGame();
+
+/* --- Game 8: This or That --- */
+const TOT_GAME = [
+  {a:"Paste the customer's address into a free AI tool", b:"Remove the address, then use the free AI tool", correct:'b'},
+  {a:"Use a VEKA-approved tool for a confidential draft", b:"Use a personal AI app for a confidential draft", correct:'a'},
+  {a:"Verify AI's wind-load number with an engineer", b:"Quote AI's wind-load number directly to the client", correct:'a'},
+  {a:"Report a suspected data leak immediately", b:"Wait and see if anyone notices", correct:'a'},
+  {a:"Share your AI login with teammates to save cost", b:"Each person uses their own licensed account", correct:'b'},
+  {a:"Publish an AI-generated image without checking it", b:"Review the AI-generated image for hidden logos or errors first", correct:'b'},
+  {a:"Trust an AI-cited standard clause without checking", b:"Cross-check the clause against the real standard", correct:'b'},
+  {a:"Use the minimum data necessary in an AI prompt", b:"Paste the customer's full record just in case", correct:'a'},
+];
+function renderTotGame(){
+  document.getElementById('totTotal').textContent = TOT_GAME.length;
+  const box = document.getElementById('totGame');
+  TOT_GAME.forEach((item,i)=>{
+    const wrap = document.createElement('div');
+    wrap.style.marginBottom='12px';
+    wrap.innerHTML = `<div style="margin-bottom:6px;color:var(--muted);font-size:0.82rem">Round ${i+1} — click the SAFER choice:</div>
+      <div class="tot-row" id="tot-row-${i}">
+        <div class="tot-btn" onclick="totAnswer(${i},'a','${item.correct}')">${item.a}</div>
+        <div class="tot-vs">VS</div>
+        <div class="tot-btn" onclick="totAnswer(${i},'b','${item.correct}')">${item.b}</div>
+      </div>`;
+    box.appendChild(wrap);
+  });
+}
+const totDone = {};
+function totAnswer(i, chosen, correct){
+  if(totDone[i]) return;
+  totDone[i]=true;
+  const row = document.getElementById('tot-row-'+i);
+  const btns = row.querySelectorAll('.tot-btn');
+  const rightBtn = correct==='a'? btns[0]:btns[1];
+  const wrongBtn = correct==='a'? btns[1]:btns[0];
+  rightBtn.classList.add('right');
+  if(chosen!==correct) wrongBtn.classList.add('wrong');
+  const ok = chosen===correct;
+  const el = document.getElementById('totScore');
+  el.textContent = (parseInt(el.textContent)||0)+(ok?1:0);
+  bumpArcadeScore(ok?1:0);
+}
+renderTotGame();
+</script>
+</body>
+</html>
